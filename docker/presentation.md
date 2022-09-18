@@ -139,7 +139,7 @@ docker pull ubuntu:22.04
 * Docker container (Runnable instance of an image on any OS)
 
 
-```python
+```docker
 docker run -i -t ubuntu:22.04
 ```
 
@@ -148,7 +148,7 @@ docker run -i -t ubuntu:22.04
 # Important command line arguments (1)
 * `--name=my-awesome-container` : Give the container a name to easily restart it
 
-```
+```docker
 docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
 docker container start -i dolfinx_v051
 ```
@@ -157,7 +157,7 @@ docker container start -i dolfinx_v051
 # Important command line arguments (2)
 * `--rm` : Remove container when exiting
 
-```
+```docker
 docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
 docker container start -i dolfinx_v051
 ```
