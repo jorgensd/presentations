@@ -87,6 +87,8 @@ style: |
   white-space: nowrap;
   border: 1px solid #eaeaea;
   border-radius: 3px;
+  color: white;
+  background: black;
 
   }
 
@@ -120,18 +122,130 @@ style: |
 
 ---
 # Docker creates a virtual operating system
+<style scoped>ul { padding: 10; list-style: -; }</style>
 
-- [Docker Desktop](https://docs.docker.com/desktop/)
-- [Docker Client](https://docs.docker.com/engine/reference/commandline/cli)
-- [Docker Hub](https://hub.docker.com/)
+* [Docker Desktop](https://docs.docker.com/desktop/)
+* [Docker Client](https://docs.docker.com/engine/reference/commandline/cli)
+* [Docker Hub](https://hub.docker.com/)
 
 ```python
 docker pull ubuntu:22.04
 ```
 ---
 # Docker consists of different abstractions
+<style scoped>ul { padding: 10; list-style: -; }</style>
 
-- Docker container images (Custom filesystem with all preinstalled dependencies)
-- Docker container (runnable instance of an image on any OS)
+* Docker container images (Custom filesystem with all reinstalled dependencies)
+* Docker container (runnable instance of an image on any OS)
+
+
+```python
+docker run -i -t ubuntu:22.04
+```
 
 ---
+
+# Important command line arguments (1)
+* `--name=my-awesome-container` : Give the container a name to easily restart it
+
+```
+docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
+docker container start -i dolfinx_v051
+```
+---
+
+# Important command line arguments (2)
+* `--rm` : Remove container when exiting
+
+```
+docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
+docker container start -i dolfinx_v051
+```
+
+---
+<!-- # Important command line arguments (2)
+
+* `-d` : Detach the container from the terminal and run it in the background
+
+```bash
+docker run -d --name="test_env" dolfinx/dolfinx:v0.5.1 tail -f /dev/null 
+docker exec -ti test_env sh -c "pip3 install "
+``` -->
+<!-- --- -->
+# Important command line arguments (3)
+
+* `-p 8888:8888` : Map port `8888` on your system to port 8888 in the container
+
+```bash
+docker run -ti --rm -p 8888:8888 dolfinx/lab:v0.5.1
+```
+
+---
+
+<style scoped>ul { padding: 10; list-style: -; }</style>
+
+# When/why use docker?
+- Many environments with different version requirements
+- Dependency on "heavy packages" (e.g. PETSc) that takes a long time to install
+- Consistent test/end user environments
+
+---
+# Building a docker image (1)
+requirements.txt
+```text
+pandas
+
+matplotlib
+
+seaborn
+
+--no-binary=h5py
+h5py
+```
+
+```bash
+ pip3 install --no-cache-dir -r requirements.txt --upgrade
+```
+---
+
+# Building a docker image (2)
+
+Dockerfile
+```docker
+FROM dolfinx/lab:v0.5.1
+WORKDIR /tmp/
+ADD requirements.txt /tmp/requirements.txt
+ENV HDF5_MPI="ON" HDF5_DIR="/usr/local/"
+
+RUN CC=mpicc pip3 install --no-cache-dir -r requirements.txt --upgrade &&\
+    pip3 cache purge
+ENTRYPOINT ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root"]
+```
+
+```docker
+docker build -t test_image .
+```
+
+---
+# Where to store a docker image?
+
+- DockerHub (https://hub.docker.com/)
+- Quay.io (https://quay.io/)
+- Github Packages (https://github.com/features/packages)
+
+
+---
+# Examples of GitHub integration
+
+- https://github.com/jorgensd/dolfinx_mpc
+- https://github.com/FEniCS/dolfinx/blob/main/docker/Dockerfile
+- https://github.com/jorgensd/dolfinx-tutorial
+
+
+---
+
+# Other container systems:
+- Buildah (https://buildah.io/)
+- Podman (https://podman.io/)
+- Containerd (https://containerd.io/)
+- ...and many more!
