@@ -135,8 +135,8 @@ docker pull ubuntu:22.04
 # Docker consists of different abstractions
 <style scoped>ul { padding: 10; list-style: -; }</style>
 
-* Docker container images (Custom filesystem with all reinstalled dependencies)
-* Docker container (runnable instance of an image on any OS)
+* Docker images (Custom filesystem with all preinstalled dependencies)
+* Docker container (Runnable instance of an image on any OS)
 
 
 ```python
