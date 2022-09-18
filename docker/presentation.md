@@ -113,7 +113,7 @@ style: |
   }
 ---
 
-# Docker
+# An introduction to Docker
 
 ### Jørgen S. Dokken
 
@@ -163,25 +163,36 @@ docker container start -i dolfinx_v051
 ```
 
 ---
-<!-- # Important command line arguments (2)
+# Important command line arguments (3)
 
 * `-d` : Detach the container from the terminal and run it in the background
 
-```bash
-docker run -d --name="test_env" dolfinx/dolfinx:v0.5.1 tail -f /dev/null 
-docker exec -ti test_env sh -c "pip3 install "
-``` -->
-<!-- --- -->
-# Important command line arguments (3)
+```docker
+docker run -ti  -d --name="test_env" dolfinx/dolfinx:v0.5.1
+docker attach test_env
+docker exec -ti test_env sh -c "pip3 install pandas"
+``` 
+
+---
+# Important command line arguments (4)
 
 * `-p 8888:8888` : Map port `8888` on your system to port 8888 in the container
 
-```bash
+```docker
 docker run -ti --rm -p 8888:8888 dolfinx/lab:v0.5.1
+```
+---
+
+# Important command line arguments (5)
+ * `-v location_on_host:location_in_container` share a folder with the container 
+ * `-w location_in_container` Working directory (default starting location when starting the container)
+
+ ```docker
+docker run -ti --rm -v $(pwd):/root/shared -w /root/shared \
+           dolfinx/dolfinx:nightly
 ```
 
 ---
-
 <style scoped>ul { padding: 10; list-style: -; }</style>
 
 # When/why use docker?
@@ -237,10 +248,9 @@ docker build -t test_image .
 ---
 # Examples of GitHub integration
 
-- https://github.com/jorgensd/dolfinx_mpc
-- https://github.com/FEniCS/dolfinx/blob/main/docker/Dockerfile
-- https://github.com/jorgensd/dolfinx-tutorial
-
+- Github Packages integration (https://github.com/jorgensd/dolfinx_mpc)
+- Advanced build image (https://github.com/FEniCS/dolfinx/blob/main/docker/Dockerfile)
+- Binder (https://github.com/jorgensd/dolfinx-tutorial)
 
 ---
 
