@@ -123,14 +123,20 @@ style: |
 ---
 # Docker creates a virtual operating system
 <style scoped>ul { padding: 10; list-style: -; }</style>
-
+<style>
+img[alt~="center"] {
+  display: block;
+  margin: 0 auto;
+}
+</style>
 * [Docker Desktop](https://docs.docker.com/desktop/)
 * [Docker Client](https://docs.docker.com/engine/reference/commandline/cli)
 * [Docker Hub](https://hub.docker.com/)
 
-```python
-docker pull ubuntu:22.04
-```
+![width:800 center](setup.svg)
+
+<span style="font-size:80%">Figure from: https://docs.docker.com/get-started/overview/</span>
+
 ---
 # Docker consists of different abstractions
 <style scoped>ul { padding: 10; list-style: -; }</style>
@@ -140,6 +146,7 @@ docker pull ubuntu:22.04
 
 
 ```docker
+docker pull ubuntu:22.04
 docker run -i -t ubuntu:22.04
 ```
 
