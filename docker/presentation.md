@@ -129,9 +129,10 @@ img[alt~="center"] {
   margin: 0 auto;
 }
 </style>
-* [Docker Desktop](https://docs.docker.com/desktop/)
-* [Docker Client](https://docs.docker.com/engine/reference/commandline/cli)
-* [Docker Hub](https://hub.docker.com/)
+
+[Docker Desktop](https://docs.docker.com/desktop/)
+[Docker Client](https://docs.docker.com/engine/reference/commandline/cli)
+[Docker Hub](https://hub.docker.com/)
 
 ![width:800 center](setup.svg)
 
@@ -139,10 +140,10 @@ img[alt~="center"] {
 
 ---
 # Docker consists of different abstractions
-<style scoped>ul { padding: 10; list-style: -; }</style>
 
-* Docker images (Custom filesystem with all preinstalled dependencies)
-* Docker container (Runnable instance of an image on any OS)
+Docker images (Custom filesystem with all preinstalled dependencies)
+
+Docker container (Runnable instance of an image on any OS)
 
 
 ```docker
@@ -153,7 +154,7 @@ docker run -i -t ubuntu:22.04
 ---
 
 # Important command line arguments (1)
-* `--name=my-awesome-container` : Give the container a name to easily restart it
+`--name=my-awesome-container` : Give the container a name to easily restart it
 
 ```docker
 docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
@@ -162,7 +163,7 @@ docker container start -i dolfinx_v051
 ---
 
 # Important command line arguments (2)
-* `--rm` : Remove container when exiting
+`--rm` : Remove container when exiting
 
 ```docker
 docker run -ti --name=dolfinx_v051 dolfinx/dolfinx:v0.5.1 
@@ -172,7 +173,7 @@ docker container start -i dolfinx_v051
 ---
 # Important command line arguments (3)
 
-* `-d` : Detach the container from the terminal and run it in the background
+`-d` : Detach the container from the terminal and run it in the background
 
 ```docker
 docker run -ti  -d --name="test_env" dolfinx/dolfinx:v0.5.1
@@ -183,7 +184,7 @@ docker exec -ti test_env sh -c "pip3 install pandas"
 ---
 # Important command line arguments (4)
 
-* `-p 8888:8888` : Map port `8888` on your system to port 8888 in the container
+`-p 8888:8888` : Map port `8888` on your system to port 8888 in the container
 
 ```docker
 docker run -ti --rm -p 8888:8888 dolfinx/lab:v0.5.1
@@ -191,8 +192,9 @@ docker run -ti --rm -p 8888:8888 dolfinx/lab:v0.5.1
 ---
 
 # Important command line arguments (5)
- * `-v location_on_host:location_in_container` share a folder with the container 
- * `-w location_in_container` Working directory (default starting location when starting the container)
+ `-v location_on_host:location_in_container` share a folder with the container 
+ 
+ `-w location_in_container` Working directory (default starting location when starting the container)
 
  ```docker
 docker run -ti --rm -v $(pwd):/root/shared -w /root/shared \
