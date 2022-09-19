@@ -215,7 +215,7 @@ h5py
 ```
 
 ```bash
- pip3 install --no-cache-dir -r requirements.txt --upgrade
+pip3 install -r requirements.txt --upgrade
 ```
 ---
 
@@ -228,7 +228,7 @@ WORKDIR /tmp/
 ADD requirements.txt /tmp/requirements.txt
 ENV HDF5_MPI="ON" HDF5_DIR="/usr/local/"
 
-RUN CC=mpicc pip3 install --no-cache-dir -r requirements.txt --upgrade &&\
+RUN CC=mpicc pip3 install -r requirements.txt --upgrade &&\
     pip3 cache purge
 ENTRYPOINT ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root"]
 ```
