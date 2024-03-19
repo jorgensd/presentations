@@ -179,9 +179,8 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 ---
 
 # Implicitness in DOLFIN
-<div data-marpit-fragment>
 
-<div>
+
 ```python
 from dolfin import *
 import time
@@ -195,8 +194,7 @@ for i in range(3):
     end = time.perf_counter()
     print(f"{i}: {end-start:.2e}")
 ```
-</div>
-<div>
+<div data-marpit-fragment>
 
 Output:
 
