@@ -141,16 +141,26 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 
 # Brief history of finite elements
 
+<div class="columns">
+<div>
+
 * 1940s: Rayleigh-Ritz/Ritz Galerkin method
 * 1970s: General purpose finite element software
 * 1990s: Object orientation
 * 2000s: User-friendliness
 * 2020s: High performance computing
+</div>
+<div>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lrpj3cZrKn4?si=rQY8RsGJEXfYNfIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
+
+<div>
 
 ---
 
 # Brief history of the FEniCS project
 
+![bg right:30%](./fenics_logo.png)
 
 * 2003: Initiated in Netherlands, Sweden and USA
 * 2006-2016: Hans Petter era: CBC
@@ -169,6 +179,9 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 ---
 
 # Implicitness in DOLFIN
+<div data-marpit-fragment>
+
+<div>
 ```python
 from dolfin import *
 import time
@@ -182,12 +195,17 @@ for i in range(3):
     end = time.perf_counter()
     print(f"{i}: {end-start:.2e}")
 ```
+</div>
+<div>
+
 Output:
+
 ```bash
 0: 3.30e+00
 1: 3.94e-04
 2: 3.10e-04
 ```
+</div>
 
 ---
 
@@ -252,5 +270,12 @@ Compilation: 1.30e-01
 </div>
 <div>
 <div>
+
 ---
 
+# Package overview
+
+![bg right](./overview.png)
+
+
+---
