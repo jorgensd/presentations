@@ -225,11 +225,14 @@ Compilation: 1.58e-01
 1: 5.69e-05
 2: 4.18e-05
 ```
+<div data-marpit-fragment>
+
 # Same experiment for P1
+
 <div class="columns">
 <div>
 
-### DOLFIN
+DOLFIN
 ```bash
 
 0: 3.27e+00
@@ -239,7 +242,7 @@ Compilation: 1.58e-01
 </div>
 <div>
 
-### DOLFINx
+DOLFINx
 ```
 Compilation: 1.30e-01
 0: 2.11e-04
@@ -248,6 +251,6 @@ Compilation: 1.30e-01
 ```
 </div>
 <div>
-
+<div>
 ---
 
