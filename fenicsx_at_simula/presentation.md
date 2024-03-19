@@ -17,12 +17,13 @@ style: |
 
   font-size: 1.3em;
   text-align: center;
-
+  color: #f15922;
   }
   h2 {
 
   font-size: 1.5em;
   text-align: left;
+  color: #f15922;
 
   }
   h3 {
@@ -32,6 +33,8 @@ style: |
   text-align: center;
   font-weight: normal;
   letter-spacing: 1px;
+  color: #f15922;
+
 
   }
   h6 {
@@ -39,6 +42,7 @@ style: |
   text-align: center;
   font-weight: normal;
   letter-spacing: 1px;
+  color: #f15922;
 
   }
   p{
@@ -123,9 +127,13 @@ style: |
 
 # DOLFINx: The next generation FEniCS problem solving environment
 
-### Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson, C. N., Rognes, M. E., Scroggs, M. W., Sime, N., & Wells, G. N.
+<center>
+Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson, C. N., Rognes, M. E., Scroggs, M. W., Sime, N., & Wells, G. N.
+<center/>
 
-###### dokken@simula.no
+<center>
+<b> dokken@simula.no </b>
+<center/>
 
 ### [Zenodo: 10.5281/zenodo.10447666](https://doi.org/10.5281/zenodo.10447666)
 
@@ -183,7 +191,7 @@ Output:
 
 ---
 
-# Explicit version in DOLFINx
+# Explicit control in DOLFINx
 ```python
 from mpi4py import MPI
 import dolfinx
@@ -209,7 +217,7 @@ for i in range(3):
 ```
 
 ---
-# Explicit version continued
+# Explicit control continued
 
 ```bash
 Compilation: 1.58e-01
@@ -221,7 +229,7 @@ Compilation: 1.58e-01
 <div class="columns">
 <div>
 
-## DOLFIN
+### DOLFIN
 ```bash
 
 0: 3.27e+00
@@ -231,7 +239,7 @@ Compilation: 1.58e-01
 </div>
 <div>
 
-## DOLFINx
+### DOLFINx
 ```
 Compilation: 1.30e-01
 0: 2.11e-04
