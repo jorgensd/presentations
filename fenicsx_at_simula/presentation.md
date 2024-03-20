@@ -464,8 +464,90 @@ print(compiled_expression.eval(mesh, cells))
 
 ---
 
-# MPI parallelism
+# Mesh creation
 
-- IndexMaps
-- MPI-3 Neighbourhoods
+```python
+import numpy as np
+from mpi4py import MPI
+
+import basix.ufl
+import dolfinx
+import ufl
+
+x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
+cells = np.array([[0, 1, 3, 4], [1, 2, 4, 5]], dtype=np.int64)
+coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
+                                       shape=(x.shape[1],))
+msh = dolfinx.mesh.create_mesh(MPI.COMM_SELF, cells, x, ufl.Mesh(coordinate_element))
+
+```
+
+---
+
+# Parallel reading
+
+```python
+if (rank:=MPI.COMM_WORLD.rank) == 0:
+    x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=np.float32)
+    cells = np.array([[0, 1, 3, 4]], dtype=np.int64) 
+elif rank == 1:
+    x = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
+    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
+else:
+    x = np.empty((0, 2), dtype=np.float32)
+    cells = np.empty((0, 4), dtype=np.int64)
+coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
+                                       shape=(x.shape[1],))
+msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element))
+```
+
+* Array interface makes it easier to interface with any meshing format
+* No copying when moving data to C++ through nanobind (`std::span`)
+
+---
+
+# Custom partitioning
+
+```python
+if (rank:=MPI.COMM_WORLD.rank) == 0:
+    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
+    def partitioner(comm: MPI.Intracomm, n, m, topo):
+        # The cell on this process will be owned by rank 2, and ghosted on rank 0
+        return dolfinx.graph.adjacencylist(np.array([2, 0], dtype=np.int32), np.array([0,2],dtype=np.int32))
+elif rank == 1:
+    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
+    def partitioner(comm: MPI.Intracomm, n, m, topo):
+        # The cell on this process will be owned by rank 1, and ghosted on 0 and 2
+        return dolfinx.graph.adjacencylist(np.array([1, 0, 2], dtype=np.int32), np.array([0,3],dtype=np.int32))
+else:
+    cells = np.empty((0, 4), dtype=np.int64)
+    def partitioner(comm: MPI.Intracomm, n, m, topo):
+        # No cells on process
+        return dolfinx.graph.adjacencylist(np.empty(0, dtype=np.int32), np.zeros(1, dtype=np.int32))
+
+coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
+                                       shape=(x.shape[1],))
+msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element), partitioner=partitioner)
+```
+<div data-marpit-fragment>
+
+<div>
+
+```bash
+rank=0 Owned cells: 0 Ghosted cells: 2 Total cells: 2
+rank=1 Owned cells: 1 Ghosted cells: 0 Total cells: 2
+rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
+```
+
+</div>
+</div>
+
+---
+
+# All entities in DOLFINx has ownership
+
+
+![Cell ownership and ghost distribution; width:20cm](cell_partitioning.png)
+
 ---
