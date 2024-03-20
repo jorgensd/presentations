@@ -166,7 +166,7 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 * 2003: Initiated in Netherlands, Sweden and USA
 * 2006-2016: Hans Petter era: CBC
 * 2017-Present: Development of DOLFINx
-* ~2000 users on the Forum
+* ~2000 users on the FEniCS Discourse forum
 * ~12 000 monthly downloads
 
 ---
@@ -177,6 +177,7 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 * Maintainability
 * Scalability
 * Extendability
+
 
 
 ---
@@ -620,5 +621,49 @@ coefficients_A, constants_A = [], []
 a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
                               integrals, [], [], False, None))
 ```
+
+---
+
+# Example of nesting kernels
+
+- Mass lumping
+- Static condensation
+```python
+@numba.cfunc(c_signature, nopython=True)
+def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
+    A = numba.carray(A_, (dim, dim))
+
+    # Allocate new Numpy array where temporary tabulation is stored
+    M = np.zeros_like(A)
+
+    w = numba.carray(w_, (dim, ))
+    c = numba.carray(c_, (1, ))
+
+    # Call the compiled kernel (from_buffer is required to extract the
+    # underlying data pointer)
+    ufcx_kernel(ffi.from_buffer(M), ffi.from_buffer(w),
+                ffi.from_buffer(c), coords_, entity_local_index,
+                quadrature_permutation)
+
+    # Row sum matrix M and store into diagonal of the output matrix A
+    np.fill_diagonal(A, np.sum(M, axis=1))
+  ```
+
+  ---
+
+# Additional resources
+
+<div class="columns">
+<div>
+<iframe width="600" height="250" src="https://fenicsproject.org/", title="FEniCS web page"></iframe>
+<iframe width="600" height="250" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+</div>
+<div>
+
+<iframe width="600" height="250" src="http://jsdokken.com/FEniCS23-tutorial/", title="FEniCSx tutorial @ Sorbonne"></iframe>
+<iframe width="600" height="250" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
+
+</div>
+</div>
 
 ---
