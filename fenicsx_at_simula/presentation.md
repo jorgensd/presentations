@@ -83,8 +83,7 @@ style: |
   font-size: 25px;
   font-family: Consolas, Courier, Monospace;
   color: white;
-  background: 	#222222;
-
+  background-color: #D1CFCC;
   }
   code , tt{
 
@@ -94,18 +93,20 @@ style: |
   border: 1px solid #eaeaea;
   border-radius: 3px;
   color: white;
-  background: 	#222222;
-
+  background: 	#D1CFCC;
   }
 
+  /* code blocks */
   pre {
 
   padding: 6px 10px;
   border-radius: 3px;
-  background-color:  #D1CFCC;
   color: black;
+  background: #D1CFCC;
+
   }
 
+  /* Code blocks */
   pre code, pre tt {
 
   background-color: transparent;
@@ -360,6 +361,106 @@ lagrange_gll = basix.ufl.element(
 
 ![Integral moments compared with point evaluations; width:25cm](./moments.png)
 
+
+---
+
+# Code generation
+
+What happens under the hood?
+
+```python
+import dolfin as df
+
+degree = 1
+N = 7
+
+mesh = df.UnitIntervalMesh(10)
+f = df.Expression("sin(N*pi*x[0])", N=N, degree=degree, domain=mesh)
+int_f = df.assemble(f*df.dx)
+```
+
+---
+
+# Can we do better?
+
+<div data-marpit-fragment>
+
+<div>
+
+```python
+x = df.SpatialCoordinate(mesh)
+g = df.sin(N*df.pi*x[0])
+int_g = df.assemble(g*df.dx)
+
+```
+</div>
+
+```bash
+degree=1, N=7, int_f=5.10e-02, int_g=9.04e-02, 43.62% difference
+degree=3, N=7, int_f=9.13e-02, int_g=9.04e-02, 1.06% difference
+degree=5, N=7, int_f=9.09e-02, int_g=9.04e-02, 0.64% difference
+```
+
+---
+
+# Can we do even better?
+
+<div data-marpit-fragment>
+
+<div>
+
+```python
+x = df.SpatialCoordinate(mesh)
+g = df.sin(df.Constant(N)*df.pi*x[0])
+int_g = df.assemble(g*df.dx)
+```
+
+</div>
+
+<div>
+
+**DOLFINx equivalent**
+
+```python
+mesh = dolfinx.mesh.create_unit_interval(MPI.COMM_WORLD, 10)
+x = ufl.SpatialCoordinate(mesh)
+N = dolfinx.fem.Constant(mesh, 7.)
+f = ufl.sin(N * ufl.pi* x[0])
+compiled_form = dolfinx.fem.form(f*ufl.dx)
+```
+
+</div>
+
+```python
+N.value = 3
+print(dolfinx.fem.assemble_scalar(compiled_form))
+```
+
+</div>
+
+---
+
+# Evaluation of UFL-expressions
+
+<div data-marpit-fragment>
+
+<div>
+
+```python
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 3))
+u = dolfinx.fem.Function(V)
+u.interpolate(lambda x: 3*x[0]**3)
+grad_u_squared = ufl.dot(ufl.grad(u), ufl.grad(u))
+point_in_reference_element = np.array([0.5])
+compiled_expression = dolfinx.fem.Expression(grad_u_squared, point_in_reference_element)
+print(compiled_expression.eval(mesh, cells))
+```
+<div>
+
+* Also supports for expression evaluation of [facet expressions](https://github.com/FEniCS/dolfinx/pull/3062) (`FacetNormals`)
+* Can also be used in interpolation: `u.interpolate(compiled_expression)`
+
+</div>
 
 ---
 
