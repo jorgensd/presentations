@@ -165,6 +165,8 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 * 2003: Initiated in Netherlands, Sweden and USA
 * 2006-2016: Hans Petter era: CBC
 * 2017-Present: Development of DOLFINx
+* ~2000 users on the Forum
+* ~12 000 monthly downloads
 
 ---
 
@@ -273,7 +275,96 @@ Compilation: 1.30e-01
 
 # Package overview
 
-![bg right](./overview.png)
+
+![bg right:50%](./overview.png)
+
+---
+
+# Basix
+
+<div class="columns">
+<div>
+
+* A finite element tabulation library
+* Provides quadrature schemes
+* Written in C++ with a Python interface
+  * Runtime tabulation
+* Custom finite elements
+</div>
+<iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.7.0.post0/python/", title="Basix github repository"></iframe>
 
 
+---
+
+# Basix yields extra control over finite elements
+
+
+```python
+import basix.ufl
+from basix import CellType, ElementFamily, LagrangeVariant
+degree = 6
+lagrange = basix.ufl.element(
+    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.equispaced)
+lagrange_gll = basix.ufl.element(
+    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.gll_warped)
+```
+<div class="columns">
+
+<div>
+
+<img src="equispaced.png" width=450px>
+
+</div>
+
+<div>
+
+<img src="gll_warped.png" width=450px>
+
+</div>
+</div>
+
+
+--- 
+
+# Lagrange variants are important for higher order finite element modelling
+
+<div data-marpit-fragment>
+
+<div>
+
+[Runge's phenomenon: Variants of Lagrange elements (DOLFINx demos)](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/demos/demo_lagrange_variants.html)
+
+<div class="columns">
+<div>
+
+![Runges phenomenon equispaced; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_equispaced.png)
+</div>
+
+![GLL Warped; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_gll_warped.png)
+
+</div>
+
+</div>
+
+
+---
+
+# Proper representation of dual basis
+
+<iframe width="1000" height="500" src="https://defelement.com/elements/examples/triangle-nedelec1-lagrange-1.html", title="Nedelec 1 degree 1 on triangle"></iframe>
+
+
+---
+
+# Proper dual basis leads to accurate interpolation  
+
+![Integral moments compared with point evaluations; width:25cm](./moments.png)
+
+
+---
+
+# MPI parallelism
+
+- IndexMaps
+- MPI-3 Neighbourhoods
 ---
