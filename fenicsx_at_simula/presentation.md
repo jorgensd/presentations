@@ -483,6 +483,14 @@ msh = dolfinx.mesh.create_mesh(MPI.COMM_SELF, cells, x, ufl.Mesh(coordinate_elem
 
 ```
 
+<div data-marpit-fragment>
+
+<div>
+
+No re-ordering of cells to ensure consistent global orientations, see: Scroggs, Dokken, Richardson, Wells, 2022: [DOI: 10.1145/3524456](https://doi.org/10.1145/3524456)
+
+</div>
+
 ---
 
 # Parallel reading
@@ -582,5 +590,35 @@ rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
 
 ---
 
+# Custom assembly if UFL doesn't quite fit
+
+```python
+c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
+    dolfinx.default_scalar_type, dolfinx.default_real_type)
+
+@numba.cfunc(c_signature, nopython=True)
+def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
+    # Wrap pointers as a Numpy arrays
+    A = numba.carray(A_, (dim, dim))
+    coordinate_dofs = numba.carray(coords_, (3, 3))
+
+    x0, y0 = coordinate_dofs[0, :2]
+    x1, y1 = coordinate_dofs[1, :2]
+    x2, y2 = coordinate_dofs[2, :2]
+
+    # Compute Jacobian determinant and fill the output array with
+    # precomputed mass matrix scaled by the Jacobian
+    detJ = abs((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1))
+    # M_hat is pre-computed local mass matrix using for instance Basix to tabulate
+    # basis functions at specified quadrature points
+    A[:] = detJ * M_hat
+
+formtype = dolfinx.cpp.fem.Form_float64
+cells = np.arange(msh.topology.index_map(msh.topology.dim).size_local, dtype=np.int32)
+integrals = {dolfinx.fem.IntegralType.cell: [(-1, tabulate_A.address, cells), ]}
+coefficients_A, constants_A = [], []
+a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
+                              integrals, [], [], False, None))
+```
 
 ---
