@@ -16,6 +16,7 @@ print(f"Compilation: {end_c-start_c:.2e}")
 
 for i in range(3):
     start = time.perf_counter()
-    dolfinx.fem.assemble_matrix(a_compiled)
+    A = dolfinx.fem.assemble_matrix(a_compiled)
+    A.scatter_reverse()
     end = time.perf_counter()
     print(f"{i}: {end-start:.2e}")

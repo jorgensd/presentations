@@ -2,7 +2,6 @@ import matplotlib.patches
 import matplotlib.pyplot
 import numpy as np
 import basix.ufl
-from basix import CellType, ElementFamily, LagrangeVariant
 
 
 def plot_dof_positions(el, name):
@@ -24,9 +23,9 @@ def plot_dof_positions(el, name):
 
 degree = 6
 lagrange = basix.ufl.element(
-    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.equispaced)
+    "Lagrange", "triangle", degree, basix.LagrangeVariant.equispaced)
 lagrange_gll = basix.ufl.element(
-    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.gll_warped)
+    "Lagrange", "triangle", degree, basix.LagrangeVariant.gll_warped)
 
 plot_dof_positions(lagrange, "equispaced.png")
 plot_dof_positions(lagrange_gll, "gll_warped.png")

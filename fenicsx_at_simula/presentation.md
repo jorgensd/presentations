@@ -145,11 +145,11 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 <div class="columns">
 <div>
 
-* 1940s: Rayleigh-Ritz/Ritz Galerkin method
-* 1970s: General purpose finite element software
-* 1990s: Object orientation
-* 2000s: User-friendliness
-* 2020s: High performance computing
+* **1940s**: Rayleigh-Ritz/Ritz Galerkin method
+* **1970s**: General purpose finite element software
+* **1990s**: Object oriented programming
+* **2000s**: User-friendliness
+* **2020s**: High performance computing
 </div>
 <div>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/lrpj3cZrKn4?si=rQY8RsGJEXfYNfIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
@@ -165,7 +165,7 @@ Baratta, I. A., Dean, J. P., Dokken, J. S., Habera, M., Hale, J. S., Richardson,
 
 * 2003: Initiated in Netherlands, Sweden and USA
 * 2006-2016: Hans Petter era: CBC
-* 2017-Present: Development of DOLFINx
+* 2017--: Development of DOLFINx
 * ~2000 users on the FEniCS Discourse forum
 * ~12 000 monthly downloads
 
@@ -219,7 +219,7 @@ import ufl
 import time
 
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 1, 1)
-V = dolfinx.fem.functionspace(mesh, ("Lagrange", 1))
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
 
 u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
 a = ufl.inner(ufl.grad(u), ufl.grad(v))*ufl.dx
@@ -231,7 +231,8 @@ print(f"Compilation: {end_c-start_c:.2e}")
 
 for i in range(3):
     start = time.perf_counter()
-    dolfinx.fem.assemble_matrix(a_compiled)
+    A = dolfinx.fem.assemble_matrix(a_compiled)
+    A.scatter_reverse()
     end = time.perf_counter()
     print(f"{i}: {end-start:.2e}")
 ```
@@ -240,10 +241,10 @@ for i in range(3):
 # Explicit control continued
 
 ```bash
-Compilation: 1.58e-01
-0: 2.26e-04
-1: 5.69e-05
-2: 4.18e-05
+Compilation: 1.34e-01
+0: 2.24e-04
+1: 6.13e-05
+2: 4.64e-05
 ```
 <div data-marpit-fragment>
 
@@ -264,10 +265,10 @@ DOLFIN
 
 DOLFINx
 ```
-Compilation: 1.30e-01
-0: 2.11e-04
-1: 7.79e-05
-2: 5.05e-05
+Compilation: 1.32e-01
+0: 5.95e-04
+1: 5.20e-05
+2: 2.60e-05
 ```
 </div>
 <div>
@@ -303,12 +304,11 @@ Compilation: 1.30e-01
 
 ```python
 import basix.ufl
-from basix import CellType, ElementFamily, LagrangeVariant
 degree = 6
 lagrange = basix.ufl.element(
-    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.equispaced)
+    "Lagrange", "triangle", degree, basix.LagrangeVariant.equispaced)
 lagrange_gll = basix.ufl.element(
-    ElementFamily.P, CellType.triangle, degree, LagrangeVariant.gll_warped)
+    "Lagrange", "triangle", degree, basix.LagrangeVariant.gll_warped)
 ```
 <div class="columns">
 
@@ -365,7 +365,7 @@ lagrange_gll = basix.ufl.element(
 
 ---
 
-# Code generation
+# More implicitness from legacy DOLFIN
 
 What happens under the hood?
 
@@ -386,15 +386,15 @@ int_f = df.assemble(f*df.dx)
 
 <div data-marpit-fragment>
 
-<div>
-
 ```python
 x = df.SpatialCoordinate(mesh)
 g = df.sin(N*df.pi*x[0])
 int_g = df.assemble(g*df.dx)
-
 ```
+
 </div>
+
+<div data-marpit-fragment>
 
 ```bash
 degree=1, N=7, int_f=5.10e-02, int_g=9.04e-02, 43.62% difference
@@ -402,13 +402,14 @@ degree=3, N=7, int_f=9.13e-02, int_g=9.04e-02, 1.06% difference
 degree=5, N=7, int_f=9.09e-02, int_g=9.04e-02, 0.64% difference
 ```
 
+</div>
+
 ---
 
 # Can we do even better?
 
 <div data-marpit-fragment>
 
-<div>
 
 ```python
 x = df.SpatialCoordinate(mesh)
@@ -418,7 +419,7 @@ int_g = df.assemble(g*df.dx)
 
 </div>
 
-<div>
+<div data-marpit-fragment>
 
 **DOLFINx equivalent**
 
@@ -431,6 +432,7 @@ compiled_form = dolfinx.fem.form(f*ufl.dx)
 ```
 
 </div>
+<div data-marpit-fragment>
 
 ```python
 N.value = 3
