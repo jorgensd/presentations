@@ -507,6 +507,43 @@ msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_ele
 
 ---
 
+# When a mesh is read in with multiple processes (MPI) the cells are distributed
+
+<div class="columns">
+<div>
+
+![Cell ownership and ghost distribution; width:15cm](cell_partitioning.png)
+
+</div>
+<div>
+
+![Cell index map; width:15cm](cell_index_map.png)
+
+</div>
+</div>
+
+---
+
+# All entities (vertex, edge, facet, cell) has a notion of ownership
+
+Makes mesh-view construction in parallel "easy" and safe
+
+<div class="columns">
+<div>
+
+![Vertex ownership and ghost distribution; width:15cm](vertex_ownership.png)
+
+</div>
+<div>
+
+![Vertex index map; width:15cm](vertex_indexmap.png)
+
+</div>
+</div>
+
+---
+
+
 # Custom partitioning
 
 ```python
@@ -545,9 +582,5 @@ rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
 
 ---
 
-# All entities in DOLFINx has ownership
-
-
-![Cell ownership and ghost distribution; width:20cm](cell_partitioning.png)
 
 ---
