@@ -147,13 +147,32 @@ Jørgen S. Dokken
 
 # About me
 
+<div data-marpit-fragment>
+
 - **2011**: First introduction to programming (Python)
 - **2014**: First introduction to FEniCS
-- **2016-2019:** PhD in informatics from the University of Oslo/Simula
-- **2019-**: Forum Adminstrator for the FEniCS Project
+
+</div>
+<div data-marpit-fragment>
+
+- **2016-2019:** PhD in informatics from University of Oslo/Simula Research Laboratory (SRL)
+
+</div>
+
+<div data-marpit-fragment>
+
+- **2019-**: Forum Administrator for the FEniCS Project
 - **2019-2022**: Post-doc at Department of Engineering, University of Cambridge
+
+</div>
+
+<div data-marpit-fragment>
+
 - **2022-**: Member of the FEniCS Steering Council
-- **2022-**: Research Engineer at Simula Research Laboratory
+- **2022-2023**: Research Engineer at SRL
+- **2024--**: Senior Research Engineer at SRL
+
+</div>
 
 ![bg right:30%](./me.jpg)
 
