@@ -23,5 +23,6 @@ problem = petsc.LinearProblem(
     a, L, bcs=bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"}
 )
 uh = problem.solve()
-with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh], engine="BP4") as bp:
+with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
+                          [uh], engine="BP4") as bp:
     bp.write(0.0)

@@ -140,38 +140,39 @@ Jørgen S. Dokken
 <div>
 <img src="fenics_logo.png" width=200px>
 </div>
-<img src="Simula logo.png" width=300px>
+<img src="Simula_logo.png" width=300px>
 <center/>
 
 ---
 
 # About me
 
-![bg right:20%](./me.jpg)
-
 - **2011**: First introduction to programming (Python)
 - **2014**: First introduction to FEniCS
-- **2016-2019:** PhD in informatics fro
-  m the University of Oslo/Simula
+- **2016-2019:** PhD in informatics from the University of Oslo/Simula
 - **2019-**: Forum Adminstrator for the FEniCS Project
 - **2019-2022**: Post-doc at Department of Engineering, University of Cambridge
 - **2022-**: Member of the FEniCS Steering Council
 - **2022-**: Research Engineer at Simula Research Laboratory
 
+![bg right:30%](./me.jpg)
+
 ---
 
-# Brief history of finite elements
+### Brief history of the finite element method (FEM)
+
+![bg width:700px opacity:.2](./Simula_logo.png)
 
 <div class="columns">
 <div>
 
-- **1910s**: Rayleigh-Ritz/Ritz-Galerkin method
-- **1940s**: Birth of the finite element method
-- **1958**: First open source finite element software
-- **1970s**: General purpose finite element software and mathematical rigorousness
-- **1990s**: Object oriented programming
-- **2000s**: User-friendliness (Python)
-- **2010s**: High performance computing
+* **1910s**: Rayleigh-Ritz/Ritz-Galerkin method
+* **1940s**: Birth of the FEM
+* **1958**: First open source FE software
+* **1970s**: General purpose FE software and mathematical rigorousness
+* **1990s**: Object oriented programming
+* **2000s**: User-friendliness (Python)
+* **2010s**: High performance computing
 
 </div>
 
@@ -211,16 +212,16 @@ $$
 
 ![bg right:25%](./fenics_logo.png)
 
-- 2002: First public version of a C++ library (DOLFIN)
-- 2003: FEniCS project was created
-- 2004: Code generation (C++) using FFC
-- 2005: First Python interface (PyDOLFIN)
-- 2009: Parallel (MPI support)
-- 2009: Unified form language (UFL) introduced
-- 2016--: Sponsored by NumFOCUS
-- 2017--: Development of DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
-- ~2000 users on the FEniCS Discourse forum
-- ~12 000 monthly downloads
+* 2002: First public version of a C++ library (DOLFIN)
+* 2003: FEniCS project was created
+* 2004: Code generation (C++) using FFC
+* 2005: First Python interface (PyDOLFIN)
+* 2009: Parallel (MPI support)
+* 2009: Unified form language (UFL) introduced
+* 2016--: Sponsored by NumFOCUS
+* 2017--: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+* ~2000 users on the FEniCS Discourse forum
+* ~12 000 monthly downloads
 
 <center>
 <img src="numfocus_logo.png" width=300px>
@@ -228,8 +229,80 @@ $$
 
 ---
 
-# A minimal example - The Poisson equation
+# The Poisson equation
+![bg contain right:30%](uh.png)
 
+```python
+from mpi4py import MPI
+import dolfinx
+import dolfinx.fem.petsc as petsc
+import ufl
+import numpy as np
+
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+---
+
+
+# The Poisson equation
+![bg contain right:30%](uh.png)
+
+```python
+from mpi4py import MPI
+import dolfinx
+import dolfinx.fem.petsc as petsc
+import ufl
+import numpy as np
+
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(ufl.grad(u), ufl.grad(v)) * ufl.dx
+x, y = ufl.SpatialCoordinate(mesh)
+f = x * ufl.sin(y * ufl.pi)
+L = ufl.inner(f, v) * ufl.dx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+---
+
+# The Poisson equation
 ```python
 from mpi4py import MPI
 import dolfinx
@@ -251,13 +324,17 @@ boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
 u_bc = dolfinx.fem.Constant(mesh, 0.0)
 
 bcs = [dolfinx.fem.dirichletbc(u_bc, boundary_dofs, V)]
+options = {"ksp_type": "preonly", "pc_type": "lu"}
 problem = petsc.LinearProblem(
-    a, L, bcs=bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"}
+    a, L, bcs=bcs, petsc_options=options
 )
 uh = problem.solve()
-with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh], engine="BP4") as bp:
+with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
+                          [uh], engine="BP4") as bp:
     bp.write(0.0)
 ```
+
+![bg contain right:30%](uh.png)
 
 ---
 
@@ -265,34 +342,47 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh], engine="BP4") as bp:
 
 ### Package overview
 
-![bg right:50%](./overview.png)
+![bg contain right:53%](./overview_stripped.png)
+
+---
+
+# How does it work?
+
+### Package overview
+
+![bg contain right:53%](./overview.png)
 
 ---
 
 # Basix
 
+![bg width:700px opacity:.2](./Simula_logo.png)
+
 <div class="columns">
 <div>
 
-- A finite element tabulation library
-- Provides quadrature schemes
-- Written in C++ with a Python interface
-  - Runtime tabulation
-- Custom finite elements
+* A finite element tabulation library
+* Provides quadrature schemes
+* Written in C++ with a Python interface
+  * Runtime tabulation
+* Custom finite elements
+
 </div>
 <iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.7.0.post0/python/", title="Basix github repository"></iframe>
 
 ---
 
+![bg width:700px opacity:.2](./Simula_logo.png)
+
 # Basix yields extra control over finite elements
 
 ```python
 import basix.ufl
-degree = 6
+degree = 10
 lagrange = basix.ufl.element(
-    "Lagrange", "triangle", degree, basix.LagrangeVariant.equispaced)
+    "Lagrange", "quadrilateral", degree, basix.LagrangeVariant.equispaced)
 lagrange_gll = basix.ufl.element(
-    "Lagrange", "triangle", degree, basix.LagrangeVariant.gll_warped)
+    "Lagrange", "quadrilateral", degree, basix.LagrangeVariant.gll_warped)
 ```
 
 <div class="columns">
@@ -312,30 +402,71 @@ lagrange_gll = basix.ufl.element(
 
 ---
 
-# Lagrange variants are important for higher order finite element modelling
+# Why do we care?
+![bg contain right:30%](Sawtooth.png)
 
 <div data-marpit-fragment>
 
 <div>
+</div>
 
-[Runge's phenomenon: Variants of Lagrange elements (DOLFINx demos)](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/demos/demo_lagrange_variants.html)
-
-<div class="columns">
 <div>
 
-![Runges phenomenon equispaced; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_equispaced.png)
+```python
+from mpi4py import MPI
+import numpy as np
+import basix.ufl
+import dolfinx
+import ufl
+
+def saw_tooth(x):
+    f = 4 * abs(x[0] - 0.43)
+    for _ in range(8):
+        f = abs(f - 0.3)
+    return f
+
+def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
+
+    msh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, M,
+                                          cell_type=dolfinx.mesh.CellType.quadrilateral)
+    ufl_element = basix.ufl.element(basix.ElementFamily.P, 
+                                    msh.topology.cell_name(), 10, variant)
+    V = dolfinx.fem.functionspace(msh, ufl_element)
+    uh = dolfinx.fem.Function(V)
+    uh.interpolate(lambda x: saw_tooth(x))
+
+    x = ufl.SpatialCoordinate(msh)
+    u_exact = saw_tooth(x)
+    M = dolfinx.fem.form((u_exact - uh) ** 2 * ufl.dx)
+    error = np.sqrt(msh.comm.allreduce(dolfinx.fem.assemble_scalar(M), op=MPI.SUM))
+    return hs, error
+```
 
 </div>
 
-![GLL Warped; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_gll_warped.png)
+  
 
-</div>
+--- 
 
-</div>
+# We observe reduced convergence for equispaced Lagrange elements
+
+![bg width:700px opacity:.2](./Simula_logo.png)
+
+<center>
+<img src="./Errors_2D.png" width=600px>
+<center/>
+
+<center>
+<a href="https://docs.fenicsproject.org/dolfinx/main/python/demos/demo_lagrange_variants.html">Runge's phenomenon</a>
+
+<center/>
+
 
 ---
 
 # The FEniCS form compiler (FFCx) is used to generate C code from Python
+
+![bg width:700px opacity:.2](./Simula_logo.png)
 
 <div class="columns">
 <div>
@@ -462,18 +593,22 @@ for (int iq = 0; iq < 6; ++iq)
 
 # Features
 
+![bg width:700px opacity:.2](./Simula_logo.png)
+
 <div class="columns">
 
 <div>
 
-- Single and double precision
-- Real and complex valued tensors
-- Assembly into arbitrary order tensors
-- Curved cells for intervals, triangles, quadrilaterals, tetrahedra, hexahedra
-- Discontinuous (broken) variants of all elements
+* Single and double precision
+* Real and complex valued tensors
+* Assembly into arbitrary order tensors
+* Curved cells for intervals, triangles, quadrilaterals, tetrahedra, hexahedra
+* Discontinuous (broken) variants of all elements
 
 </div>
 <div>
+
+<div data-marpit-fragment>
 
 <style scoped>
 table {
@@ -497,6 +632,7 @@ table {
 | Bubble                           | Cell dependent |
 | Iso                              | $\geq 1$       |
 
+</div>
 </div>
 
 ---
