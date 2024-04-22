@@ -163,8 +163,8 @@ ft.name = "Facet markers"
 # Following the DGF-2 benchmark, we define our problem specific parameters
 
 t = 0
-T = 4                         # Final time
-dt = 1 / 200                 # Time step size
+T = 8                         # Final time
+dt = 1 / 300                 # Time step size
 num_steps = int(T / dt)
 k = Constant(mesh, PETSc.ScalarType(dt))
 mu = Constant(mesh, PETSc.ScalarType(0.001))  # Dynamic viscosity
@@ -371,10 +371,11 @@ if mesh.comm.rank == 0:
 
 import pyvista
 pyvista.start_xvfb()
-plotter = pyvista.Plotter(window_size=([2048, 1536]))
+plotter = pyvista.Plotter(window_size=([1920, 1080]))
 
 
-plotter.open_gif("velocity.gif", fps=250)
+skip = 200
+plotter.open_gif("velocity.gif", fps=int(1/dt)//skip)
 
 from dolfinx import plot
 
@@ -396,7 +397,6 @@ function_grid.set_active_vectors("u")
 actor_0 = plotter.add_mesh(grid, style="wireframe", color="k",line_width=3)
 plotter.view_xy()
 plotter.camera.tight()    
-
 
 progress = tqdm.autonotebook.tqdm(desc="Solving PDE", total=num_steps)
 for i in range(num_steps):
@@ -450,15 +450,15 @@ for i in range(num_steps):
         loc_n.copy(loc_n1)
         loc_.copy(loc_n)
 
-
-    function_grid["u"][:, :len(u_)] = u_.x.array.reshape(geometry.shape[0], len(u_))
-    actor = plotter.add_mesh(function_grid.streamlines(source_radius=0.41,
-    pointa=(0, 0, 0),
-    pointb=(0, H, 0),
-    n_points=33).tube(radius=0.005), clim=[0, 1.5])
-    plotter.remove_scalar_bar()
-    plotter.write_frame()
-    plotter.remove_actor(actor)
+    if i % skip == 0:
+        function_grid["u"][:, :len(u_)] = u_.x.array.reshape(geometry.shape[0], len(u_))
+        actor = plotter.add_mesh(function_grid.streamlines(source_radius=0.41,
+        pointa=(c_x+1.2*r, 0, 0),
+        pointb=(c_x+1.2*r, H, 0),
+        n_points=33).tube(radius=0.005), clim=[0, 1.5])
+        plotter.remove_scalar_bar()
+        plotter.write_frame()
+        plotter.remove_actor(actor)
 
 plotter.close()
 
