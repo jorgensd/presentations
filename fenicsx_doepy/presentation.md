@@ -229,6 +229,34 @@ $$
 
 ---
 
+# Some examples
+
+<div class="columns">
+
+<div data-marpit-fragment>
+
+<div>
+
+<center>
+<img src="./deformation.gif" width=400px>
+<center/>
+<center>
+<img src="./velocity.gif" width=400px>
+<center/>
+</div>
+  
+</div>
+<iframe width="800" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+
+</div>
+
+---
+
+---
+
+
+---
+
 # The Poisson equation
 ![bg contain right:30%](uh.png)
 
@@ -499,6 +527,7 @@ python3 -m ffcx script.py
 ---
 
 # FFCx generates code to assemble the mass matrix for any element
+![bg width:700px opacity:.2](./Simula_logo.png)
 
 ```c
 
@@ -852,14 +881,6 @@ def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permu
 
 # Additional resources
 
-<iframe width="1200" height="250" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
-
-<div class="columns">
-<div>
-<iframe width="600" height="250" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
-</div>
-<iframe width="600" height="250" src="http://jsdokken.com/FEniCS23-tutorial/", title="FEniCSx tutorial @ Sorbonne"></iframe>
-</div>
-</div>
+<iframe width="1200" height="500" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
 
 ---
