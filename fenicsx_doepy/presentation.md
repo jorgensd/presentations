@@ -212,7 +212,7 @@ $$
 and an inner product
 
 $$
-\langle \cdot , \rangle: V_0 \times V_0 \rightarrow \mathbb{R}
+\langle \cdot , \cdot \rangle: V_0 \times V_0 \rightarrow \mathbb{R}
 $$
 
 such that
@@ -231,17 +231,39 @@ $$
 
 ![bg right:25%](./fenics_logo.png)
 
-* 2002: First public version of a C++ library (DOLFIN)
-* 2003: FEniCS project was created
-* 2004: Code generation (C++) using FFC
-* 2005: First Python interface (PyDOLFIN)
-* 2009: Parallel (MPI support)
-* 2009: Unified form language (UFL) introduced
-* 2016--: Sponsored by NumFOCUS
-* 2017--: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
-* ~2000 users on the FEniCS Discourse forum
-* ~12 000 monthly downloads
+<div data-marpit-fragment>
 
+- 2002: First public version of a C++ library (DOLFIN)
+- 2003: FEniCS project was created
+
+</div>
+<div data-marpit-fragment>
+
+- 2004: Code generation (C++) using FFC
+- 2005: First Python interface (PyDOLFIN)
+
+</div>
+
+<div data-marpit-fragment>
+
+- 2009: Parallel (MPI support)
+- 2009: Unified form language (UFL) introduced
+
+</div>
+
+
+<div data-marpit-fragment>
+
+- 2016--: Sponsored by NumFOCUS
+- 2017--: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+
+</div>
+<div data-marpit-fragment>
+
+- ~3000 users on the FEniCS Discourse forum
+- ~12 000 monthly downloads
+
+</div>
 <center>
 <img src="numfocus_logo.png" width=300px>
 <center/>
@@ -251,6 +273,10 @@ $$
 # Some examples
 
 <div class="columns">
+
+<div>
+<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+</div>
 
 <div data-marpit-fragment>
 
@@ -266,8 +292,6 @@ $$
 
 </div>
 
-<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
-</div>
 
 ---
 
