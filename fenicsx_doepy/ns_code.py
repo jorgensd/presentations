@@ -164,7 +164,7 @@ ft.name = "Facet markers"
 
 t = 0
 T = 8                         # Final time
-dt = 1 / 300                 # Time step size
+dt = 1 / 1600                 # Time step size
 num_steps = int(T / dt)
 k = Constant(mesh, PETSc.ScalarType(dt))
 mu = Constant(mesh, PETSc.ScalarType(0.001))  # Dynamic viscosity
@@ -371,10 +371,10 @@ if mesh.comm.rank == 0:
 
 import pyvista
 pyvista.start_xvfb()
-plotter = pyvista.Plotter(window_size=([1920, 1080]))
+plotter = pyvista.Plotter(window_size=([1280, 720]))
 
 
-skip = 200
+skip = 40
 plotter.open_gif("velocity.gif", fps=int(1/dt)//skip)
 
 from dolfinx import plot
