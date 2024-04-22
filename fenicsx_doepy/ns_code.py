@@ -163,8 +163,8 @@ ft.name = "Facet markers"
 # Following the DGF-2 benchmark, we define our problem specific parameters
 
 t = 0
-T = 2                         # Final time
-dt = 1 / 400                 # Time step size
+T = 4                         # Final time
+dt = 1 / 200                 # Time step size
 num_steps = int(T / dt)
 k = Constant(mesh, PETSc.ScalarType(dt))
 mu = Constant(mesh, PETSc.ScalarType(0.001))  # Dynamic viscosity
@@ -361,20 +361,20 @@ if mesh.comm.rank == 0:
 #
 # As in the previous example, we create output files for the velocity and pressure and solve the time-dependent problem. As we are solving a time dependent problem with many time steps, we use the `tqdm`-package to visualize the progress. This package can be install with `pip3`.
 
-from pathlib import Path
-folder = Path("results")
-folder.mkdir(exist_ok=True, parents=True)
-vtx_u = VTXWriter(mesh.comm, "dfg2D-3-u.bp", [u_], engine="BP4")
-vtx_p = VTXWriter(mesh.comm, "dfg2D-3-p.bp", [p_], engine="BP4")
-vtx_u.write(t)
-vtx_p.write(t)
+# from pathlib import Path
+# folder = Path("results")
+# folder.mkdir(exist_ok=True, parents=True)
+# vtx_u = VTXWriter(mesh.comm, folder/"dfg2D-3-u.bp", [u_], engine="BP4")
+# vtx_p = VTXWriter(mesh.comm, folder/"dfg2D-3-p.bp", [p_], engine="BP4")
+# vtx_u.write(t)
+# vtx_p.write(t)
 
 import pyvista
 pyvista.start_xvfb()
 plotter = pyvista.Plotter(window_size=([2048, 1536]))
 
 
-plotter.open_gif("velocity.gif", fps=120)
+plotter.open_gif("velocity.gif", fps=250)
 
 from dolfinx import plot
 
@@ -441,9 +441,9 @@ for i in range(num_steps):
     solver3.solve(b3, u_.vector)
     u_.x.scatter_forward()
 
-    # Write solutions to file
-    vtx_u.write(t)
-    vtx_p.write(t)
+    # # Write solutions to file
+    # vtx_u.write(t)
+    # vtx_p.write(t)
 
     # Update variable with solution form this time step
     with u_.vector.localForm() as loc_, u_n.vector.localForm() as loc_n, u_n1.vector.localForm() as loc_n1:
@@ -455,14 +455,14 @@ for i in range(num_steps):
     actor = plotter.add_mesh(function_grid.streamlines(source_radius=0.41,
     pointa=(0, 0, 0),
     pointb=(0, H, 0),
-    n_points=25).tube(radius=0.005), clim=[0, 1.5])
+    n_points=33).tube(radius=0.005), clim=[0, 1.5])
     plotter.remove_scalar_bar()
     plotter.write_frame()
     plotter.remove_actor(actor)
 
 plotter.close()
 
-vtx_u.close()
-vtx_p.close()
+# vtx_u.close()
+# vtx_p.close()
 
 

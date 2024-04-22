@@ -244,16 +244,11 @@ $$
 <img src="./velocity.gif" width=400px>
 <center/>
 </div>
-  
-</div>
-<iframe width="800" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
 
 </div>
 
----
-
----
-
+<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+</div>
 
 ---
 
@@ -879,8 +874,6 @@ def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permu
 
 ---
 
-# Additional resources
-
-<iframe width="1200" height="500" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
+<iframe width="1200" height="600" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
 
 ---
