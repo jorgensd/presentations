@@ -124,7 +124,6 @@ style: |
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
-
 ---
 
 # An introduction to finite element modelling in FEniCS
@@ -146,34 +145,57 @@ Jørgen S. Dokken
 
 ---
 
+# About me
+
+![bg right:20%](./me.jpg)
+
+- **2011**: First introduction to programming (Python)
+- **2014**: First introduction to FEniCS
+- **2016-2019:** PhD in informatics fro
+  m the University of Oslo/Simula
+- **2019-**: Forum Adminstrator for the FEniCS Project
+- **2019-2022**: Post-doc at Department of Engineering, University of Cambridge
+- **2022-**: Member of the FEniCS Steering Council
+- **2022-**: Research Engineer at Simula Research Laboratory
+
+---
+
 # Brief history of finite elements
 
 <div class="columns">
 <div>
 
-* **1910s**: Rayleigh-Ritz/Ritz Galerkin method
-* **1940s**: First finite element software for structural problems
-* **1970s**: General purpose finite element software
-* **1990s**: Object oriented programming
-* **2000s**: User-friendliness
-* **2020s**: High performance computing
+- **1910s**: Rayleigh-Ritz/Ritz-Galerkin method
+- **1940s**: Birth of the finite element method
+- **1958**: First open source finite element software
+- **1970s**: General purpose finite element software and mathematical rigorousness
+- **1990s**: Object oriented programming
+- **2000s**: User-friendliness (Python)
+- **2010s**: High performance computing
 
 </div>
 
 <div>
 
-Find $u\in V_0$ such that 
+Find $u\in V_0$ such that
 
 $$
 R(x) = - \nabla \cdot (\nabla u) - f = 0  \text{ in } \Omega \\
 $$
 
 Define
+
 $$
 u_h = \sum_{i=1}^{N} u_i \phi_i(x)
 $$
 
-Define an inner product $\langle \cdot , \rangle: V_0 \times V_0 \rightarrow \mathbb{R}$ such that 
+and an inner product
+
+$$
+\langle \cdot , \rangle: V_0 \times V_0 \rightarrow \mathbb{R}
+$$
+
+such that
 
 $$
 \langle R(x), \phi_i \rangle = 0 \qquad\forall i=1,\cdots,N
@@ -189,16 +211,16 @@ $$
 
 ![bg right:25%](./fenics_logo.png)
 
-* 2002: First public version of a C++ library (DOLFIN)
-* 2003: FEniCS project was created
-* 2004: Code generation (C++) using FFC
-* 2005: First Python interface (PyDOLFIN)
-* 2009: Parallel (MPI support)
-* 2009: Unified form language (UFL) introduced
-* 2016--: Sponsored by NumFOCUS 
-* 2017--: Development of DOLFINx
-* ~2000 users on the FEniCS Discourse forum
-* ~12 000 monthly downloads
+- 2002: First public version of a C++ library (DOLFIN)
+- 2003: FEniCS project was created
+- 2004: Code generation (C++) using FFC
+- 2005: First Python interface (PyDOLFIN)
+- 2009: Parallel (MPI support)
+- 2009: Unified form language (UFL) introduced
+- 2016--: Sponsored by NumFOCUS
+- 2017--: Development of DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+- ~2000 users on the FEniCS Discourse forum
+- ~12 000 monthly downloads
 
 <center>
 <img src="numfocus_logo.png" width=300px>
@@ -207,6 +229,7 @@ $$
 ---
 
 # A minimal example - The Poisson equation
+
 ```python
 from mpi4py import MPI
 import dolfinx
@@ -238,8 +261,9 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh], engine="BP4") as bp:
 
 ---
 
-# Package overview
+# How does it work?
 
+### Package overview
 
 ![bg right:50%](./overview.png)
 
@@ -250,19 +274,17 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh], engine="BP4") as bp:
 <div class="columns">
 <div>
 
-* A finite element tabulation library
-* Provides quadrature schemes
-* Written in C++ with a Python interface
-  * Runtime tabulation
-* Custom finite elements
+- A finite element tabulation library
+- Provides quadrature schemes
+- Written in C++ with a Python interface
+  - Runtime tabulation
+- Custom finite elements
 </div>
 <iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.7.0.post0/python/", title="Basix github repository"></iframe>
-
 
 ---
 
 # Basix yields extra control over finite elements
-
 
 ```python
 import basix.ufl
@@ -272,6 +294,7 @@ lagrange = basix.ufl.element(
 lagrange_gll = basix.ufl.element(
     "Lagrange", "triangle", degree, basix.LagrangeVariant.gll_warped)
 ```
+
 <div class="columns">
 
 <div>
@@ -287,8 +310,7 @@ lagrange_gll = basix.ufl.element(
 </div>
 </div>
 
-
---- 
+---
 
 # Lagrange variants are important for higher order finite element modelling
 
@@ -302,6 +324,7 @@ lagrange_gll = basix.ufl.element(
 <div>
 
 ![Runges phenomenon equispaced; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_equispaced.png)
+
 </div>
 
 ![GLL Warped; width:15cm](https://docs.fenicsproject.org/dolfinx/v0.7.3/python/_images/demo_lagrange_variants_interpolation_gll_warped.png)
@@ -310,86 +333,201 @@ lagrange_gll = basix.ufl.element(
 
 </div>
 
-
 ---
 
-# Proper representation of dual basis
+# The FEniCS form compiler (FFCx) is used to generate C code from Python
 
-<iframe width="1000" height="500" src="https://defelement.com/elements/examples/triangle-nedelec1-lagrange-1.html", title="Nedelec 1 degree 1 on triangle"></iframe>
-
-
----
-
-# Proper dual basis leads to accurate interpolation  
-
-![Integral moments compared with point evaluations; width:25cm](./moments.png)
-
-
-
----
-
-# Can we do even better?
-
-<div data-marpit-fragment>
-
-
-```python
-x = df.SpatialCoordinate(mesh)
-g = df.sin(df.Constant(N)*df.pi*x[0])
-int_g = df.assemble(g*df.dx)
-```
-
-</div>
-
-<div data-marpit-fragment>
-
-**DOLFINx equivalent**
-
-```python
-mesh = dolfinx.mesh.create_unit_interval(MPI.COMM_WORLD, 10)
-x = ufl.SpatialCoordinate(mesh)
-N = dolfinx.fem.Constant(mesh, 7.)
-f = ufl.sin(N * ufl.pi* x[0])
-compiled_form = dolfinx.fem.form(f*ufl.dx)
-```
-
-</div>
-<div data-marpit-fragment>
-
-```python
-N.value = 3
-print(dolfinx.fem.assemble_scalar(compiled_form))
-```
-
-</div>
-
----
-
-# Evaluation of UFL-expressions
-
-<div data-marpit-fragment>
-
+<div class="columns">
 <div>
 
 ```python
-V = dolfinx.fem.functionspace(mesh, ("Lagrange", 3))
-u = dolfinx.fem.Function(V)
-u.interpolate(lambda x: 3*x[0]**3)
-grad_u_squared = ufl.dot(ufl.grad(u), ufl.grad(u))
-point_in_reference_element = np.array([0.5])
-compiled_expression = dolfinx.fem.Expression(grad_u_squared, point_in_reference_element)
-print(compiled_expression.eval(mesh, cells))
-```
-<div>
+import ufl
+import basix.ufl
 
-* Also supports for expression evaluation of [facet expressions](https://github.com/FEniCS/dolfinx/pull/3062) (`FacetNormals`)
-* Can also be used in interpolation: `u.interpolate(compiled_expression)`
+c_el = basix.ufl.element("Lagrange", "triangle", 1, shape=(2, ))
+mesh = ufl.Mesh(c_el)
+
+el = basix.ufl.element("Lagrange", "triangle", 3)
+
+V = ufl.FunctionSpace(mesh, el)
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(u, v) * ufl.dx
+
+forms = [a]
+```
+
+```bash
+python3 -m ffcx script.py
+```
+
+</div>
+<iframe width="500" height="300" src="S.pdf", title="Computational graph of a mass matrix"></iframe>
+</div>
+
+---
+
+# FFCx generates code to assemble the mass matrix for any element
+
+```c
+
+void tabulate_tensor_integral_a80de02e2fc39315d8672b75da91b1586209cb47(double* restrict A,
+                                    const double* restrict w,
+                                    const double* restrict c,
+                                    const double* restrict coordinate_dofs,
+                                    const int* restrict entity_local_index,
+                                    const uint8_t* restrict quadrature_permutation)
+{
+// Quadrature rules
+static const double weights_39d[6] = {0.054975871827661, 0.054975871827661, 0.054975871827661, 0.1116907948390055, 0.1116907948390055, 0.1116907948390055};
+// Precomputed values of basis functions and precomputations
+// FE* dimensions: [permutation][entities][points][dofs]
+static const double FE1_C0_D10_Q39d[1][1][1][3] = {{{{-1.0, 1.0, 0.0}}}};
+static const double FE1_C1_D01_Q39d[1][1][1][3] = {{{{-1.0, 0.0, 1.0}}}};
+static const double FE2_C0_Q39d[1][1][6][6] = {{{{-0.07480380774819603, 0.5176323419876736, -0.07480380774819671, 0.2992152309927871, 0.03354481152314834, 0.2992152309927839},
+  {-0.07480380774819613, -0.0748038077481966, 0.5176323419876735, 0.2992152309927871, 0.2992152309927838, 0.03354481152314828},
+  {0.5176323419876713, -0.0748038077481967, -0.07480380774819674, 0.03354481152314866, 0.2992152309927869, 0.2992152309927868},
+  {-0.04820837781551195, -0.08473049309397784, -0.04820837781551192, 0.1928335112620479, 0.7954802262009061, 0.1928335112620478},
+  {-0.04820837781551193, -0.048208377815512, -0.08473049309397786, 0.1928335112620479, 0.192833511262048, 0.7954802262009062},
+  {-0.08473049309397794, -0.04820837781551188, -0.04820837781551195, 0.7954802262009061, 0.1928335112620479, 0.1928335112620479}}}};
+// ------------------------
+}
+```
 
 </div>
 
 ---
 
-# Mesh creation
+# Generated code continued (Jacobian)
+
+```c
+// ------------------------
+// Section: Jacobian
+// Inputs: coordinate_dofs, FE1_C1_D01_Q39d, FE1_C0_D10_Q39d
+// Outputs: J_c3, J_c1, J_c2, J_c0
+double J_c0 = 0.0;
+double J_c3 = 0.0;
+double J_c1 = 0.0;
+double J_c2 = 0.0;
+{
+  for (int ic = 0; ic < 3; ++ic)
+  {
+    J_c0 += coordinate_dofs[(ic) * 3] * FE1_C0_D10_Q39d[0][0][0][ic];
+    J_c3 += coordinate_dofs[(ic) * 3 + 1] * FE1_C1_D01_Q39d[0][0][0][ic];
+    J_c1 += coordinate_dofs[(ic) * 3] * FE1_C1_D01_Q39d[0][0][0][ic];
+    J_c2 += coordinate_dofs[(ic) * 3 + 1] * FE1_C0_D10_Q39d[0][0][0][ic];
+  }
+}
+// ------------------------
+double sp_39d_0 = J_c0 * J_c3;
+double sp_39d_1 = J_c1 * J_c2;
+double sp_39d_2 = -sp_39d_1;
+double sp_39d_3 = sp_39d_0 + sp_39d_2;
+double sp_39d_4 = fabs(sp_39d_3);
+```
+
+---
+
+# Generated code continued (local tensor)
+
+```c
+for (int iq = 0; iq < 6; ++iq)
+{
+  // Section: Intermediates
+  double fw0 = 0;
+  {
+    fw0 = sp_39d_4 * weights_39d[iq];
+  }
+  // Section: Tensor Computation
+  // Inputs: FE2_C0_Q39d, fw0
+  // Outputs: A
+  {
+    double temp_0[6] = {0};
+    for (int j = 0; j < 6; ++j)
+    {
+      temp_0[j] = fw0 * FE2_C0_Q39d[0][0][iq][j];
+    }
+    for (int j = 0; j < 6; ++j)
+    {
+      for (int i = 0; i < 6; ++i)
+      {
+        A[6 * (i) + (j)] += FE2_C0_Q39d[0][0][iq][i] * temp_0[j];
+      }
+    }
+  }
+}
+```
+
+---
+
+# Features
+
+<div class="columns">
+
+<div>
+
+- Single and double precision
+- Real and complex valued tensors
+- Assembly into arbitrary order tensors
+- Curved cells for intervals, triangles, quadrilaterals, tetrahedra, hexahedra
+- Discontinuous (broken) variants of all elements
+
+</div>
+<div>
+
+<style scoped>
+table {
+    height: 100%;
+    width: 100%;
+    font-size: 15px;
+    color: black
+}
+</style>
+
+| Family                           | Degrees        |
+| -------------------------------- | -------------- |
+| Lagrange                         | $\geq 0$       |
+| Nedelec first and second kind    | $\geq 1$       |
+| Raviart-Thomas                   | $\geq 1$       |
+| Brezzi-Douglas-Marini            | $\geq 1$       |
+| Regge                            | $\geq 0$       |
+| Hellan-Herrmann-Johnson          | $\geq 0$       |
+| Crouzeix-Raviart                 | $\geq 1$       |
+| Discontinuous Polynomial Cubical | $\geq 0$       |
+| Bubble                           | Cell dependent |
+| Iso                              | $\geq 1$       |
+
+</div>
+
+---
+
+# How does it work through Python?
+
+- Just in time compilation with the [C Foreign Funcion Interface](https://cffi.readthedocs.io/en/stable/) (CFFI)
+- C++ code is interfaced to Python using [Nanobind](https://nanobind.readthedocs.io/en/latest/)
+
+```python
+from mpi4py import MPI
+import basix.ufl
+import dolfinx
+import ufl
+
+mesh = dolfinx.mesh.create_unit_cube(
+    MPI.COMM_WORLD, 10, 12, 13,
+    cell_type=dolfinx.mesh.CellType.tetrahedron)
+
+el = basix.ufl.element("Lagrange", mesh.topology.cell_name(), 3)
+
+V = dolfinx.fem.functionspace(mesh, el)
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(u, v) * ufl.dx
+compiled_form = dolfinx.fem.form(a)
+```
+
+---
+
+# Mesh creation using Numpy arrays
 
 ```python
 import numpy as np
@@ -423,7 +561,7 @@ No re-ordering of cells to ensure consistent global orientations, see: Scroggs, 
 ```python
 if (rank:=MPI.COMM_WORLD.rank) == 0:
     x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=np.float32)
-    cells = np.array([[0, 1, 3, 4]], dtype=np.int64) 
+    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
 elif rank == 1:
     x = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
     cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
@@ -435,8 +573,8 @@ coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
 msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element))
 ```
 
-* Array interface makes it easier to interface with any meshing format
-* No copying when moving data to C++ through nanobind (`std::span`)
+- Array interface makes it easier to interface with any meshing format
+- No copying when moving data to C++ through nanobind (`std::span`)
 
 ---
 
@@ -457,7 +595,7 @@ msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_ele
 
 ---
 
-# All entities (vertex, edge, facet, cell) has a notion of ownership
+<!-- # All entities (vertex, edge, facet, cell) has a notion of ownership
 
 Makes mesh-view construction in parallel "easy" and safe
 
@@ -474,9 +612,9 @@ Makes mesh-view construction in parallel "easy" and safe
 </div>
 </div>
 
----
+--- -->
 
-
+<!--
 # Custom partitioning
 
 ```python
@@ -513,7 +651,7 @@ rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
 </div>
 </div>
 
----
+--- -->
 
 # Custom assembly if UFL doesn't quite fit
 
@@ -552,6 +690,7 @@ a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
 
 - Mass lumping
 - Static condensation
+
 ```python
 @numba.cfunc(c_signature, nopython=True)
 def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
@@ -571,9 +710,9 @@ def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permu
 
     # Row sum matrix M and store into diagonal of the output matrix A
     np.fill_diagonal(A, np.sum(M, axis=1))
-  ```
+```
 
-  ---
+---
 
 # Additional resources
 
