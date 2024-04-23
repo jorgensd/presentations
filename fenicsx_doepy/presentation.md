@@ -124,6 +124,16 @@ style: |
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
+
+  .skewed-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 55fr) minmax(0, 35fr);
+  }
+
+
+backgroundImage: url('Simula_logo.png')
+backgroundSize: 150px
+backgroundPosition: bottom+10px left+10px
 ---
 
 # An introduction to finite element modelling in FEniCS
@@ -140,7 +150,7 @@ Jørgen S. Dokken
 <div>
 <img src="fenics_logo.png" width=200px>
 </div>
-<img src="Simula_logo.png" width=300px>
+<!-- <img src="Simula_logo.png" width=300px> -->
 <center/>
 
 ---
@@ -178,11 +188,11 @@ Jørgen S. Dokken
 
 ---
 
-### Brief history of the finite element method (FEM)
+# Brief history of the finite element method (FEM)
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
-<div class="columns">
+<div class="skewed-columns">
 <div>
 
 * **1910s**: Rayleigh-Ritz/Ritz-Galerkin method
@@ -230,32 +240,31 @@ $$
 # Brief history of FEniCS
 
 ![bg right:25%](./fenics_logo.png)
-
 <div data-marpit-fragment>
 
-- 2002: First public version of a C++ library (DOLFIN)
-- 2003: FEniCS project was created
+- **2002**: First public version of a C++ library (DOLFIN)
+- **2003**: FEniCS project was created
 
 </div>
 <div data-marpit-fragment>
 
-- 2004: Code generation (C++) using FFC
-- 2005: First Python interface (PyDOLFIN)
+- **2004**: Code generation (C++) using FFC
+- **2005**: First Python interface (PyDOLFIN)
 
 </div>
 
 <div data-marpit-fragment>
 
-- 2009: Parallel (MPI support)
-- 2009: Unified form language (UFL) introduced
+- **2009**: Parallel (MPI support)
+- **2009**: Unified form language (UFL) introduced
 
 </div>
 
 
 <div data-marpit-fragment>
 
-- 2016--: Sponsored by NumFOCUS
-- 2017--: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+- **2016--**: Sponsored by NumFOCUS
+- **2017--**: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
 
 </div>
 <div data-marpit-fragment>
@@ -422,7 +431,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
 
 # Basix
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 <div class="columns">
 <div>
@@ -438,7 +447,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
 
 ---
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 # Basix yields extra control over finite elements
 
@@ -516,7 +525,7 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 
 # We observe reduced convergence for equispaced Lagrange elements
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 <center>
 <img src="./Errors_2D.png" width=600px>
@@ -532,7 +541,7 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 
 # The FEniCS form compiler (FFCx) is used to generate C code from Python
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 <div class="columns">
 <div>
@@ -565,7 +574,7 @@ python3 -m ffcx script.py
 ---
 
 # FFCx generates code to assemble the mass matrix for any element
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 ```c
 
@@ -660,7 +669,7 @@ for (int iq = 0; iq < 6; ++iq)
 
 # Features
 
-![bg width:700px opacity:.2](./Simula_logo.png)
+<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 <div class="columns">
 
