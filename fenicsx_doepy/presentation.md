@@ -147,6 +147,10 @@ Jørgen S. Dokken
 <center/>
 
 <center>
+<a href="https://jsdokken.com">https://jsdokken.com</a>
+<center/>
+
+<center>
 <div>
 <img src="fenics_logo.png" width=200px>
 </div>
