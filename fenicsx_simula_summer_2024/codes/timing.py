@@ -117,6 +117,8 @@ if __name__ == "__main__":
     if backend == "dolfin":
         os.environ["DIJITSO_CACHE_DIR"] = cache_dir.absolute().as_posix()
         import dolfin
+        dolfin.parameters["form_compiler"]["cpp_optimize"] = True
+        dolfin.parameters["form_compiler"]["optimize"] = True
         for i in range(repeat):
             total_t.start()
             mesh_t.start()
@@ -154,7 +156,9 @@ if __name__ == "__main__":
         from petsc4py import PETSc
         import dolfinx.fem.petsc
         import ufl
-        jit_options = {"cache_dir": cache_dir.absolute().as_posix()}
+        jit_options = {"cache_dir": cache_dir.absolute().as_posix(),
+                       "cffi_extra_compile_args": ["-O3", "-march=native"],
+                       "cffi_libraries": ["m"]}
         for i in range(repeat):
             total_t.start()
             mesh_t.start()
