@@ -205,11 +205,9 @@ Jørgen S. Dokken
 
 # Why do we need DOLFINx?
 
----
-
-- New features were hard to develop within legacy DOLFIN
-- Loads of code generation
-- Old code-base hard to maintain
+* New features were hard to develop within legacy DOLFIN
+* Loads of code generation
+* Old code-base hard to maintain
 
 ---
 
