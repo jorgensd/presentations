@@ -444,11 +444,39 @@ with dolfinx.io.VTXWriter(domain.comm, "mesh.bp", domain, engine="BP4") as bp:
 
 # Non-linear problems
 
+```python
+uh = dolfinx.fem.Function(V)
+u_n = dolfinx.fem.Function(V)
+dudt = (uh - u_n) / dt
+v = ufl.TestFunction(V)
+dx = ufl.Measure("dx", domain=mesh)
+F = dudt * v * dx + k * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx - f * v * dx
+```
+
+---
+
+# Non-linear problems continued
+
+```python
+import dolfinx.fem.petsc
+import dolfinx.nls.petsc
+
+problem = dolfinx.fem.petsc.NonlinearProblem(F, u=uh, bcs=[])
+solver = dolfinx.nls.petsc.NewtonSolver(mesh.comm, problem)
+ksp = solver.krylov_solver
+ksp.setType("preonly")
+pc = ksp.getPC()
+pc.setType("lu")
+pc.setFactorSolverType("mumps")
+```
+
 ---
 
 # Post-processing
 
 ---
+
+
 
 ---
 
