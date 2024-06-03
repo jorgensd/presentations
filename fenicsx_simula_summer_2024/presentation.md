@@ -205,9 +205,9 @@ Jørgen S. Dokken
 
 # Why do we need DOLFINx?
 
-* New features were hard to develop within legacy DOLFIN
-* Loads of code generation
-* Old code-base hard to maintain
+- New features were hard to develop within legacy DOLFIN
+- Loads of code generation
+- Old code-base hard to maintain
 
 ---
 
@@ -329,7 +329,11 @@ L_compiled = dolfinx.fem.form(L)
 
 ---
 
-# Insert an initial condition
+# Define an initial condition
+
+$$
+u(\cdot, 0) = \frac{1}{2\pi \sigma} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} e^{-\frac{1}{2}\left(\frac{y-\mu}{\sigma}\right)^2}
+$$
 
 ```python
 import numpy as np
@@ -346,6 +350,8 @@ u_n.interpolate(u_init)
 ---
 
 # Defining the linear solver
+
+Find $u_h\in V$ such that $a(u_h, v)=L(v) \quad \forall v\in V$.
 
 ```python
 import dolfinx.fem.petsc
