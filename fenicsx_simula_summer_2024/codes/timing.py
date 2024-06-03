@@ -49,7 +49,7 @@ class TimerContainer:
         self.timers[timer.name] = {"runtime": timer.elapsed, "num_calls": timer.num_calls, "min": min_val, "max": max_val}
 
     def create_table(self, outfile: pathlib.Path):
-        header = "Operation | Min | Max | Avg | Number of calls\n"
+        header = "Operation Min Max Avg Number of calls\n"
         content = ""
         for name, timer in self.timers.items():
             time = MPI.COMM_WORLD.gather(timer["runtime"], root=0)
@@ -60,7 +60,9 @@ class TimerContainer:
                 continue
             for op in num_ops:
                 assert op == num_ops[0], "Operation called different number of times on each process"
-            content += f"{name} {np.min(min_times)} {np.max(max_times)} {np.sum(time)/len(time)} {num_ops[0]}\n"            
+            if num_ops[0] == 0:
+                continue
+            content += f"{name} {np.min(min_times)} {np.max(max_times)} {np.sum(time)/(num_ops[0]*len(time))} {num_ops[0]}\n"            
         if MPI.COMM_WORLD.rank == 0:
             outfile.parent.mkdir(exist_ok=True)
             with open(outfile, "w") as f:
@@ -94,12 +96,11 @@ if __name__ == "__main__":
     prefix = args.out_prefix
 
     total_t = Timer("Total")
-    mesh_t = Timer("Mesh generation")
-    V_t = Timer("Function space creation")
-    form_creation_t = Timer("Form creation")
-    form_compilation_t = Timer("Form compilation")
-    assembly_lhs_t = Timer("Assembly LHS")
-    assembly_rhs_t = Timer("Assembly RHS")
+    mesh_t = Timer("Mesh")
+    V_t = Timer("FunctionSpace")
+    form_compilation_t = Timer("Compile-form")
+    assembly_lhs_t = Timer("Assemble-LHS")
+    assembly_rhs_t = Timer("Assemble-RHS")
     solve_t = Timer("Solve")
 
 
@@ -126,7 +127,6 @@ if __name__ == "__main__":
             V = dolfin.FunctionSpace(mesh, "Lagrange", degree)
             V_t.stop()
 
-            form_creation_t.start()
             u = dolfin.TrialFunction(V)
             v = dolfin.TestFunction(V)
             u_n = dolfin.Function(V)
@@ -134,7 +134,6 @@ if __name__ == "__main__":
             f_c = dolfin.Constant(f)
             a = alpha_c * dolfin.dot(dolfin.grad(u), dolfin.grad(v)) * dolfin.dx + u * v * dolfin.dx
             L = u_n * v *dolfin.dx  + alpha_c * dolfin.Constant(f) * v * dolfin.dx
-            form_creation_t.stop()
             
 
             uh = dolfin.Function(V)
@@ -167,7 +166,6 @@ if __name__ == "__main__":
             V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree), jit_options=jit_options)
             V_t.stop()
 
-            form_creation_t.start()
             u = ufl.TrialFunction(V)
             v = ufl.TestFunction(V)
             u_n = dolfinx.fem.Function(V)
@@ -175,7 +173,6 @@ if __name__ == "__main__":
             f_c = dolfinx.fem.Constant(mesh, f)
             a = alpha_c * ufl.dot(ufl.grad(u), ufl.grad(v)) * ufl.dx + u * v * ufl.dx
             L = u_n * v *ufl.dx  + alpha_c * dolfinx.fem.Constant(mesh, f) * v * ufl.dx
-            form_creation_t.stop()
             
             form_compilation_t.start()
             a = dolfinx.fem.form(a, jit_options=jit_options)
@@ -211,7 +208,6 @@ if __name__ == "__main__":
 
     container.add_timer(mesh_t)
     container.add_timer(V_t)
-    container.add_timer(form_creation_t)
     container.add_timer(form_compilation_t)
     container.add_timer(assembly_lhs_t)
     container.add_timer(assembly_rhs_t)
