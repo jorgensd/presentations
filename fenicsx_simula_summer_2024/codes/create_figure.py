@@ -4,7 +4,7 @@ import seaborn
 import matplotlib.pyplot as plt
 from pathlib import Path
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--input", type=str, required=True)
+argparser.add_argument("--input", "-i", type=str, required=True)
 args = argparser.parse_args()
 
 table = pandas.read_csv(args.input, sep=" ")

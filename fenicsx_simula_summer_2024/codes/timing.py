@@ -86,7 +86,7 @@ parser.add_argument("--repeats", "-r", type=int, default=5, help="Number of time
 parser.add_argument("-N", type=int, default=50, help="Number of elements in each direction of the mesh")
 parser.add_argument("--backend", "-b", type=str, default="dolfinx", choices=["dolfinx", "dolfin"], help="Which backend to use")
 parser.add_argument("--out_prefix", "-o", type=str, default="results", help="Prefix for output files")
-
+parser.add_argument("--problem", "-p", type=str, default="heat", choices=["heat", "curl"], help="Which problem to solve")
 if __name__ == "__main__":
     args = parser.parse_args()
     degree = args.degree
@@ -94,6 +94,7 @@ if __name__ == "__main__":
     backend = args.backend
     N = args.N
     prefix = args.out_prefix
+    problem = args.problem
 
     total_t = Timer("Total")
     mesh_t = Timer("Mesh")
@@ -125,31 +126,43 @@ if __name__ == "__main__":
             mesh = dolfin.UnitCubeMesh(N, N, N)
             mesh_t.stop()
 
-            V_t.start()
-            V = dolfin.FunctionSpace(mesh, "Lagrange", degree)
-            V_t.stop()
+            if problem == "heat":
+                V_t.start()
+                V = dolfin.FunctionSpace(mesh, "Lagrange", degree)
+                V_t.stop()
 
-            u = dolfin.TrialFunction(V)
-            v = dolfin.TestFunction(V)
-            u_n = dolfin.Function(V)
-            alpha_c = dolfin.Constant(alpha)
-            f_c = dolfin.Constant(f)
-            a = alpha_c * dolfin.dot(dolfin.grad(u), dolfin.grad(v)) * dolfin.dx + u * v * dolfin.dx
-            L = u_n * v *dolfin.dx  + alpha_c * dolfin.Constant(f) * v * dolfin.dx
-            
+                u = dolfin.TrialFunction(V)
+                v = dolfin.TestFunction(V)
+                u_n = dolfin.Function(V)
+                alpha_c = dolfin.Constant(alpha)
+                f_c = dolfin.Constant(f)
+                a = alpha_c * dolfin.dot(dolfin.grad(u), dolfin.grad(v)) * dolfin.dx + u * v * dolfin.dx
+                L = u_n * v *dolfin.dx  + alpha_c * dolfin.Constant(f) * v * dolfin.dx
+                
+                uh = dolfin.Function(V)
+                assembly_lhs_t.start()
+                A = dolfin.assemble(a)
+                assembly_lhs_t.stop()
 
-            uh = dolfin.Function(V)
-            assembly_lhs_t.start()
-            A = dolfin.assemble(a)
-            assembly_lhs_t.stop()
+                assembly_rhs_t.start()
+                b = dolfin.assemble(L)
+                assembly_rhs_t.stop()
 
-            assembly_rhs_t.start()
-            b = dolfin.assemble(L)
-            assembly_rhs_t.stop()
+                solve_t.start()
+                dolfin.solve(A, uh.vector(), b, "mumps")
+                solve_t.stop()
+            elif problem == "curl":
+                V_t.start()
+                V = dolfin.FunctionSpace(mesh, "N1curl", degree)
+                V_t.stop()
+               
+                u = dolfin.TrialFunction(V)
+                v = dolfin.TestFunction(V)
+                a = dolfin.inner(dolfin.curl(u), dolfin.curl(v)) * dolfin.dx
+                assembly_lhs_t.start()
+                A = dolfin.assemble(a)
+                assembly_lhs_t.stop()
 
-            solve_t.start()
-            dolfin.solve(A, uh.vector(), b, "mumps")
-            solve_t.stop()
             total_t.stop()
 
     elif backend == "dolfinx":
@@ -165,50 +178,67 @@ if __name__ == "__main__":
             mesh = dolfinx.mesh.create_unit_cube(MPI.COMM_WORLD, N, N, N)
             mesh_t.stop()
 
-            
-            V_t.start()
-            V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree), jit_options=jit_options)
-            V_t.stop()
+            if problem == "heat":            
+                V_t.start()
+                V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree), jit_options=jit_options)
+                V_t.stop()
 
-            u = ufl.TrialFunction(V)
-            v = ufl.TestFunction(V)
-            u_n = dolfinx.fem.Function(V)
-            alpha_c = dolfinx.fem.Constant(mesh, alpha)
-            f_c = dolfinx.fem.Constant(mesh, f)
-            a = alpha_c * ufl.dot(ufl.grad(u), ufl.grad(v)) * ufl.dx + u * v * ufl.dx
-            L = u_n * v *ufl.dx  + alpha_c * dolfinx.fem.Constant(mesh, f) * v * ufl.dx
-            
-            form_compilation_t.start()
-            a = dolfinx.fem.form(a, jit_options=jit_options)
-            L = dolfinx.fem.form(L, jit_options=jit_options)
-            form_compilation_t.stop()
+                u = ufl.TrialFunction(V)
+                v = ufl.TestFunction(V)
+                u_n = dolfinx.fem.Function(V)
+                alpha_c = dolfinx.fem.Constant(mesh, alpha)
+                f_c = dolfinx.fem.Constant(mesh, f)
+                a = alpha_c * ufl.dot(ufl.grad(u), ufl.grad(v)) * ufl.dx + u * v * ufl.dx
+                L = u_n * v *ufl.dx  + alpha_c * dolfinx.fem.Constant(mesh, f) * v * ufl.dx
+                
+                form_compilation_t.start()
+                a = dolfinx.fem.form(a, jit_options=jit_options)
+                L = dolfinx.fem.form(L, jit_options=jit_options)
+                form_compilation_t.stop()
 
-            uh = dolfinx.fem.Function(V)
-            assembly_lhs_t.start()
-            A = dolfinx.fem.petsc.assemble_matrix(a)
-            A.assemble()
-            assembly_lhs_t.stop()
+                uh = dolfinx.fem.Function(V)
+                assembly_lhs_t.start()
+                A = dolfinx.fem.petsc.assemble_matrix(a)
+                A.assemble()
+                assembly_lhs_t.stop()
 
-            assembly_rhs_t.start()
-            b = dolfinx.fem.petsc.assemble_vector(L)
-            b.ghostUpdate(addv=PETSc.InsertMode.ADD, mode=PETSc.ScatterMode.REVERSE)
-            b.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
-            assembly_rhs_t.stop()
+                assembly_rhs_t.start()
+                b = dolfinx.fem.petsc.assemble_vector(L)
+                b.ghostUpdate(addv=PETSc.InsertMode.ADD, mode=PETSc.ScatterMode.REVERSE)
+                b.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
+                assembly_rhs_t.stop()
 
-            solve_t.start()
-            ksp = PETSc.KSP().create(mesh.comm)
-            ksp.setType("preonly")
-            ksp.getPC().setType("lu")
-            ksp.getPC().setFactorSolverType("mumps")
-            ksp.setOperators(A)
-            ksp.solve(b, uh.x.petsc_vec)
-            uh.x.scatter_forward()
-            solve_t.stop()
+                solve_t.start()
+                ksp = PETSc.KSP().create(mesh.comm)
+                ksp.setType("preonly")
+                ksp.getPC().setType("lu")
+                ksp.getPC().setFactorSolverType("mumps")
+                ksp.setOperators(A)
+                ksp.solve(b, uh.x.petsc_vec)
+                uh.x.scatter_forward()
+                solve_t.stop()
+                b.destroy()
+                A.destroy()
+                ksp.destroy()
+            elif problem == "curl":
+                V_t.start()
+                V = dolfinx.fem.functionspace(mesh, ("N1curl", degree))
+                V_t.stop()
+               
+                u = ufl.TrialFunction(V)
+                v = ufl.TestFunction(V)
+                a = ufl.inner(ufl.curl(u), ufl.curl(v)) * ufl.dx
+
+                form_compilation_t.start()
+                a = dolfinx.fem.form(a, jit_options=jit_options)
+                form_compilation_t.stop()
+
+                assembly_lhs_t.start()
+                A = dolfinx.fem.assemble_matrix(a)
+                assembly_lhs_t.stop()
+
             total_t.stop()
 
-            b.destroy()
-            A.destroy()
-            ksp.destroy()
 
     container.add_timer(mesh_t)
     container.add_timer(V_t)
@@ -217,6 +247,6 @@ if __name__ == "__main__":
     container.add_timer(assembly_rhs_t)
     container.add_timer(solve_t)
     container.add_timer(total_t)
-
-    outfile = (pathlib.Path(f"{prefix}") / f"{backend}_{N=}_{degree=}_{MPI.COMM_WORLD.size}").with_suffix(".txt")
+    mpi_size = MPI.COMM_WORLD.size
+    outfile = (pathlib.Path(f"{prefix}") / f"{backend}_{N=}_{degree=}_{problem=}_{mpi_size=}").with_suffix(".txt")
     container.create_table(outfile)
