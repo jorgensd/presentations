@@ -443,6 +443,14 @@ with dolfinx.io.VTXWriter(domain.comm, "mesh.bp", domain, engine="BP4") as bp:
 ---
 
 # Non-linear problems
+Solve a sequence of problems 
+$$
+u_{k+1} = u_k - \alpha\delta u_k
+$$
+
+$$
+{J}_F(u_k)\delta u_k = F(u_k)
+$$
 
 ```python
 uh = dolfinx.fem.Function(V)
@@ -456,7 +464,14 @@ F = dudt * v * dx + k * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx - f * v * dx
 ---
 
 # Non-linear problems continued
+Solve a sequence of problems 
+$$
+u_{k+1} = u_k - \alpha\delta u_k
+$$
 
+$$
+{J}_F(u_k)\delta u_k = F(u_k)
+$$
 ```python
 import dolfinx.fem.petsc
 import dolfinx.nls.petsc
@@ -472,11 +487,47 @@ pc.setFactorSolverType("mumps")
 
 ---
 
-# Post-processing
+# Interpolation onto subset of cells
+
+```python
+from mpi4py import MPI
+import dolfinx
+import ufl
+
+mesh = dolfinx.mesh.create_unit_square(
+    MPI.COMM_WORLD, 25, 25, dolfinx.mesh.CellType.quadrilateral
+)
+
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 3, (2,)))
+subdomain_cells = dolfinx.mesh.locate_entities(
+    mesh, mesh.topology.dim, lambda x: (x[0] > 0.8) & (x[1] > 0.2)
+)
+uh = dolfinx.fem.Function(V)
+uh.interpolate(lambda x: (0.05 * x[1] ** 2, 0 * x[0]), cells=subdomain_cells)
+```
 
 ---
 
+# Interpolation of any ufl expression
 
+```python
+def epsilon(u):
+    return ufl.sym(ufl.grad(u))
+
+
+def sigma(u, lmbda=2, mu=0.5):
+    return lmbda * ufl.nabla_div(u) * ufl.Identity(len(u)) + 2 * mu * epsilon(u)
+
+
+s = sigma(uh) - 1.0 / 3 * ufl.tr(sigma(uh)) * ufl.Identity(len(uh))
+von_Mises = ufl.sqrt(3.0 / 2 * ufl.inner(s, s))
+
+Q = dolfinx.fem.functionspace(mesh, ("DQ", 2))
+compiled_expr = dolfinx.fem.Expression(von_Mises, Q.element.interpolation_points())
+q = dolfinx.fem.Function(Q, name="VonMises")
+q.interpolate(compiled_expr)
+
+```
 
 ---
 
