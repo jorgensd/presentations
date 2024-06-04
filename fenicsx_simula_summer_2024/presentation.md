@@ -570,10 +570,10 @@ q.interpolate(compiled_expr)
 <div class="columns">
 
 <div>
-<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+<iframe width="550" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
 </div>
 
-<div data-marpit-fragment>
+<!-- <div data-marpit-fragment> -->
 
 <div>
 
@@ -585,4 +585,4 @@ q.interpolate(compiled_expr)
 <center/>
 </div>
 
-</div>
+<!-- </div> -->
