@@ -190,12 +190,6 @@ Jørgen S. Dokken
 
 <div data-marpit-fragment>
 
-- **2017--**: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
-
-</div>
-
-<div data-marpit-fragment>
-
 - ~3000 users on the FEniCS Discourse forum
 - ~12 000 monthly downloads
 
@@ -205,19 +199,11 @@ Jørgen S. Dokken
 
 # Why do we need DOLFINx?
 
-- New features were hard to develop within legacy DOLFIN
-- Loads of code generation
-- Old code-base hard to maintain
-
----
-
-# New features
-
-- Complex number support
-- Single/double precision
-- Quadrilateral and hexahedral (unordered) meshes
-- Arbitrary order (discontinuous) Lagrange outputting of all cell types
-- Custom mesh partitioning
+<div data-marpit-fragment>
+<center>
+DOI: <a href="https://doi.org/10.5281/zenodo.10447665">10.5281/zenodo.10447665</a>
+<center/>
+</div>
 
 ---
 
@@ -403,6 +389,8 @@ $$
 
 ---
 
+---
+
 # Mesh creation with raw numpy arrays
 
 ```python
@@ -473,7 +461,9 @@ mesh, cell_markers, facet_markers = model_to_mesh(gmsh.model, MPI.COMM_WORD, 0, 
 <img src="./codes/hearts.png" width=700px>
 <center/>
 
-### Stay for next talk by Henrik  for more hearts
+### Stay for next talk by Henrik for more hearts
+
+---
 
 ---
 # Non-linear problems
@@ -492,7 +482,7 @@ u_n = dolfinx.fem.Function(V)
 dudt = (uh - u_n) / dt
 v = ufl.TestFunction(V)
 dx = ufl.Measure("dx", domain=mesh)
-F = dudt * v * dx + k * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx - f * v * dx
+F = dudt * v * dx + k * ufl.inner(ufl.grad(uh), ufl.grad(v)) * dx - f * v * dx
 ```
 
 ---
@@ -578,10 +568,19 @@ q.interpolate(compiled_expr)
 <div>
 
 <center>
-<img src="./deformation.gif" width=400px>
+
+**Other new features**
+
+- Complex number support
+- Single/double precision
+- Quadrilateral and hexahedral (unordered) meshes
+- Arbitrary order (discontinuous) Lagrange outputs
+- Custom mesh partitioning
+- Proper definition of higher order elements
+
 <center/>
 <center>
-<img src="./velocity.gif" width=400px>
+<img src="./velocity.gif" width=500px>
 <center/>
 </div>
 
