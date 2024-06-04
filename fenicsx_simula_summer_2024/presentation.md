@@ -386,17 +386,19 @@ bp_file.close()
 # Heat equation with P-1 elements
 
 <center>
-<img src="./codes/results/dolfin_N=50_degree=1_problem=&apos;heat&apos;_mpi_size=2.png" width=1000px>
-<img src="./codes/results/dolfinx_N=50_degree=1_problem=&apos;heat&apos;_mpi_size=2.png" width=1000px>
+<img src="./codes/results/timing_args.N=50_args.degree=1_args.problem=&apos;heat&apos;_args.png" width=800px>
 <center/>
 
 ---
 
 # Assembly with higher order N1Curl elements
 
+$$
+A = \int_\Omega (\nabla \times u) \cdot (\nabla \times v)~\mathrm{d}x
+$$
+
 <center>
-<img src="./codes/results/dolfin_N=2_degree=5_problem=&apos;curl&apos;_mpi_size=2.png" width=1000px>
-<img src="./codes/results/dolfinx_N=2_degree=5_problem=&apos;curl&apos;_mpi_size=2.png" width=1000px>
+<img src="./codes/results/timing_args.N=10_args.degree=5_args.problem=&apos;curl&apos;_args.png" width=800px>
 <center/>
 
 ---
@@ -442,6 +444,38 @@ with dolfinx.io.VTXWriter(domain.comm, "mesh.bp", domain, engine="BP4") as bp:
 
 ---
 
+# GMSH interface (cardiac-geometries-core)
+
+```python
+import subprocess
+from pathlib import Path
+
+import dolfinx.io.gmshio
+fname = "lv-mesh.msh"
+cmd = f"geo lv-ellipsoid {fname}"
+
+subprocess.run(cmd.split(" "))
+
+from mpi4py import MPI
+import dolfinx
+mesh, ct, ft = dolfinx.io.gmshio.read_from_msh(fname, comm=MPI.COMM_WORLD, rank=0)
+```
+
+---
+
+# Interaction directly with GMSH Python API
+
+```python
+mesh, cell_markers, facet_markers = model_to_mesh(gmsh.model, MPI.COMM_WORD, 0, gdim=2)
+```
+
+<center>
+<img src="./codes/hearts.png" width=700px>
+<center/>
+
+### Stay for next talk by Henrik  for more hearts
+
+---
 # Non-linear problems
 Solve a sequence of problems 
 $$

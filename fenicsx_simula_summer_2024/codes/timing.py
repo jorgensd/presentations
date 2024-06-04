@@ -34,8 +34,9 @@ class Timer:
         print(f"{self.name}: {self.stop():.3e}")
 
 class TimerContainer:
-    def __init__(self):
+    def __init__(self, backend: str):
         self.timers = {}
+        self.backend = backend
 
     def add_timer(self, timer: Timer):
         if timer.min is None:
@@ -49,7 +50,7 @@ class TimerContainer:
         self.timers[timer.name] = {"runtime": timer.elapsed, "num_calls": timer.num_calls, "min": min_val, "max": max_val}
 
     def create_table(self, outfile: pathlib.Path):
-        header = "Operation Min Max Avg Number of calls\n"
+        header = "Operation Min Max Avg Num_Calls Backend\n"
         content = ""
         for name, timer in self.timers.items():
             time = MPI.COMM_WORLD.gather(timer["runtime"], root=0)
@@ -62,7 +63,7 @@ class TimerContainer:
                 assert op == num_ops[0], "Operation called different number of times on each process"
             if num_ops[0] == 0:
                 continue
-            content += f"{name} {np.min(min_times)} {np.max(max_times)} {np.sum(time)/(num_ops[0]*len(time))} {num_ops[0]}\n"            
+            content += f"{name} {np.min(min_times)} {np.max(max_times)} {np.sum(time)/(num_ops[0]*len(time))} {num_ops[0]} {self.backend}\n"            
         if MPI.COMM_WORLD.rank == 0:
             outfile.parent.mkdir(exist_ok=True)
             with open(outfile, "w") as f:
@@ -114,7 +115,7 @@ if __name__ == "__main__":
         rmtree(cache_dir)
     MPI.COMM_WORLD.barrier()
 
-    container = TimerContainer()
+    container = TimerContainer(backend)
     if backend == "dolfin":
         os.environ["DIJITSO_CACHE_DIR"] = cache_dir.absolute().as_posix()
         import dolfin
@@ -248,5 +249,5 @@ if __name__ == "__main__":
     container.add_timer(solve_t)
     container.add_timer(total_t)
     mpi_size = MPI.COMM_WORLD.size
-    outfile = (pathlib.Path(f"{prefix}") / f"{backend}_{N=}_{degree=}_{problem=}_{mpi_size=}").with_suffix(".txt")
+    outfile = (pathlib.Path(f"{prefix}") / f"{backend}_{N}_{degree}_{str(problem)}_{mpi_size}").with_suffix(".txt")
     container.create_table(outfile)
