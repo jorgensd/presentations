@@ -301,6 +301,10 @@ $$
 \frac{\partial u}{\partial t} - \nabla \cdot( k(t) \nabla u) = f(x,y,t) \qquad \text{in } \Omega
 $$
 
+$$
+F(u_h, v)=\frac{1}{\Delta t}(u_h-u_n, v)_\Omega + k(t)\cdot (\nabla u , \nabla v)_\Omega -(f, v)_\Omega=0
+$$
+
 ```python
 u = ufl.TrialFunction(V)
 u_n = dolfinx.fem.Function(V)
@@ -419,13 +423,16 @@ c_el = basix.ufl.element("Lagrange", "triangle", 2, shape=(nodes.shape[1],))
 domain = dolfinx.mesh.create_mesh(MPI.COMM_SELF, connectivity, nodes, ufl.Mesh(c_el))
 
 ```
+
 ---
 
 # Mesh creation continued
+
 ```python
 with dolfinx.io.VTXWriter(domain.comm, "mesh.bp", domain, engine="BP4") as bp:
     bp.write(0.0)
 ```
+
 <center>
 <img src="./codes/mesh.png" width=480px>
 <center/>
@@ -466,8 +473,11 @@ mesh, cell_markers, facet_markers = model_to_mesh(gmsh.model, MPI.COMM_WORD, 0, 
 ---
 
 ---
+
 # Non-linear problems
-Solve a sequence of problems 
+
+Solve a sequence of problems
+
 $$
 u_{k+1} = u_k - \alpha\delta u_k
 $$
@@ -488,7 +498,9 @@ F = dudt * v * dx + k * ufl.inner(ufl.grad(uh), ufl.grad(v)) * dx - f * v * dx
 ---
 
 # Non-linear problems continued
-Solve a sequence of problems 
+
+Solve a sequence of problems
+
 $$
 u_{k+1} = u_k - \alpha\delta u_k
 $$
@@ -496,6 +508,7 @@ $$
 $$
 {J}_F(u_k)\delta u_k = F(u_k)
 $$
+
 ```python
 import dolfinx.fem.petsc
 import dolfinx.nls.petsc
