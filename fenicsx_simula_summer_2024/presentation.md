@@ -203,6 +203,8 @@ Jørgen S. Dokken
 <center>
 DOI: <a href="https://doi.org/10.5281/zenodo.10447665">10.5281/zenodo.10447665</a>
 <center/>
+<img src="p_adaptive.png" width=800px>
+
 </div>
 
 ---
