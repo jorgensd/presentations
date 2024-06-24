@@ -55,7 +55,7 @@ L_form = dolfinx.fem.form(L, dtype=np.float64)
 
 # Solve linear problem
 import dolfinx.fem.petsc
-uh = dolfinx.fem.Function(V)
+uh = dolfinx.fem.Function(V, name="uh")
 solver_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",
