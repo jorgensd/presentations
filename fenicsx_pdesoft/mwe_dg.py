@@ -1,25 +1,25 @@
 from mpi4py import MPI
-import dolfinx.fem.petsc
-import numpy as np
-
+import dolfinx
 from dg_form import a, L, alpha, gamma, el, f
-
-d_cell = dolfinx.mesh.to_type(el.cell_type.name)
-mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7, d_cell)
-Vh = dolfinx.fem.functionspace(mesh, el)
 
 compiler_options = {"scalar_type": dolfinx.default_scalar_type}
 compiled_a = dolfinx.fem.compile_form(
-    mesh.comm,
+    MPI.COMM_WORLD,
     a,
     form_compiler_options=compiler_options,
 )
 compiled_L = dolfinx.fem.compile_form(
-    mesh.comm,
+    MPI.COMM_WORLD,
     L,
     form_compiler_options=compiler_options,
 )
 
+
+import numpy as np
+
+d_cell = dolfinx.mesh.to_type(el.cell_type.name)
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7, d_cell)
+Vh = dolfinx.fem.functionspace(mesh, el)
 
 # Create coefficients and constants
 alp = dolfinx.fem.Constant(mesh, 25.0)
@@ -34,7 +34,8 @@ a_form = dolfinx.fem.create_form(
 L_form = dolfinx.fem.create_form(compiled_L, [Vh], mesh, {f: fh}, {alpha: alp})
 
 # Solve linear problem
-uh = dolfinx.fem.Function(Vh)
+import dolfinx.fem.petsc
+uh = dolfinx.fem.Function(Vh, name="uh")
 solver_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",

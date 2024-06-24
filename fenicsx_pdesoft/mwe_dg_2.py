@@ -9,19 +9,19 @@ cell = dolfinx.mesh.CellType.triangle
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7, cell)
 
 el = element("Lagrange", cell.name, 3, discontinuous=True)
-V = dolfinx.fem.functionspace(mesh, el)
+Vh = dolfinx.fem.functionspace(mesh, el)
 
 # Define problem specific variables
 h = 2 * ufl.Circumradius(mesh)
 n = ufl.FacetNormal(mesh)
 x, y = ufl.SpatialCoordinate(mesh)
 g = ufl.sin(2 * ufl.pi * x) + ufl.cos(y)
-f = dolfinx.fem.Function(V)
+f = dolfinx.fem.Function(Vh)
 f.interpolate(lambda x: x[0] + 2 * np.sin(x[1]))
 alpha = dolfinx.fem.Constant(mesh, 25.0)
 gamma = dolfinx.fem.Constant(mesh, 25.0)
-u = ufl.TrialFunction(V)
-v = ufl.TestFunction(V)
+u = ufl.TrialFunction(Vh)
+v = ufl.TestFunction(Vh)
 
 # Define variational formulation
 ds = ufl.Measure("ds", domain=mesh)
@@ -55,7 +55,7 @@ L_form = dolfinx.fem.form(L, dtype=np.float64)
 
 # Solve linear problem
 import dolfinx.fem.petsc
-uh = dolfinx.fem.Function(V, name="uh")
+uh = dolfinx.fem.Function(Vh, name="uh")
 solver_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",
