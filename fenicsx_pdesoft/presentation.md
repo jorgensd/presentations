@@ -433,3 +433,34 @@ with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
 ---
 
 # Multiphysics
+
+<img src="./p_adaptive.png" width=500px>
+
+---
+
+# The Signorini problem $^1$
+
+<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation -->
+
+$$
+\begin{align*}
+\nabla \cdot (\sigma(\mathbf{u})) &= f \text{ in } \Omega\\
+\mathbf{u} &= \mathbf{u}_D \text{ on } \delta\Omega_D \\
+\sigma(\mathbf{u})\mathbf{n} &= 0 \text{ on } \delta\Omega_N\\
+\mathbf{u}\cdot \mathbf{n} - g &\leq 0 \text{ on } \Gamma\\
+\sigma_n(\mathbf{u})\mathbf{n} &\leq 0 \text{ on } \Gamma\\
+\sigma_n(\mathbf{u})\mathbf{u}\cdot \mathbf{n} &= 0 \text{ on } \Gamma
+\end{align*}
+$$
+
+---
+
+<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation -->
+
+# The Signorini problem $^1$
+
+<center>
+<img src="./contact.png" width=1000px>
+</center>
+
+---
