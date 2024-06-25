@@ -434,13 +434,39 @@ with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
 
 # Multiphysics
 
-<img src="./p_adaptive.png" width=500px>
+```python
+submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, tdim, subset_cells)
+# Define variational form
+# ...
+compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
+```
+
+<div class="columns">
+<div>
+
+$$
+\begin{align*}
+-\nabla\cdot(k\nabla u_i)&=f_i \text{ in } \Omega_i\\
+u&=u_{D_i} \text{ on } \delta\Omega_{i,D} \\
+k\frac{\partial u_i}{\partial n}&=0 \text{ on } \delta\Omega_{i,N}\\
+u_i &= u_j \text{ on } \Gamma_{i,j}\\
+k\frac{\partial u_i}{\partial n} &= \frac{\partial u_j}{\partial n} \text{ on } \Gamma_{i,j}
+\end{align*}
+$$
+
+</div>
+<div>
+<img src="./p_adaptive.png" width=600px>
+</div>
 
 ---
 
 # The Signorini problem $^1$
 
 <!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation -->
+
+<div class=columns>
+<div>
 
 $$
 \begin{align*}
@@ -452,6 +478,14 @@ $$
 \sigma_n(\mathbf{u})\mathbf{u}\cdot \mathbf{n} &= 0 \text{ on } \Gamma
 \end{align*}
 $$
+
+</div>
+
+<div>
+**Proximal**
+
+</div>
+</div>
 
 ---
 
