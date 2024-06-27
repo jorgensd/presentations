@@ -461,9 +461,9 @@ $$
 
 ---
 
-# The Signorini problem $^1$
+# The Signorini problem $^{1, 2}$
 
-<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation -->
+<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv preprint arXiv:2307.12444 (2023) -->
 
 <div class=columns>
 <div>
@@ -484,27 +484,34 @@ $$
 <div>
 
 **Latent variable proximal point algorithm**
-
 Let $u\in V(\Omega)$, $\psi\in Q(\Gamma)$
 
 $$
 \begin{align*}
-(\sigma(u), \epsilon(v)_\Omega - (\psi, v\cdot n)_\Gamma = (\psi^{k-1}, v\cdot n)\\
+(\sigma(u), \epsilon(v))_\Omega - (\psi, v\cdot n)_\Gamma = (\psi^{k-1}, v\cdot n)\\
 -(u\cdot n, w)_\Gamma - (e^{\alpha_k \psi}, w)_\Gamma = (g, w)_\Gamma
 \end{align*}
 $$
+
+Given $\alpha_k$, $\psi_{k-1}$
+
+- Solve saddle point problem
+- Check for convergence
+- Update latent variable $\psi^{k-1}$, $\alpha_k$
 
 </div>
 </div>
 
 ---
 
-<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation -->
+<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv preprint arXiv:2307.12444 (2023) -->
 
 # The Signorini problem $^1$
 
 <center>
 <img src="./contact.png" width=1000px>
 </center>
+
+---
 
 ---
