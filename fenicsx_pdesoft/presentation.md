@@ -263,14 +263,12 @@ v = ufl.TestFunction(V)
 # Creating a variational formulation (3/4)
 
 ```python
-
 # Define variational formulation
 ds = ufl.Measure("ds", domain=domain)
 dx = ufl.Measure("dx", domain=domain)
 dS = ufl.Measure("dS", domain=domain)
 
 F = ufl.inner(ufl.grad(u), ufl.grad(v)) * dx - f * v * dx
-
 
 # Nitsche terms
 def flux_term(u, v):
@@ -307,6 +305,8 @@ a, L = ufl.system(F)
 python3 -m ffcx dg_form.py
 ```
 
+<div data-marpit-fragment>
+
 **Python**
 
 ```python
@@ -314,12 +314,11 @@ from mpi4py import MPI
 import dolfinx
 from dg_form import a, L, alpha, gamma, el, f
 
-compiler_options = {"scalar_type": dolfinx.default_scalar_type}
-compiled_a = dolfinx.fem.compile_form(
-    MPI.COMM_WORLD, a, form_compiler_options=compiler_options)
-compiled_L = dolfinx.fem.compile_form(
-    MPI.COMM_WORLD, L, form_compiler_options=compiler_options)
+compiled_a = dolfinx.fem.compile_form(MPI.COMM_WORLD, a)
+compiled_L = dolfinx.fem.compile_form(MPI.COMM_WORLD, L)
 ```
+
+</div>
 
 ---
 
@@ -338,7 +337,7 @@ gam = dolfinx.fem.Constant(mesh, 25.0)
 fh = dolfinx.fem.Function(Vh)
 fh.interpolate(lambda x: x[0] + 2 * np.sin(x[1]))
 
-# Compile variational forms
+# Attach data to generated code
 a_form = dolfinx.fem.create_form(
     compiled_a, [Vh, Vh], mesh, {}, {alpha: alp, gamma: gam})
 L_form = dolfinx.fem.create_form(compiled_L, [Vh], mesh, {f: fh}, {alpha: alp})
@@ -351,12 +350,12 @@ L_form = dolfinx.fem.create_form(compiled_L, [Vh], mesh, {f: fh}, {alpha: alp})
 # Solving a discrete problem - Path 2 (1/3)
 
 ```python
-# Create discrete domain
-cell = dolfinx.mesh.CellType.triangle
-mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7, cell)
-
-el = element("Lagrange", cell.name, 3, discontinuous=True)
-Vh = dolfinx.fem.functionspace(mesh, el)
+# Create discrete domain and function space
+dtype = np.float32
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7,
+                                       dolfinx.mesh.CellType.triangle,
+                                       dtype=dtype)
+Vh = dolfinx.fem.functionspace(mesh, ("DG", 3))
 ```
 
 ---
@@ -369,10 +368,10 @@ h = 2 * ufl.Circumradius(mesh)
 n = ufl.FacetNormal(mesh)
 x, y = ufl.SpatialCoordinate(mesh)
 g = ufl.sin(2 * ufl.pi * x) + ufl.cos(y)
-f = dolfinx.fem.Function(Vh)
+f = dolfinx.fem.Function(Vh, dtype=dtype)
 f.interpolate(lambda x: x[0] + 2 * np.sin(x[1]))
-alpha = dolfinx.fem.Constant(mesh, 25.0)
-gamma = dolfinx.fem.Constant(mesh, 25.0)
+alpha = dolfinx.fem.Constant(mesh, dtype(25.0))
+gamma = dolfinx.fem.Constant(mesh, dtype(25.0))
 u = ufl.TrialFunction(Vh)
 v = ufl.TestFunction(Vh)
 ```
@@ -393,8 +392,8 @@ F += ....
 
 a, L = ufl.system(F)
 
-a_form = dolfinx.fem.form(a, dtype=np.float64)
-L_form = dolfinx.fem.form(L, dtype=np.float64)
+a_form = dolfinx.fem.form(a, dtype=dtype)
+L_form = dolfinx.fem.form(L, dtype=dtype)
 ```
 
 ---
@@ -403,7 +402,7 @@ L_form = dolfinx.fem.form(L, dtype=np.float64)
 
 ```python
 import dolfinx.fem.petsc
-uh = dolfinx.fem.Function(V)
+uh = dolfinx.fem.Function(Vh, name="uh", dtype=dtype)
 solver_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",
@@ -466,6 +465,7 @@ $$
 
 <!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv preprint arXiv:2307.12444 (2023) -->
 
+<br>
 <div class=columns>
 <div>
 
@@ -502,10 +502,9 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 </div>
 </div>
+<br>
 
 ---
-
-<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv preprint arXiv:2307.12444 (2023) -->
 
 # The Signorini problem $^{1,2}$
 
@@ -514,5 +513,7 @@ Given $\alpha_k$, $\psi_{k-1}$
 </center>
 
 ---
+
+<!--  footer: <br> -->
 
 ---

@@ -1,25 +1,25 @@
 from mpi4py import MPI
 import dolfinx
 import ufl
-from basix.ufl import element
 import numpy as np
 
-# Create discrete domain
-cell = dolfinx.mesh.CellType.triangle
-mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7, cell)
+# Create discrete domain and function space
+dtype = np.float32
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 6, 7,
+                                       dolfinx.mesh.CellType.triangle,
+                                       dtype=dtype)
 
-el = element("Lagrange", cell.name, 3, discontinuous=True)
-Vh = dolfinx.fem.functionspace(mesh, el)
+Vh = dolfinx.fem.functionspace(mesh, ("DG", 3))
 
 # Define problem specific variables
 h = 2 * ufl.Circumradius(mesh)
 n = ufl.FacetNormal(mesh)
 x, y = ufl.SpatialCoordinate(mesh)
 g = ufl.sin(2 * ufl.pi * x) + ufl.cos(y)
-f = dolfinx.fem.Function(Vh)
+f = dolfinx.fem.Function(Vh, dtype=dtype)
 f.interpolate(lambda x: x[0] + 2 * np.sin(x[1]))
-alpha = dolfinx.fem.Constant(mesh, 25.0)
-gamma = dolfinx.fem.Constant(mesh, 25.0)
+alpha = dolfinx.fem.Constant(mesh, dtype(25.0))
+gamma = dolfinx.fem.Constant(mesh, dtype(25.0))
 u = ufl.TrialFunction(Vh)
 v = ufl.TestFunction(Vh)
 
@@ -49,13 +49,13 @@ F += dg_flux(u, v) * dS + dg_flux(v, u) * dS
 F += gamma / ufl.avg(h) * ufl.inner(ufl.jump(v, n), ufl.jump(u, n)) * dS
 
 a, L = ufl.system(F)
-a_form = dolfinx.fem.form(a, dtype=np.float64)
-L_form = dolfinx.fem.form(L, dtype=np.float64)
+a_form = dolfinx.fem.form(a, dtype=dtype)
+L_form = dolfinx.fem.form(L, dtype=dtype)
 
 
 # Solve linear problem
 import dolfinx.fem.petsc
-uh = dolfinx.fem.Function(Vh, name="uh")
+uh = dolfinx.fem.Function(Vh, name="uh", dtype=dtype)
 solver_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",

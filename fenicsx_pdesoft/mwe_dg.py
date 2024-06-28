@@ -2,17 +2,8 @@ from mpi4py import MPI
 import dolfinx
 from dg_form import a, L, alpha, gamma, el, f
 
-compiler_options = {"scalar_type": dolfinx.default_scalar_type}
-compiled_a = dolfinx.fem.compile_form(
-    MPI.COMM_WORLD,
-    a,
-    form_compiler_options=compiler_options,
-)
-compiled_L = dolfinx.fem.compile_form(
-    MPI.COMM_WORLD,
-    L,
-    form_compiler_options=compiler_options,
-)
+compiled_a = dolfinx.fem.compile_form(MPI.COMM_WORLD, a)
+compiled_L = dolfinx.fem.compile_form(MPI.COMM_WORLD, L)
 
 
 import numpy as np
@@ -27,7 +18,7 @@ gam = dolfinx.fem.Constant(mesh, 25.0)
 fh = dolfinx.fem.Function(Vh)
 fh.interpolate(lambda x: x[0] + 2 * np.sin(x[1]))
 
-# Compile variational forms
+# Attach data to generated code 
 a_form = dolfinx.fem.create_form(
     compiled_a, [Vh, Vh], mesh, {}, {alpha: alp, gamma: gam}
 )
@@ -35,6 +26,7 @@ L_form = dolfinx.fem.create_form(compiled_L, [Vh], mesh, {f: fh}, {alpha: alp})
 
 # Solve linear problem
 import dolfinx.fem.petsc
+
 uh = dolfinx.fem.Function(Vh, name="uh")
 solver_options = {
     "ksp_type": "preonly",
