@@ -428,7 +428,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
     bp.write(0.0)
 ```
 
-![bg contain right:30%](uh.png)
+![bg contain right:30%](uh_DG.png)
 
 ---
 
@@ -443,12 +443,14 @@ compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
 
 <div class="columns">
 <div>
+<br>
+<br>
 
 $$
 \begin{align*}
 -\nabla\cdot(k\nabla u_i)&=f_i \text{ in } \Omega_i\\
 u&=u_{D_i} \text{ on } \delta\Omega_{i,D} \\
-k\frac{\partial u_i}{\partial n}&=0 \text{ on } \delta\Omega_{i,N}\\
+%k\frac{\partial u_i}{\partial n}&=0 \text{ on } \delta\Omega_{i,N}\\
 u_i &= u_j \text{ on } \Gamma_{i,j}\\
 k\frac{\partial u_i}{\partial n} &= \frac{\partial u_j}{\partial n} \text{ on } \Gamma_{i,j}
 \end{align*}
@@ -456,7 +458,7 @@ $$
 
 </div>
 <div>
-<img src="./p_adaptive.png" width=600px>
+<img src="./fenics_logo_dg.png" width=500px>
 </div>
 
 ---
@@ -506,7 +508,7 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 <!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv preprint arXiv:2307.12444 (2023) -->
 
-# The Signorini problem $^1$
+# The Signorini problem $^{1,2}$
 
 <center>
 <img src="./contact.png" width=1000px>

@@ -68,5 +68,5 @@ problem.solve()
 print(f"Solver converged with {problem.solver.getConvergedReason()}")
 
 # Store solution to disk
-with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
+with dolfinx.io.VTXWriter(mesh.comm, "dg_solution.bp", [uh], engine="BP4") as bp:
     bp.write(0.0)
