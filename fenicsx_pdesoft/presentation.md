@@ -489,8 +489,8 @@ Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$
 
 $$
 \begin{align*}
-(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
-(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\alpha_k \psi}, w)_\Gamma &= (g, w)_\Gamma
+\alpha_k*(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -\alpha_k(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
+(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\psi}, w)_\Gamma &= (g, w)_\Gamma
 \end{align*}
 $$
 

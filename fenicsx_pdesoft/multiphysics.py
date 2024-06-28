@@ -110,7 +110,7 @@ fdim = mesh.topology.dim - 1
 assert fdim == ft.dim
 submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, fdim, contact_facets)[0:2]
 
-E, nu = 1.e4, 0.40
+E, nu = 2.e4, 0.40
 mu = E / (2.0 * (1.0 + nu))
 lmbda = E * nu / ((1.0 + nu) * (1.0 - 2.0 * nu))
 
@@ -147,17 +147,17 @@ mesh_to_submesh = np.full(num_facets, -1)
 mesh_to_submesh[submesh_to_mesh] = np.arange(len(submesh_to_mesh))
 entity_maps = {submesh: mesh_to_submesh}
 
-ds = ufl.Measure("ds", domain=mesh, subdomain_data=ft, subdomain_id=contact_val)
+ds = ufl.Measure("ds", domain=mesh, subdomain_data=ft, subdomain_id=contact_val, metadata={"quadrature_degree": 10})
 n = ufl.FacetNormal(mesh)
 alpha = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type(1.0))
 f = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type((0.0, 0.0)))
 x = ufl.SpatialCoordinate(mesh)
 g = x[1]+dolfinx.fem.Constant(submesh, dolfinx.default_scalar_type(0.05))
 
-F00 = ufl.inner(sigma(u, mesh.geometry.dim), ufl.sym(ufl.grad(v))) * ufl.dx(domain=mesh) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
+F00 = alpha*ufl.inner(sigma(u, mesh.geometry.dim), ufl.sym(ufl.grad(v))) * ufl.dx(domain=mesh) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
 F01 = -ufl.inner(psi-psi_k, ufl.dot(v, n)) * ds
 F10 = ufl.inner(ufl.dot(u, n), w)  * ds
-F11 = ufl.inner(ufl.exp(alpha*psi), w)  * ds - ufl.inner(g, w)  * ds
+F11 = ufl.inner(ufl.exp(psi), w)  * ds - ufl.inner(g, w)  * ds
 F0 = F00 + F01 
 F1 = F10 + F11
 
@@ -178,7 +178,7 @@ J = [[J00, J01], [J10, J11]]
 F = [residual_0, residual_1]
 
 u_bc = dolfinx.fem.Function(V)
-disp = -0.12
+disp = -0.2
 u_bc.interpolate(lambda x: (np.full(x.shape[1], 0.0), np.full(x.shape[1], disp)))
 V0, V0_to_V = V.sub(1).collapse()
 bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, top_facets))
@@ -203,7 +203,7 @@ bp_vm = dolfinx.io.VTXWriter(mesh.comm, "von_mises.bp", [vm, u_vm])
 
 
 
-M = 10
+M = 20
 for it in range(M):
     print(f"{it}/{M}")
     #u_bc.x.array[V0_to_V] = (it+1)/M * disp
