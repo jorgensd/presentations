@@ -178,7 +178,7 @@ J = [[J00, J01], [J10, J11]]
 F = [residual_0, residual_1]
 
 u_bc = dolfinx.fem.Function(V)
-disp = -0.2
+disp = -0.12
 u_bc.interpolate(lambda x: (np.full(x.shape[1], 0.0), np.full(x.shape[1], disp)))
 V0, V0_to_V = V.sub(1).collapse()
 bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, top_facets))
