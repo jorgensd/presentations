@@ -471,12 +471,12 @@ $$
 
 $$
 \begin{align*}
-\nabla \cdot (\sigma(\mathbf{u})) &= f \text{ in } \Omega\\
+\nabla \cdot (\sigma(\mathbf{u})) &= \mathbf{f} \text{ in } \Omega\\
 \mathbf{u} &= \mathbf{u}_D \text{ on } \delta\Omega_D \\
 \sigma(\mathbf{u})\mathbf{n} &= 0 \text{ on } \delta\Omega_N\\
-\mathbf{u}\cdot \mathbf{n} - g &\leq 0 \text{ on } \Gamma\\
+\mathbf{u}\cdot \mathbf{n} &\leq g \text{ on } \Gamma\\
 \sigma_n(\mathbf{u})\mathbf{n} &\leq 0 \text{ on } \Gamma\\
-\sigma_n(\mathbf{u})\mathbf{u}\cdot \mathbf{n} &= 0 \text{ on } \Gamma
+\sigma_n(\mathbf{u})(\mathbf{u}\cdot \mathbf{n}-g) &= 0 \text{ on } \Gamma
 \end{align*}
 $$
 
@@ -485,12 +485,12 @@ $$
 <div>
 
 **Latent variable proximal point algorithm**
-Let $u\in V(\Omega)$, $\psi\in Q(\Gamma)$
+Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$
 
 $$
 \begin{align*}
-(\sigma(u), \epsilon(v))_\Omega - (\psi, v\cdot n)_\Gamma = (\psi^{k-1}, v\cdot n)\\
--(u\cdot n, w)_\Gamma - (e^{\alpha_k \psi}, w)_\Gamma = (g, w)_\Gamma
+(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
+(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\alpha_k \psi}, w)_\Gamma &= (g, w)_\Gamma
 \end{align*}
 $$
 

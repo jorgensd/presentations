@@ -154,10 +154,10 @@ f = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type((0.0, 0.0)))
 x = ufl.SpatialCoordinate(mesh)
 g = x[1]+dolfinx.fem.Constant(submesh, dolfinx.default_scalar_type(0.05))
 
-F00 = alpha * ufl.inner(sigma(u, mesh.geometry.dim), ufl.grad(v)) * ufl.dx(domain=mesh) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
+F00 = ufl.inner(sigma(u, mesh.geometry.dim), ufl.sym(ufl.grad(v))) * ufl.dx(domain=mesh) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
 F01 = -ufl.inner(psi-psi_k, ufl.dot(v, n)) * ds
 F10 = ufl.inner(ufl.dot(u, n), w)  * ds
-F11 = ufl.inner(ufl.exp(psi), w)  * ds - ufl.inner(g, w)  * ds
+F11 = ufl.inner(ufl.exp(alpha*psi), w)  * ds - ufl.inner(g, w)  * ds
 F0 = F00 + F01 
 F1 = F10 + F11
 
