@@ -436,8 +436,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
 
 ```python
 submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, tdim, subset_cells)
-# Define variational form
-# ...
+# Define variational form...
 compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
 ```
 
@@ -458,7 +457,7 @@ $$
 
 </div>
 <div>
-<img src="./fenics_logo_dg.png" width=500px>
+<img src="./fenics_logo_dg.png" width=550px>
 </div>
 
 ---

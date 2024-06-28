@@ -266,7 +266,7 @@ def define_interior_eq(mesh,degree,  submesh, submesh_to_mesh, value):
 
 
 u_0, F_00, m_to_b = define_interior_eq(mesh, 4, submesh_b, submesh_b_to_mesh, 2.0)
-u_1, F_11, m_to_t = define_interior_eq(mesh, 2, submesh_t, submesh_t_to_mesh, 3.0)
+u_1, F_11, m_to_t = define_interior_eq(mesh, 2, submesh_t, submesh_t_to_mesh, 5.0)
 u_0.name = "u_b"
 u_1.name = "u_t"
 
@@ -343,7 +343,7 @@ F = [
 
 
 b_bc = dolfinx.fem.Function(u_0.function_space)
-b_bc.x.array[:] = 0.2
+b_bc.x.array[:] = 0.
 submesh_b.topology.create_connectivity(
     submesh_b.topology.dim - 1, submesh_b.topology.dim
 )
