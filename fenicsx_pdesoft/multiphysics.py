@@ -152,7 +152,7 @@ n = ufl.FacetNormal(mesh)
 alpha = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type(1.0))
 f = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type((0.0, 0.0)))
 x = ufl.SpatialCoordinate(mesh)
-g = x[1]+dolfinx.fem.Constant(submesh, dolfinx.default_scalar_type(0.05))
+g = x[1]+dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type(0.05))
 
 F00 = alpha*ufl.inner(sigma(u, mesh.geometry.dim), ufl.sym(ufl.grad(v))) * ufl.dx(domain=mesh) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
 F01 = -ufl.inner(psi-psi_k, ufl.dot(v, n)) * ds
@@ -201,9 +201,21 @@ vm = dolfinx.fem.Function(V_von_mises, name="VonMises")
 u_vm = dolfinx.fem.Function(V_DG, name="u")
 bp_vm = dolfinx.io.VTXWriter(mesh.comm, "von_mises.bp", [vm, u_vm])
 
+Qe = basix.ufl.quadrature_element(submesh.topology.cell_name(), degree=4)
+Q = dolfinx.fem.functionspace(submesh, Qe)
+q_q = dolfinx.fem.Function(Q)
+expr = dolfinx.fem.Expression(ufl.dot(u, n)-g, Q.element.interpolation_points())
+ents = dolfinx.cpp.fem.compute_integration_domains(dolfinx.fem.IntegralType.exterior_facet, mesh.topology, submesh_to_mesh, mesh.topology.dim-1)
 
+Qo = dolfinx.fem.functionspace(submesh, ("DG", 2))
+p, q = ufl.TrialFunction(Qo), ufl.TestFunction(Qo)
+a = ufl.inner(p, q) * ufl.dx
+L = ufl.inner(q_q, q) * ufl.dx
+out = dolfinx.fem.Function(Qo)
+problem_q = dolfinx.fem.petsc.LinearProblem(a, L, u=out, bcs=[], petsc_options={"ksp_type":"preonly", "pc_type":"lu", "pc_factor_mat_solver_type":"mumps"})
+bp_derived = dolfinx.io.VTXWriter(mesh.comm, "un.bp", [out], engine="BP4")
 
-M = 20
+M = 10
 for it in range(M):
     print(f"{it}/{M}")
     #u_bc.x.array[V0_to_V] = (it+1)/M * disp
@@ -213,7 +225,7 @@ for it in range(M):
     alpha.value += 1
     #alpha.value = 1
     #try:
-    solver.solve(1e-6, (it+1)/M)
+    solver.solve(1e-8, (it+1)/M)
     # except AssertionError as e:
     #     bp.close()
     #     print(e)
@@ -225,8 +237,11 @@ for it in range(M):
     vm.interpolate(stress_expr)
     bp_vm.write(it)
 
+    q_q.x.array[:] = expr.eval(mesh, ents).reshape(-1)
+    problem_q.solve()
+    bp_derived.write(it)
 
-
+bp_derived.close()
 bp.close()
 bp_psi.close()
 bp_vm.close()

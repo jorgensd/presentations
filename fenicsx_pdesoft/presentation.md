@@ -225,7 +225,7 @@ PDESoft 2024
 
 ---
 
-# Creating variational formulation (1/4)
+# We start by defining symbolic representations using UFL and Basix
 
 ```python
 import ufl
@@ -243,10 +243,9 @@ V = ufl.FunctionSpace(domain, el)
 
 ---
 
-# Creating a variational formulation (2/4)
+# Define problem specific symbolic variables
 
 ```python
-# Define problem specific variables
 h = 2 * ufl.Circumradius(domain)
 n = ufl.FacetNormal(domain)
 x, y = ufl.SpatialCoordinate(domain)
@@ -260,10 +259,9 @@ v = ufl.TestFunction(V)
 
 ---
 
-# Creating a variational formulation (3/4)
+# Creating a variational formulation (1/2)
 
 ```python
-# Define variational formulation
 ds = ufl.Measure("ds", domain=domain)
 dx = ufl.Measure("dx", domain=domain)
 dS = ufl.Measure("dS", domain=domain)
@@ -281,7 +279,7 @@ F -= flux_term(v, g) * ds + alpha / h * g * v * ds
 
 ---
 
-# Creating a variational formulation (4/4)
+# Creating a variational formulation (2/2)
 
 ```python
 # Interior penalty/DG terms
@@ -322,7 +320,7 @@ compiled_L = dolfinx.fem.compile_form(MPI.COMM_WORLD, L)
 
 ---
 
-# Solving a discrete problem (Path 1)
+# Attaching generated code to discrete problem
 
 ```python
 import numpy as np
@@ -347,7 +345,7 @@ L_form = dolfinx.fem.create_form(compiled_L, [Vh], mesh, {f: fh}, {alpha: alp})
 
 ---
 
-# Solving a discrete problem - Path 2 (1/3)
+# Solving a discrete problem (single precision)
 
 ```python
 # Create discrete domain and function space
@@ -360,7 +358,7 @@ Vh = dolfinx.fem.functionspace(mesh, ("DG", 3))
 
 ---
 
-# Solving a discrete problem - Path 2 (2/3)
+# Solving a discrete problem (single precision)
 
 ```python
 # Define problem specific variables
@@ -378,7 +376,7 @@ v = ufl.TestFunction(Vh)
 
 ---
 
-# Solving a discrete problem - Path 2 (2/3)
+# Solving a discrete problem (single precision)
 
 ```python
 # Define variational formulation
@@ -398,7 +396,7 @@ L_form = dolfinx.fem.form(L, dtype=dtype)
 
 ---
 
-# Solving a discrete problem (assembly + solve)
+# PETSc solver interface
 
 ```python
 import dolfinx.fem.petsc
@@ -417,13 +415,17 @@ print(f"Solver converged with {problem.solver.getConvergedReason()}")
 
 ---
 
-# Outputting
+# Outputting to VTX format by ADIOS2
 
 Supports arbitrary (discontinuous) Lagrange functions
 
 ```python
-# ADIOS2 VTXWriter
-with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
+with dolfinx.io.VTXWriter(
+  mesh.comm,
+  "solution_2.bp",
+  [uh],
+  engine="BP4"
+  ) as bp:
     bp.write(0.0)
 ```
 
@@ -434,14 +436,14 @@ with dolfinx.io.VTXWriter(mesh.comm, "solution_2.bp", [uh], engine="BP4") as bp:
 # Multiphysics
 
 ```python
-submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, tdim, subset_cells)
+submesh, cell_map = dolfinx.mesh.create_submesh(mesh, tdim, subset_cells)[0:2]
 # Define variational form...
 compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
 ```
 
 <div class="columns">
 <div>
-<br>
+ Different polynomial degrees in each subdomain
 <br>
 
 $$
