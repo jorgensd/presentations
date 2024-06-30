@@ -229,18 +229,16 @@ PDESoft 2024
 
 <!--  footer: <br> -->
 
-# Variational forms are defined using UFL and Basix
+# UFL + Basix = Variational forms
 
 ```python
 import ufl
 from basix.ufl import element
 
-# Create a symbolic representation of a mesh
 cell = "triangle"
 c_el = element("Lagrange", cell, 1, shape=(2,))
 domain = ufl.Mesh(c_el)
 
-# Create a symbolic representation of a function space
 el = element("Lagrange", cell, 3, discontinuous=True)
 V = ufl.FunctionSpace(domain, el)
 ```
@@ -469,8 +467,7 @@ $$
 
 # The Signorini problem $^{2, 3}$
 
-<!--  footer: $^2$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^3$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv:2307.12444 (2023) -->
-
+<!--  footer: $^2$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^3$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv:2307.12444 (2023)<br><br> -->
 <br>
 <div class=columns>
 <div>
@@ -507,8 +504,10 @@ Given $\alpha_k$, $\psi_{k-1}$
 - Update latent variable $\psi^{k-1}$, $\alpha_k$
 
 </div>
-</div>
 <br>
+<br>
+<br>
+</div>
 
 ---
 
