@@ -450,11 +450,11 @@ compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
 
 $$
 \begin{align*}
--\nabla\cdot(k\nabla u_i)&=f_i \text{ in } \Omega_i\\
+-\nabla\cdot(k_i\nabla u_i)&=f_i \text{ in } \Omega_i\\
 u&=u_{D_i} \text{ on } \delta\Omega_{i,D} \\
 %k\frac{\partial u_i}{\partial n}&=0 \text{ on } \delta\Omega_{i,N}\\
 u_i &= u_j \text{ on } \Gamma_{i,j}\\
-k\frac{\partial u_i}{\partial n} &= \frac{\partial u_j}{\partial n} \text{ on } \Gamma_{i,j}
+k_i\frac{\partial u_i}{\partial n} &= k_j\frac{\partial u_j}{\partial n} \text{ on } \Gamma_{i,j}
 \end{align*}
 $$
 
