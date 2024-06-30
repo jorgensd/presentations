@@ -215,7 +215,7 @@ PDESoft 2024
 
 ![bg contain right:53%](./overview_stripped.png)
 
-<!--  footer: $^1$ Baratta, Dean, Dokken, Habera, Hale, Richardson, Rognes, Scroggs, Sime, Wells. 2023. DOLFINx: _The next generation FEniCS problem solving environment_. Zenodo. DOI: 10.5281/zenodo.10447666 <br> -->
+<!--  footer: $^1$ Baratta, Dean, Dokken, Habera, Hale, Richardson, Rognes, Scroggs, Sime, Wells. 2023. DOLFINx: _The next generation FEniCS problem solving environment_. Zenodo. DOI: 10.5281/zenodo.10447666 <br><br> -->
 
 ---
 
@@ -229,7 +229,7 @@ PDESoft 2024
 
 <!--  footer: <br> -->
 
-# We start by defining symbolic representations using UFL and Basix
+# Variational forms are defined using UFL and Basix
 
 ```python
 import ufl
@@ -532,5 +532,3 @@ Given $\alpha_k$, $\psi_{k-1}$
 $^1$ Baratta, Dean, Dokken, Habera, Hale, Richardson, Rognes, Scroggs, Sime, Wells. 2023. _DOLFINx: The next generation FEniCS problem solving environment_. Zenodo. DOI: 10.5281/zenodo.10447666
 $^2$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation.
 $^3$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv:2307.12444 (2023)
-
----
