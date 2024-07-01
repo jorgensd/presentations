@@ -445,7 +445,7 @@ compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
 
 <div class="columns">
 <div>
- Different polynomial degrees in each subdomain
+Different function spaces in each subdomain
 <br>
 
 $$
