@@ -130,7 +130,6 @@ style: |
     grid-template-columns: minmax(0, 55fr) minmax(0, 35fr);
   }
 
-
 backgroundImage: url('Simula_logo.png')
 backgroundSize: 150px
 backgroundPosition: bottom+10px left+10px
@@ -183,7 +182,7 @@ Jørgen S. Dokken
 
 - **2022-**: Member of the FEniCS Steering Council
 - **2022-**: Consulting for Simula Consulting
-- **2022-2023**: Research Engineer at SRL 
+- **2022-2023**: Research Engineer at SRL
 - **2024--**: Senior Research Engineer at SRL
 </div>
 
@@ -219,12 +218,11 @@ $$
 \langle R(u_h, x), \phi_j \rangle = 0 \qquad\forall j=1,\cdots,N
 $$
 
-
 ---
 
 # History of the finite element method (FEM)
 
-**1940s**: Birth of the FEM (basis functions with restricted support)
+**1940s**: Birth of the FEM
 
 Consider $\langle u, v \rangle=\int_\Omega u\cdot v~\mathrm{d}x$.
 
@@ -235,28 +233,31 @@ $$
 \end{align*}
 $$
 
-Rewritten as
+<div data-marpit-fragment>
 
 $$
 \begin{align*}
 a(u_h, \phi_j) &=L(\phi_j)\\
-a(u_h, \phi_j) &= \int_\Omega \nabla u_h \cdot \nabla \phi_j - f\phi_j~\mathrm{d}x\\
+a(u_h, \phi_j) &= \int_\Omega \nabla u_h \cdot \nabla \phi_j - f\phi_j~\mathrm{d}x \qquad
 L(\phi_j) &= \int_{\Omega} f \phi_j~\mathrm{d}x
 \end{align*}
 $$
 
+</div>
+
+![bg contain right:30%](uh_DG.png)
+
 ---
+
 # History of the finite element method (FEM)
 
-* **1958**: First open source FE software
-* **1970s**: General purpose FE software and mathematical rigorousness
-* **1990s**: Object oriented programming
-* **2000s**: User-friendliness (Python)
-* **2010s**: High performance computing
-
+- **1958**: First open source FE software in Fortran (E.L. Wilson of UC Berkeley/Boeing)
+- **1970s**: General purpose FE software and mathematical rigorousness
+- **1990s**: Object oriented programming
+- **2000s**: User-friendliness (Python)
+- **2010s**: High performance computing
 
 <!-- --- -->
-
 
 <!-- </div>
 
@@ -290,13 +291,12 @@ $$
 
 </div> -->
 
-
 ---
-
 
 # Brief history of FEniCS
 
 ![bg right:25%](./fenics_logo.png)
+
 <div data-marpit-fragment>
 
 - **2002**: First public version of a C++ library (DOLFIN)
@@ -317,7 +317,6 @@ $$
 
 </div>
 
-
 <div data-marpit-fragment>
 
 - **2016--**: Sponsored by NumFOCUS
@@ -336,7 +335,6 @@ $$
 
 ---
 
-
 # What do people use FEniCS for?
 
 Hydrogen transport in fusion modelling
@@ -351,14 +349,13 @@ Modelling a permanent magnet synchronous motor (Rolls Royce)
 [DOI: 10.1016/j.finel.2022.103755](10.1016/j.finel.2022.103755)
 ![rr_em](rr_em.png)
 
-
 ---
 
 # What do people use FEniCS for?
 
-
 Spatial modeling algorithms for reactions and transport (SMART) in biological cells
 [arXiv: 2405.15968](https://arxiv.org/abs/2405.15968)
+
 <div class="skewed-columns">
 <div>
 
@@ -375,6 +372,7 @@ Spatial modeling algorithms for reactions and transport (SMART) in biological ce
 ---
 
 # The Poisson equation
+
 ![bg contain right:30%](uh.png)
 
 ```python
@@ -410,8 +408,8 @@ V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
 
 ---
 
-
 # The Poisson equation
+
 ![bg contain right:30%](uh.png)
 
 ```python
@@ -448,6 +446,7 @@ L = ufl.inner(f, v) * ufl.dx
 ---
 
 # The Poisson equation
+
 ```python
 from mpi4py import MPI
 import dolfinx
@@ -506,11 +505,11 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
 <div class="columns">
 <div>
 
-* A finite element tabulation library
-* Provides quadrature schemes
-* Written in C++ with a Python interface
-  * Runtime tabulation
-* Custom finite elements
+- A finite element tabulation library
+- Provides quadrature schemes
+- Written in C++ with a Python interface
+  - Runtime tabulation
+- Custom finite elements
 
 </div>
 <iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.7.0.post0/python/", title="Basix github repository"></iframe>
@@ -548,6 +547,7 @@ lagrange_gll = basix.ufl.element(
 ---
 
 # Why do we care?
+
 ![bg contain right:30%](Sawtooth.png)
 
 <div data-marpit-fragment>
@@ -574,7 +574,7 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 
     msh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, M,
                                           cell_type=dolfinx.mesh.CellType.quadrilateral)
-    ufl_element = basix.ufl.element(basix.ElementFamily.P, 
+    ufl_element = basix.ufl.element(basix.ElementFamily.P,
                                     msh.topology.cell_name(), 10, variant)
     V = dolfinx.fem.functionspace(msh, ufl_element)
     uh = dolfinx.fem.Function(V)
@@ -589,9 +589,7 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 
 </div>
 
-  
-
---- 
+---
 
 # We observe reduced convergence for equispaced Lagrange elements
 
@@ -605,7 +603,6 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 <a href="https://docs.fenicsproject.org/dolfinx/main/python/demos/demo_lagrange_variants.html">Runge's phenomenon</a>
 
 <center/>
-
 
 ---
 
@@ -644,6 +641,7 @@ python3 -m ffcx script.py
 ---
 
 # FFCx generates code to assemble the mass matrix for any element
+
 <!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 ```c
@@ -745,11 +743,11 @@ for (int iq = 0; iq < 6; ++iq)
 
 <div>
 
-* Single and double precision
-* Real and complex valued tensors
-* Assembly into arbitrary order tensors
-* Curved cells for intervals, triangles, quadrilaterals, tetrahedra, hexahedra
-* Discontinuous (broken) variants of all elements
+- Single and double precision
+- Real and complex valued tensors
+- Assembly into arbitrary order tensors
+- Curved cells for intervals, triangles, quadrilaterals, tetrahedra, hexahedra
+- Discontinuous (broken) variants of all elements
 
 </div>
 <div>
@@ -1061,4 +1059,3 @@ a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
 </div>
 
 </div>
-
