@@ -339,7 +339,21 @@ $$
 
 Hydrogen transport in fusion modelling
 Breeding blanket from FESTIM: [DOI: 10.1016/j.ijhydene.2024.03.184](https://doi.org/10.1016/j.ijhydene.2024.03.184)
-![width:750px](festim.png)
+
+<div class="columns">
+<div>
+
+![width:600px](festim.png)
+
+</div>
+<div>
+<div data-marpit-fragment>
+
+![width:500px](fenics_logo_dg.png)
+
+</div>
+
+</div>
 
 ---
 
