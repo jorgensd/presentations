@@ -442,7 +442,12 @@ lagrange_gll = basix.ufl.element(
 
 ---
 
-# Add slide where we tabulate here to illustrate that it is possible directly with this element
+# Basix tabulate arbitrary order derivatives
+
+```python
+
+
+```
 
 ---
 
@@ -458,33 +463,31 @@ lagrange_gll = basix.ufl.element(
 <div>
 
 ```python
-from mpi4py import MPI
-import numpy as np
-import basix.ufl
-import dolfinx
-import ufl
-
 def saw_tooth(x):
     f = 4 * abs(x[0] - 0.43)
     for _ in range(8):
         f = abs(f - 0.3)
     return f
 
-def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
+msh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, M,
+                                      cell_type=dolfinx.mesh.CellType.quadrilateral)
 
-    msh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, M,
-                                          cell_type=dolfinx.mesh.CellType.quadrilateral)
-    ufl_element = basix.ufl.element(basix.ElementFamily.P,
-                                    msh.topology.cell_name(), 10, variant)
-    V = dolfinx.fem.functionspace(msh, ufl_element)
-    uh = dolfinx.fem.Function(V)
-    uh.interpolate(lambda x: saw_tooth(x))
+ufl_element = basix.ufl.element(basix.ElementFamily.P,
+                                msh.basix_cell(), 10, variant)
+V = dolfinx.fem.functionspace(msh, ufl_element)
 
-    x = ufl.SpatialCoordinate(msh)
-    u_exact = saw_tooth(x)
-    M = dolfinx.fem.form((u_exact - uh) ** 2 * ufl.dx)
-    error = np.sqrt(msh.comm.allreduce(dolfinx.fem.assemble_scalar(M), op=MPI.SUM))
-    return hs, error
+# Approximate sawtooth function by interpolation
+uh = dolfinx.fem.Function(V)
+uh.interpolate(lambda x: saw_tooth(x))
+
+# Evaluate sawtooth function in quadrature points
+x = ufl.SpatialCoordinate(msh)
+u_exact = saw_tooth(x)
+
+# Compute L2 error
+diff = u_exact - uh
+M = dolfinx.fem.form(ufl.inner(diff, diff) * ufl.dx)
+error = np.sqrt(msh.comm.allreduce(dolfinx.fem.assemble_scalar(M), op=MPI.SUM))
 ```
 
 </div>
@@ -520,7 +523,7 @@ import basix.ufl
 c_el = basix.ufl.element("Lagrange", "triangle", 1, shape=(2, ))
 mesh = ufl.Mesh(c_el)
 
-el = basix.ufl.element("Lagrange", "triangle", 3)
+el = basix.ufl.element("Lagrange", "triangle", 2)
 
 V = ufl.FunctionSpace(mesh, el)
 
@@ -545,8 +548,7 @@ python3 -m ffcx script.py
 <!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 ```c
-
-void tabulate_tensor_integral_a80de02e2fc39315d8672b75da91b1586209cb47(double* restrict A,
+void tabulate_tensor_integral_814d6545520c96b29b3c162b3f5d484bbf83c565(double* restrict A,
                                     const double* restrict w,
                                     const double* restrict c,
                                     const double* restrict coordinate_dofs,
@@ -565,21 +567,19 @@ static const double FE2_C0_Q39d[1][1][6][6] = {{{{-0.07480380774819603, 0.517632
   {-0.04820837781551195, -0.08473049309397784, -0.04820837781551192, 0.1928335112620479, 0.7954802262009061, 0.1928335112620478},
   {-0.04820837781551193, -0.048208377815512, -0.08473049309397786, 0.1928335112620479, 0.192833511262048, 0.7954802262009062},
   {-0.08473049309397794, -0.04820837781551188, -0.04820837781551195, 0.7954802262009061, 0.1928335112620479, 0.1928335112620479}}}};
-// ------------------------
-}
 ```
 
 </div>
 
 ---
 
-# Generated code continued (Jacobian)
+# Generated code continued
 
 ```c
 // ------------------------
 // Section: Jacobian
-// Inputs: coordinate_dofs, FE1_C1_D01_Q39d, FE1_C0_D10_Q39d
-// Outputs: J_c3, J_c1, J_c2, J_c0
+// Inputs: FE1_C1_D01_Q39d, coordinate_dofs, FE1_C0_D10_Q39d
+// Outputs: J_c1, J_c2, J_c3, J_c0
 double J_c0 = 0.0;
 double J_c3 = 0.0;
 double J_c1 = 0.0;
@@ -603,12 +603,14 @@ double sp_39d_4 = fabs(sp_39d_3);
 
 ---
 
-# Generated code continued (local tensor)
+# Generated code continued
 
 ```c
 for (int iq = 0; iq < 6; ++iq)
 {
   // Section: Intermediates
+  // Inputs:
+  // Outputs: fw0
   double fw0 = 0;
   {
     fw0 = sp_39d_4 * weights_39d[iq];
