@@ -901,7 +901,37 @@ J = dolfinx.fem.form([[jac00, jac01], [jac10, jac11]],
 
 ---
 
-<!--  footer: -->
+<!--  footer: <br>-->
+
+# Different function spaces on domain subsets
+
+```python
+submesh, cell_map = dolfinx.mesh.create_submesh(mesh, tdim, subset_cells)[0:2]
+# Define variational form...
+compiled_F = dolfinx.fem.form(F, entity_maps=entity_maps)
+```
+
+<div class="columns">
+<div>
+Different function spaces in each subdomain
+<br>
+
+$$
+\begin{align*}
+-\nabla\cdot(k_i\nabla u_i)&=f_i \text{ in } \Omega_i\\
+u&=u_{D_i} \text{ on } \delta\Omega_{i,D} \\
+%k\frac{\partial u_i}{\partial n}&=0 \text{ on } \delta\Omega_{i,N}\\
+u_i &= u_j \text{ on } \Gamma_{i,j}\\
+k_i\frac{\partial u_i}{\partial n} &= k_j\frac{\partial u_j}{\partial n} \text{ on } \Gamma_{i,j}
+\end{align*}
+$$
+
+</div>
+<div>
+<img src="./fenics_logo_dg.png" width=550px>
+</div>
+
+---
 
 # Some examples
 
