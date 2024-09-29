@@ -802,7 +802,8 @@ $$
 <div>
 
 - $\alpha_k$ bounded
-- $e^{\psi} = \mathbf{u}\cdot{n} - g$ guaranteed to be positive for any latent variable $\psi$
+- $e^{\psi} = \mathbf{u}\cdot{n} - g$ guaranteed to be positive for any latent variable $\psi$.
+- Latent variable $\psi$ can be chosen to be higher order to get a higher order feasible boundary displacement.
 - Exhibits mesh independent convergence
 </div>
 
@@ -815,7 +816,92 @@ $$
 
 ---
 
-## <!--  footer: $-->
+<!--  footer: -->
+
+# How does one implement this in FEniCSx?
+
+---
+
+<!--  footer: $^3$ Dean J., _Mathematical and computational aspects of solving mixed-domain problems using the finite element method, DOI: 10.17863/CAM.108292 (2023) <br><br>-->
+
+# DOLFINx supports sub-meshes$^3$
+
+```python
+# Given a Mesh and MeshTags for for all boundary facets
+c_facets = mt.find(contact_bndry)
+submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
+
+# Create function spaces
+e_u = basix.ufl.element("Lagrange", mesh.basix_cell(), degree, shape=(gdim, ))
+V = dolfinx.fem.functionspace(mesh, element_u)
+
+element_p = basix.ufl.element("Lagrange", submesh.basix_cell(), degree)
+W = dolfinx.fem.functionspace(submesh, element_p)
+
+```
+
+---
+
+# Mixed assembly using block structures
+
+```python
+u = dolfinx.fem.Function(V)
+v = ufl.TestFunction(V)
+psi = dolfinx.fem.Function(W)
+psi_k = dolfinx.fem.Function(W)
+w = ufl.TestFunction(W)
+n = ufl.FacetNormal(mesh)
+alpha = dolfinx.fem.Constant(mesh, 1.0)
+f = ...
+g = ...
+n_g = ...
+dx = ufl.Measure("dx", domain=mesh)
+ds = ufl.Measure("ds", domain=mesh,
+        subdomain_data=facet_tag,
+        subdomain_id=contact_bndry)
+```
+
+---
+
+# Mixed assembly continued
+
+```python
+def epsilon(w):
+    return ufl.sym(ufl.grad(w))
+
+def sigma(w, mu, lmbda):
+    ew = epsilon(w)
+    gdim = ew.ufl_shape[0]
+    return 2.0 * mu * epsilon(w) + lmbda * ufl.tr(ufl.grad(w)) * ufl.Identity(gdim)
+
+
+F0 = alpha * ufl.inner(sigma(u, mu, lmbda), epsilon(v)) * dx - alpha * ufl.inner(f, v) * dx
+F0 += -ufl.inner(psi - psi_k, ufl.dot(v, n)) * ds
+F1 = ufl.inner(ufl.dot(u, n_g), w) * ds
+F1 += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
+
+F = dolfinx.fem.form([F0, F1], sentity_maps=entity_maps)
+```
+
+---
+
+# Mixed assembly continued
+
+```python
+jac00 = ufl.derivative(F0, u)
+jac01 = ufl.derivative(F0, psi)
+jac10 = ufl.derivative(F1, u)
+jac11 = ufl.derivative(F1, psi)
+
+J = dolfinx.fem.form([[jac00, jac01], [jac10, jac11]],
+                     entity_maps=entity_maps)
+```
+
+**`J` and `F` can be passed to a blocked Newton solver**
+
+---
+
+<!--  footer: -->
 
 # Some examples
 
@@ -838,3 +924,4 @@ $$
 </div>
 
 </div>
+```
