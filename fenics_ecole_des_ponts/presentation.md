@@ -199,9 +199,9 @@ Analysis and generic tools and algorithms for PDEs
 </div>
 </div>
 
----
+<!-- --- -->
 
-# About me
+<!-- # About me
 
 <div data-marpit-fragment>
 
@@ -227,7 +227,7 @@ Analysis and generic tools and algorithms for PDEs
 - **2024--**: Senior Research Engineer at SRL
 </div>
 
-![bg right:30%](./me.jpg)
+![bg right:30%](./me.jpg) -->
 
 ---
 
@@ -334,7 +334,7 @@ L = ufl.inner(f, v) * ufl.dx
 
 
 
-+
+
 
 
 
@@ -703,7 +703,7 @@ table {
 
 # How does it work through Python?
 
-- Just in time compilation with the [C Foreign Funcion Interface](https://cffi.readthedocs.io/en/stable/) (CFFI)
+- Just in time compilation with the [C Foreign Function Interface](https://cffi.readthedocs.io/en/stable/) (CFFI)
 - C++ code is interfaced to Python using [Nanobind](https://nanobind.readthedocs.io/en/latest/)
 
 ```python
@@ -727,236 +727,95 @@ compiled_form = dolfinx.fem.form(a)
 
 ---
 
-# Mesh creation using Numpy arrays
+---
 
-```python
-import numpy as np
-from mpi4py import MPI
+# The Signorini problem $^{1, 2}$
 
-import basix.ufl
-import dolfinx
-import ufl
-
-x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
-cells = np.array([[0, 1, 3, 4], [1, 2, 4, 5]], dtype=np.int64)
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_SELF, cells, x, ufl.Mesh(coordinate_element))
-
-```
-
-<div data-marpit-fragment>
-
+<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv:2307.12444 (2023)<br>-->
+<div class=columns>
 <div>
 
-No re-ordering of cells to ensure consistent global orientations, see: Scroggs, Dokken, Richardson, Wells, 2022: [DOI: 10.1145/3524456](https://doi.org/10.1145/3524456)
+$$
+\begin{align*}
+\nabla \cdot (C \epsilon(\mathbf{u})) &= \mathbf{f} \text{ in } \Omega\\
+\mathbf{u} &= \mathbf{u}_D \text{ on } \delta\Omega_D \\
+C\epsilon(\mathbf{u})\mathbf{n} &= 0 \text{ on } \delta\Omega_N\\
+\mathbf{u}\cdot \hat{\mathbf{n}} &\leq g \text{ on } \Gamma\\
+\sigma_n(\mathbf{u}) &= (C\epsilon(\mathbf{u})\mathbf{n})\cdot \mathbf{n}\\
+\sigma_n(\mathbf{u}) \mathbf{n} &\leq 0 \text{ on } \Gamma\\
+\sigma_n(\mathbf{u})(\mathbf{u}\cdot \hat{\mathbf{n}}-g) &= 0 \text{ on } \Gamma
+\end{align*}
+$$
+
+</div>
+<div>
+<center>
+<img src="./3D_contact.png" width=400x>
+</center>
 
 </div>
 
 ---
 
-# How to create a mesh in parallel?
+# Minimization reformulation
 
-```python
-if (rank:=MPI.COMM_WORLD.rank) == 0:
-    x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=np.float32)
-    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
-elif rank == 1:
-    x = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
-    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
-else:
-    x = np.empty((0, 2), dtype=np.float32)
-    cells = np.empty((0, 4), dtype=np.int64)
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element))
-```
+Rephrase as
 
-- Array interface makes it easier to interface with any meshing format
-- No copying when moving data to C++ through nanobind (`std::span`)
+$$
+\begin{align*}
+\min_{\mathbf{u}\in \mathcal{K}} J(\mathbf{u}) = \frac{1}{2} \int_\Omega (C\epsilon(\mathbf{u}):\epsilon(\mathbf{v}))~\mathrm{d}x -
+\int_\Omega \mathbf{f}\cdot \mathbf{u}~\mathrm{d}x
+\end{align*}
+$$
+
+where
+$$\mathcal{K} = \{ \mathbf{u}\in V_{\mathbf{u}_D} \vert \mathbf{u}\cdot  \hat{\mathbf{n}} \leq g \}$$
 
 ---
 
-# When a mesh is read in with multiple processes (MPI) the cells are distributed
+# Latent variable proximal point algorithm
 
-<div class="columns">
-<div>
+Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$.
+Given $\alpha_k$, $\psi_{k-1}$,s
 
-![Cell ownership and ghost distribution; width:15cm](cell_partitioning.png)
+- Solve:
+
+$$
+\begin{align*}
+\alpha_k(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -\alpha_k(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
+(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\psi}, w)_\Gamma &= (g, w)_\Gamma
+\end{align*}
+$$
+
+- Check for convergence.
+- Update latent variable $\psi^{k-1}$, $\alpha_k$.
 
 </div>
-<div>
-
-![Cell index map; width:15cm](cell_index_map.png)
-
-</div>
-</div>
-
-<div data-marpit-fragment>
-
-Custom partitioning example: [jsdokken.com/dolfinx_docs/meshes.html](https://jsdokken.com/dolfinx_docs/meshes.html)
 
 </div>
 
 ---
 
-<!-- # All entities (vertex, edge, facet, cell) has a notion of ownership
+# Features of the method
 
-Makes mesh-view construction in parallel "easy" and safe
-
-<div class="columns">
+<div class=columns>
 <div>
 
-![Vertex ownership and ghost distribution; width:15cm](vertex_ownership.png)
-
+- $\alpha_k$ bounded
+- $e^{\psi} = \mathbf{u}\cdot{n} - g$ guaranteed to be positive for any latent variable $\psi$
+- Exhibits mesh independent convergence
 </div>
-<div>
-
-![Vertex index map; width:15cm](vertex_indexmap.png)
-
-</div>
-</div>
-
---- -->
-
-<!--
-# Custom partitioning
-
-```python
-if (rank:=MPI.COMM_WORLD.rank) == 0:
-    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # The cell on this process will be owned by rank 2, and ghosted on rank 0
-        return dolfinx.graph.adjacencylist(np.array([2, 0], dtype=np.int32), np.array([0,2],dtype=np.int32))
-elif rank == 1:
-    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # The cell on this process will be owned by rank 1, and ghosted on 0 and 2
-        return dolfinx.graph.adjacencylist(np.array([1, 0, 2], dtype=np.int32), np.array([0,3],dtype=np.int32))
-else:
-    cells = np.empty((0, 4), dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # No cells on process
-        return dolfinx.graph.adjacencylist(np.empty(0, dtype=np.int32), np.zeros(1, dtype=np.int32))
-
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element), partitioner=partitioner)
-```
-<div data-marpit-fragment>
 
 <div>
 
-```bash
-rank=0 Owned cells: 0 Ghosted cells: 2 Total cells: 2
-rank=1 Owned cells: 1 Ghosted cells: 0 Total cells: 2
-rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
-```
-
-</div>
-</div>
-
---- -->
-
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
+<center>
+<img src="./3D_contact.png" width=500px>
+</center>
 </div>
 
 ---
 
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    # Wrap pointers as a Numpy arrays
-    A = numba.carray(A_, (dim, dim))
-    coordinate_dofs = numba.carray(coords_, (3, 3))
-
-    # Compute Jacobian determinant
-    x0, y0 = coordinate_dofs[0, :2]
-    x1, y1 = coordinate_dofs[1, :2]
-    x2, y2 = coordinate_dofs[2, :2]
-    detJ = abs((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1))
-    # M_hat is pre-computed local mass matrix
-    A[:] = detJ * M_hat
-
-
-
-
-
-
-
-
-```
-
-</div>
-
----
-
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    # Wrap pointers as a Numpy arrays
-    A = numba.carray(A_, (dim, dim))
-    coordinate_dofs = numba.carray(coords_, (3, 3))
-
-    # Compute Jacobian determinant
-    x0, y0 = coordinate_dofs[0, :2]
-    x1, y1 = coordinate_dofs[1, :2]
-    x2, y2 = coordinate_dofs[2, :2]
-    detJ = abs((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1))
-    # M_hat is pre-computed local mass matrix
-    A[:] = detJ * M_hat
-
-formtype = dolfinx.cpp.fem.Form_float64
-top = msh.topology
-cells = np.arange(top.index_map(top.dim).size_local, dtype=np.int32)
-integrals = {dolfinx.fem.IntegralType.cell: [(-1, tabulate_A.address, cells), ]}
-coefficients_A, constants_A = [], []
-a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
-                              integrals, [], [], False, None))
-```
-
-</div>
-
----
+## <!--  footer: $-->
 
 # Some examples
 
