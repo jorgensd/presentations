@@ -187,6 +187,7 @@ Analysis and generic tools and algorithms for PDEs
 <center/>
 </div>
 <div>
+<div data-marpit-fragment>
 <center>
   Models for brain tissue
   <img src="./brain_clearance.png" width=500>
@@ -196,6 +197,7 @@ Analysis and generic tools and algorithms for PDEs
   <a href="https://doi.org/10.1186/s12987-023-00459-8">10.1186/s12987-023-00459-8</a>
    </font> 
 <center/>
+</div>
 </div>
 </div>
 
@@ -243,28 +245,26 @@ Analysis and generic tools and algorithms for PDEs
 </div>
 <div data-marpit-fragment>
 
-- **2004**: Code generation (C++) using FFC
-- **2005**: First Python interface (PyDOLFIN)
+- **2004**: Code generation (C++) introduced
+- **2005**: First Python interface
 
 </div>
 
 <div data-marpit-fragment>
 
-- **2009**: Parallel (MPI support)
-- **2009**: Unified form language (UFL) introduced
+- **2009**: MPI support
 
 </div>
 
 <div data-marpit-fragment>
 
 - **2016--**: Sponsored by NumFOCUS
-- **2017--**: DOLFINx ([10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+- **2017--**: DOLFINx (DOI: [10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
 
 </div>
 <div data-marpit-fragment>
 
-- ~3000 users on the FEniCS Discourse forum
-- ~12 000 monthly downloads
+$\quad$~3300 registered users on the FEniCS Discourse
 
 </div>
 <center>
@@ -368,6 +368,42 @@ boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
 u_bc = dolfinx.fem.Constant(mesh, 0.0)
 
 bcs = [dolfinx.fem.dirichletbc(u_bc, boundary_dofs, V)]
+
+
+
+
+
+
+
+```
+
+![bg contain right:30%](uh.png)
+
+---
+
+# The Poisson equation
+
+```python
+from mpi4py import MPI
+import dolfinx
+import dolfinx.fem.petsc as petsc
+import ufl
+import numpy as np
+
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(ufl.grad(u), ufl.grad(v)) * ufl.dx
+x, y = ufl.SpatialCoordinate(mesh)
+f = x * ufl.sin(y * ufl.pi)
+L = ufl.inner(f, v) * ufl.dx
+
+boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
+    V, lambda x: np.isclose(x[0], 0) | np.isclose(x[0], 1))
+u_bc = dolfinx.fem.Constant(mesh, 0.0)
+
+bcs = [dolfinx.fem.dirichletbc(u_bc, boundary_dofs, V)]
 options = {"ksp_type": "preonly", "pc_type": "lu"}
 problem = petsc.LinearProblem(
     a, L, bcs=bcs, petsc_options=options
@@ -399,20 +435,39 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
 
 # Basix
 
+<!-- footer: Scroggs et al., (2022). Basix: a runtime finite element basis evaluation library. Journal of Open Source Software, 3982, DOI: [https://10.21105/joss.03982](0.21105/joss.03982) -->
+
 <div class="columns">
 <div>
 
-- A finite element tabulation library
-- Provides quadrature schemes
-- Written in C++ with a Python interface
-  - Runtime tabulation
-- Custom finite elements
-- DOI: <a href="https://doi.org/10.21105/joss.03982">10.21105/joss.03982</a>
+<div data-marpit-fragment>
+
+- A C++ finite element tabulation library
 
 </div>
-<iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.8.0/python/", title="Basix github repository"></iframe>
+<div data-marpit-fragment>
+
+- Provides quadrature schemes
+
+</div>
+<div data-marpit-fragment>
+
+- Python interface using nanobind
+
+</div>
+<div data-marpit-fragment>
+
+- Can be used as a runtime tabulation library
+
+</div>
+
+</div>
+
+<iframe width="600" height="450" src="https://docs.fenicsproject.org/basix/main/python/demo/demo_custom_element.py.html#creating-a-custom-element", title="Creating a custom element"></iframe>
 
 ---
+
+<!-- footer: <br> -->
 
 # Basix yields extra control over finite elements
 
@@ -454,6 +509,8 @@ print("Basis functions:\n", element.tabulate(0, points))
 print("Basis derivatives:\n", element.tabulate(1, points)[1:])
 ```
 
+<div data-marpit-fragment>
+
 ```
 Basis functions:
  [[[-0.     0.     0.    -0.    -0.     0.48  -0.12  -0.     0.64 ]
@@ -464,8 +521,9 @@ Basis derivatives:
 
  [[-0.48   0.12   0.48  -0.12  -0.64   0.     0.     0.64   0.   ]
   [ 0.078 -0.034  0.638 -0.274  0.235 -0.717  0.307  1.915 -2.15 ]]]
-
 ```
+
+</div>
 
 ---
 
@@ -531,9 +589,6 @@ error = np.sqrt(msh.comm.allreduce(dolfinx.fem.assemble_scalar(M), op=MPI.SUM))
 
 <!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
-<div class="columns">
-<div>
-
 ```python
 import ufl
 import basix.ufl
@@ -542,7 +597,6 @@ c_el = basix.ufl.element("Lagrange", "triangle", 1, shape=(2, ))
 mesh = ufl.Mesh(c_el)
 
 el = basix.ufl.element("Lagrange", "triangle", 2)
-
 V = ufl.FunctionSpace(mesh, el)
 
 u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
@@ -551,19 +605,19 @@ a = ufl.inner(u, v) * ufl.dx
 forms = [a]
 ```
 
+---
+
 ```bash
 python3 -m ffcx script.py
 ```
 
-</div>
-<iframe width="500" height="300" src="S.pdf", title="Computational graph of a mass matrix"></iframe>
-</div>
+<center>
+<iframe width="1000" height="550" src="S.pdf", title="Computational graph of a mass matrix"></iframe>
+</center>
 
 ---
 
-# FFCx generates code to assemble the mass matrix for any element
-
-<!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
+# FFCx generates code to assemble the mass matrix
 
 ```c
 void tabulate_tensor_integral_814d6545520c96b29b3c162b3f5d484bbf83c565(double* restrict A,
@@ -716,12 +770,10 @@ mesh = dolfinx.mesh.create_unit_cube(
     MPI.COMM_WORLD, 10, 12, 13,
     cell_type=dolfinx.mesh.CellType.tetrahedron)
 
-el = basix.ufl.element("Lagrange", mesh.topology.cell_name(), 3)
-
-V = dolfinx.fem.functionspace(mesh, el)
-
+V = dolfinx.fem.functionspace(mesh, el, ("Lagrange", 3))
 u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
 a = ufl.inner(u, v) * ufl.dx
+
 compiled_form = dolfinx.fem.form(a)
 ```
 
@@ -776,7 +828,7 @@ $$\mathcal{K} = \{ \mathbf{u}\in V_{\mathbf{u}_D} \vert \mathbf{u}\cdot  \hat{\m
 # Latent variable proximal point algorithm
 
 Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$.
-Given $\alpha_k$, $\psi_{k-1}$,s
+Given $\alpha_k$, $\psi_{k-1}$,
 
 - Solve:
 
@@ -800,11 +852,26 @@ $$
 
 <div class=columns>
 <div>
+<div data-marpit-fragment>
 
 - $\alpha_k$ bounded
+
+</div>
+<div data-marpit-fragment>
+
 - $e^{\psi} = \mathbf{u}\cdot{n} - g$ guaranteed to be positive for any latent variable $\psi$.
-- Latent variable $\psi$ can be chosen to be higher order to get a higher order feasible boundary displacement.
-- Exhibits mesh independent convergence
+
+</div>
+<div data-marpit-fragment>
+
+- Latent variable $\psi$ is not limited to first order spaces.
+
+</div>
+<div data-marpit-fragment>
+
+- Exhibits mesh independent convergence.
+
+</div>
 </div>
 
 <div>
@@ -849,13 +916,11 @@ submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0
 
 ```python
 c_facets = mt.find(contact_bndry)
-submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
+submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)
 
-e_u = basix.ufl.element("Lagrange", mesh.basix_cell(), degree, shape=(gdim, ))
-V = dolfinx.fem.functionspace(mesh, element_u)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree, (gdim, )))
 
-element_p = basix.ufl.element("Lagrange", submesh.basix_cell(), degree)
-W = dolfinx.fem.functionspace(submesh, element_p)
+W = dolfinx.fem.functionspace(submesh, ("Larange", degree))
 
 
 
@@ -870,13 +935,11 @@ W = dolfinx.fem.functionspace(submesh, element_p)
 
 ```python
 c_facets = mt.find(contact_bndry)
-submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
+submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)
 
-e_u = basix.ufl.element("Lagrange", mesh.basix_cell(), degree, shape=(gdim, ))
-V = dolfinx.fem.functionspace(mesh, element_u)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree, (gdim, )))
 
-element_p = basix.ufl.element("Lagrange", submesh.basix_cell(), degree)
-W = dolfinx.fem.functionspace(submesh, element_p)
+W = dolfinx.fem.functionspace(submesh, ("Larange", degree))
 
 facet_imap = mesh.topology.index_map(mt.dim)
 num_facets = facet_imap.size_local + facet_imap.num_ghosts
@@ -990,9 +1053,28 @@ $$
 
 ```python
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3, dolfinx.cpp.mesh.CellType.quadrilateral)
-cells = dolfinx.mesh.locate_entities(mesh, mesh.topology.dim, lambda x: x[0]<0.4)
-midpoints = dolfinx.mesh.compute_midpoints(mesh, mesh.topology.dim, cells)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 2, (mesh.geometry.dim, )))
+u = dolfinx.fem.Function(V)
 
+def f(x):
+    return 1/2*x[0]**2 - 2 *x[1]**2, -3/2*x[0]**2 + 1/2*x[1]**2
+
+u.interpolate(f)
+
+
+
+
+
+
+
+```
+
+---
+
+# Evaluation of expressions at any point in reference cell
+
+```python
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3, dolfinx.cpp.mesh.CellType.quadrilateral)
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", 2, (mesh.geometry.dim, )))
 u = dolfinx.fem.Function(V)
 
@@ -1003,6 +1085,8 @@ u.interpolate(f)
 
 ref_x = np.array([[0.5, 0.5]])
 gradu_squared = dolfinx.fem.Expression(ufl.inner(ufl.grad(u), ufl.grad(u)), ref_x, comm=mesh.comm)
+
+cells = dolfinx.mesh.locate_entities(mesh, mesh.topology.dim, lambda x: x[0]<0.4)
 values = gradu_squared.eval(mesh,cells)
 
 ```
@@ -1031,9 +1115,29 @@ flux = ufl.dot(u, n)
 x_ref_facet = np.array([[0.2], [0.7]])
 flux_expr = dolfinx.fem.Expression(flux, x_ref_facet, comm=mesh.comm)
 
+
+
+
+
+
+
+
+
+```
+
+---
+
+# Evaluation of expressions over facets
+
+```python
+n = ufl.FacetNormal(mesh)
+flux = ufl.dot(u, n)
+x_ref_facet = np.array([[0.2], [0.7]])
+flux_expr = dolfinx.fem.Expression(flux, x_ref_facet, comm=mesh.comm)
+
 fdim = mesh.topology.dim - 1
-left_facets = dolfinx.mesh.locate_entities_boundary(mesh, fdim,
-                                                    lambda x: x[0]<1e-14)
+left_facets = dolfinx.mesh.locate_entities_boundary(
+  mesh, fdim, lambda x: x[0]<1e-14)
 integration_entities = dolfinx.fem.compute_integration_domains(
       dolfinx.fem.IntegralType.exterior_facet, mesh.topology,
       left_facets, fdim)
@@ -1054,8 +1158,34 @@ def move_to_facet_quadrature(ufl_expr, mesh, sub_facets, scheme="default", degre
     q_el = basix.ufl.quadrature_element(bndry_mesh.basix_cell(), ufl_expr.ufl_shape , scheme, degree)
     Q = dolfinx.fem.functionspace(bndry_mesh, q_el)
 
+
+
+
+
+
+
+
+
+
+
+```
+
+---
+
+# Transfer data to facet-submesh
+
+```python
+def move_to_facet_quadrature(ufl_expr, mesh, sub_facets, scheme="default", degree=6):
+    fdim = mesh.topology.dim - 1
+    # Create submesh
+    bndry_mesh, entity_map, _, _ = dolfinx.mesh.create_submesh(mesh, fdim, sub_facets)
+    # Create quadrature space on submesh
+    q_el = basix.ufl.quadrature_element(bndry_mesh.basix_cell(), ufl_expr.ufl_shape , scheme, degree)
+    Q = dolfinx.fem.functionspace(bndry_mesh, q_el)
+
     # Compute where to evaluate expression per submesh cell
-    integration_entities = compute_integration_domains(IntegralType.exterior_facet, mesh.topology, entity_map, fdim)
+    integration_entities = compute_integration_domains(
+      IntegralType.exterior_facet, mesh.topology, entity_map, fdim)
     compiled_expr = dolfinx.fem.Expression(ufl_expr, Q.element.interpolation_points())
 
     # Evaluate expression
@@ -1145,36 +1275,3 @@ b = dolfinx.fem.petsc.assemble_vector_block(L, a, bcs=[])
 - FEniCS @ Sorbonne: https://jsdokken.com/FEniCS23-tutorial
 - DOLFINx MPC: https://github.com/jorgensd/dolfinx_mpc
 - SciFEM: https://scientificcomputing.github.io/scifem
-
----
-
-<!-- # Some examples
-
-<div class="columns">
-
-<div>
-<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
-</div>
-
-<div data-marpit-fragment>
-
-<div>
-
-<center>
-<img src="./deformation.gif" width=400px>
-<center/>
-<center>
-<img src="./velocity.gif" width=400px>
-<center/>
-</div>
-
-</div> -->
-<!--
-``` -->
-
-````
-
-```
-
-```
-````
