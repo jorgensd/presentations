@@ -838,6 +838,12 @@ V = dolfinx.fem.functionspace(mesh, element_u)
 element_p = basix.ufl.element("Lagrange", submesh.basix_cell(), degree)
 W = dolfinx.fem.functionspace(submesh, element_p)
 
+facet_imap = mesh.topology.index_map(mt.dim)
+num_facets = facet_imap.size_local + facet_imap.num_ghosts
+mesh_to_submesh = np.full(num_facets, -1)
+mesh_to_submesh[submesh_to_mesh] = np.arange(len(submesh_to_mesh))
+entity_maps = {submesh: mesh_to_submesh}
+
 ```
 
 ---
@@ -859,11 +865,14 @@ dx = ufl.Measure("dx", domain=mesh)
 ds = ufl.Measure("ds", domain=mesh,
         subdomain_data=facet_tag,
         subdomain_id=contact_bndry)
+
 ```
 
 ---
 
 # Mixed assembly continued
+
+<!--  footer: <br>-->
 
 ```python
 def epsilon(w):
@@ -933,7 +942,173 @@ $$
 
 ---
 
-# Some examples
+# Post-processing / coupling
+
+---
+
+# Evaluation of expressions at any point in reference cell
+
+```python
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3, dolfinx.cpp.mesh.CellType.quadrilateral)
+cells = dolfinx.mesh.locate_entities(mesh, mesh.topology.dim, lambda x: x[0]<0.4)
+midpoints = dolfinx.mesh.compute_midpoints(mesh, mesh.topology.dim, cells)
+
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 2, (mesh.geometry.dim, )))
+u = dolfinx.fem.Function(V)
+
+def f(x):
+    return 1/2*x[0]**2 - 2 *x[1]**2, -3/2*x[0]**2 + 1/2*x[1]**2
+
+u.interpolate(f)
+
+ref_x = np.array([[0.5, 0.5]])
+gradu_squared = dolfinx.fem.Expression(ufl.inner(ufl.grad(u), ufl.grad(u)), ref_x, comm=mesh.comm)
+values = gradu_squared.eval(mesh,cells)
+
+```
+
+---
+
+# Interpolation of expressions
+
+```python
+Q = dolfinx.fem.functionspace(mesh, ("DQ", 1))
+q = dolfinx.fem.Function(Q)
+
+expr = u[1].dx(0)
+compiled_expression = dolfinx.fem.Expression(
+    expr, Q.element.interpolation_points())
+q.interpolate(compiled_expression)
+```
+
+---
+
+# Evaluation of expressions over facets
+
+```python
+n = ufl.FacetNormal(mesh)
+flux = ufl.dot(u, n)
+
+x_ref_facet = np.array([[0.2], [0.7]])
+
+flux_expr = dolfinx.fem.Expression(flux, x_ref_facet, comm=mesh.comm)
+left_facets = dolfinx.mesh.locate_entities_boundary(mesh, mesh.topology.dim -1,
+                                                    lambda x: x[0]<1e-14)
+integration_entities = dolfinx.fem.compute_integration_domains(
+      dolfinx.fem.IntegralType.exterior_facet, mesh.topology,
+      left_facets, mesh.topology.dim-1)
+flux_values = flux_expr.eval(mesh, integration_entities)
+
+```
+
+---
+
+# Transfer data to facet-submesh
+
+```python
+def move_to_facet_quadrature(ufl_expr, mesh, sub_facets, scheme="default", degree=6):
+    fdim = mesh.topology.dim - 1
+    # Create submesh
+    bndry_mesh, entity_map, _, _ = dolfinx.mesh.create_submesh(mesh, fdim, sub_facets)
+    # Create quadrature space on submesh
+    q_el = basix.ufl.quadrature_element(bndry_mesh.basix_cell(), ufl_expr.ufl_shape , scheme, degree)
+    Q = dolfinx.fem.functionspace(bndry_mesh, q_el)
+
+    # Compute where to evaluate expression per submesh cell
+    integration_entities = compute_integration_domains(IntegralType.exterior_facet, mesh.topology, entity_map, fdim)
+    compiled_expr = dolfinx.fem.Expression(ufl_expr, Q.element.interpolation_points())
+
+    # Evaluate expression
+    q = dolfinx.fem.Function(Q)
+    q.x.array[:] = compiled_expr.eval(mesh, integration_entities).reshape(-1)
+    return q
+
+```
+
+---
+
+# Example using Scifem$^4$
+
+```python
+u = Function(V, name="Velocity")
+u.interpolate(lambda x: (np.sin(x[1])*np.cos(x[0]), x[0]+x[1]**2))
+
+exterior_facets = dolfinx.mesh.exterior_facet_indices(mesh.topology)
+flux = ufl.dot(ufl.grad(u), n)
+q = move_to_facet_quadrature(flux, mesh, exterior_facets)
+q.name = "dot(grad(u), n)"
+
+import scifem
+scifem.xdmf.create_pointcloud("flux.xdmf", [q])
+with dolfinx.io.VTXWriter(mesh.comm, "flux.bp", [u]) as bp:
+    bp.write(0.0)
+```
+
+<!--  footer: $^4$ Finsberg, H.N.T. & Dokken J.S., _SCIFEM_: https://github.com/scientificcomputing/scifem <br><br>-->
+
+---
+
+# Example using Scifem$^4$
+
+<center>
+<img src="./facet_flux.png" width=1000px>
+<center/>
+
+---
+
+# Real function spaces in DOLFINx$^4$
+
+```python
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 1))
+R = scifem.create_real_functionspace(mesh)
+u = ufl.TrialFunction(V)
+lmbda = ufl.TrialFunction(R)
+du = ufl.TestFunction(V)
+dl = ufl.TestFunction(R)
+zero = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type(0.0))
+```
+
+---
+
+# Real function spaces in DOLFINx$^4$
+
+```python
+a00 = ufl.inner(ufl.grad(u), ufl.grad(du)) * ufl.dx
+a01 = ufl.inner(lmbda, du) * ufl.dx
+a10 = ufl.inner(u, dl) * ufl.dx
+L0 = ufl.inner(f, du) * ufl.dx + ufl.inner(g, du) * ufl.ds
+L1 = ufl.inner(zero, dl) * ufl.dx
+
+a = dolfinx.fem.form([[a00, a01], [a10, None]])
+L = dolfinx.fem.form([L0, L1])
+```
+
+---
+
+# Real function spaces in DOLFINx$^4$
+
+```python
+A = dolfinx.fem.petsc.assemble_matrix_block(a)
+A.assemble()
+b = dolfinx.fem.petsc.assemble_vector_block(L, a, bcs=[])
+
+# Pass on to PETSc
+# See: https://scientificcomputing.github.io/scifem/examples/real_function_space.html
+# for more details
+```
+
+---
+
+# Resources
+
+- DOLFINx tutorial: https://jsdokken.com/dolfinx-tutorial/
+- FEniCS @ Sorbonne: https://jsdokken.com/FEniCS23-tutorial
+- DOLFINx MPC: https://github.com/jorgensd/dolfinx_mpc
+- SciFEM: https://scientificcomputing.github.io/scifem
+
+---
+
+<!-- # Some examples
 
 <div class="columns">
 
@@ -953,5 +1128,13 @@ $$
 <center/>
 </div>
 
-</div>
+</div> -->
+<!--
+``` -->
+
+````
+
 ```
+
+```
+````
