@@ -816,22 +816,62 @@ $$
 
 ---
 
-<!--  footer: -->
-
 # How does one implement this in FEniCSx?
+
+<!--footer: <br>-->
 
 ---
 
-<!--  footer: $^3$ Dean J., _Mathematical and computational aspects of solving mixed-domain problems using the finite element method, DOI: 10.17863/CAM.108292 (2023) <br><br>-->
+# DOLFINx supports sub-meshes$^3$
+
+<!--footer: $^3$ Dean J., _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, DOI: 10.17863/CAM.108292 (2023)<br><br>-->
+
+```python
+c_facets = mt.find(contact_bndry)
+submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+---
 
 # DOLFINx supports sub-meshes$^3$
 
 ```python
-# Given a Mesh and MeshTags for for all boundary facets
 c_facets = mt.find(contact_bndry)
 submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
 
-# Create function spaces
+e_u = basix.ufl.element("Lagrange", mesh.basix_cell(), degree, shape=(gdim, ))
+V = dolfinx.fem.functionspace(mesh, element_u)
+
+element_p = basix.ufl.element("Lagrange", submesh.basix_cell(), degree)
+W = dolfinx.fem.functionspace(submesh, element_p)
+
+
+
+
+
+
+```
+
+---
+
+# DOLFINx supports sub-meshes$^3$
+
+```python
+c_facets = mt.find(contact_bndry)
+submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0:2]
+
 e_u = basix.ufl.element("Lagrange", mesh.basix_cell(), degree, shape=(gdim, ))
 V = dolfinx.fem.functionspace(mesh, element_u)
 
@@ -843,7 +883,6 @@ num_facets = facet_imap.size_local + facet_imap.num_ghosts
 mesh_to_submesh = np.full(num_facets, -1)
 mesh_to_submesh[submesh_to_mesh] = np.arange(len(submesh_to_mesh))
 entity_maps = {submesh: mesh_to_submesh}
-
 ```
 
 ---
@@ -858,14 +897,11 @@ psi_k = dolfinx.fem.Function(W)
 w = ufl.TestFunction(W)
 n = ufl.FacetNormal(mesh)
 alpha = dolfinx.fem.Constant(mesh, 1.0)
-f = ...
-g = ...
-n_g = ...
+f, g, n_g = ...
 dx = ufl.Measure("dx", domain=mesh)
 ds = ufl.Measure("ds", domain=mesh,
         subdomain_data=facet_tag,
         subdomain_id=contact_bndry)
-
 ```
 
 ---
@@ -889,7 +925,7 @@ F0 += -ufl.inner(psi - psi_k, ufl.dot(v, n)) * ds
 F1 = ufl.inner(ufl.dot(u, n_g), w) * ds
 F1 += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
 
-F = dolfinx.fem.form([F0, F1], sentity_maps=entity_maps)
+F = dolfinx.fem.form([F0, F1], entity_maps=entity_maps)
 ```
 
 ---
@@ -910,7 +946,9 @@ J = dolfinx.fem.form([[jac00, jac01], [jac10, jac11]],
 
 ---
 
-<!--  footer: <br>-->
+---
+
+<!-- footer: Full code available at: <br>https://gist.github.com/jorgensd/8a5c32f491195e838f5863ca88b27bce<br>-->
 
 # Different function spaces on domain subsets
 
@@ -943,6 +981,8 @@ $$
 ---
 
 # Post-processing / coupling
+
+<!-- footer: <br>-->
 
 ---
 
@@ -988,15 +1028,15 @@ q.interpolate(compiled_expression)
 ```python
 n = ufl.FacetNormal(mesh)
 flux = ufl.dot(u, n)
-
 x_ref_facet = np.array([[0.2], [0.7]])
-
 flux_expr = dolfinx.fem.Expression(flux, x_ref_facet, comm=mesh.comm)
-left_facets = dolfinx.mesh.locate_entities_boundary(mesh, mesh.topology.dim -1,
+
+fdim = mesh.topology.dim - 1
+left_facets = dolfinx.mesh.locate_entities_boundary(mesh, fdim,
                                                     lambda x: x[0]<1e-14)
 integration_entities = dolfinx.fem.compute_integration_domains(
       dolfinx.fem.IntegralType.exterior_facet, mesh.topology,
-      left_facets, mesh.topology.dim-1)
+      left_facets, fdim)
 flux_values = flux_expr.eval(mesh, integration_entities)
 
 ```
@@ -1044,7 +1084,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "flux.bp", [u]) as bp:
     bp.write(0.0)
 ```
 
-<!--  footer: $^4$ Finsberg, H.N.T. & Dokken J.S., _SCIFEM_: https://github.com/scientificcomputing/scifem <br><br>-->
+<!--  footer: $^4$ H. Finsberg & J.S. Dokken. (2024). scientificcomputing/scifem: v0.2.5. https://github.com/scientificcomputing/scifem <br><br>-->
 
 ---
 
