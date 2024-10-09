@@ -237,6 +237,64 @@ Analysis and generic tools and algorithms for PDEs
 
 ![bg right:25%](./fenics_logo.png)
 
+**2002:** First public version of DOLFIN (Dynamic Object oriented Library for FINite element computation)
+
+<center>
+<img src="./dolfin_preprint.png" width=500px>
+<center/>
+
+---
+
+# Brief history of FEniCS
+
+![bg right:25%](./fenics_logo.png)
+
+**2002:** First public version of DOLFIN (Dynamic Object oriented Library for FINite element computation)
+
+<center>
+<img src="./original_dolfin.png" width=600px><br>
+<font size="5">
+Setting up a Poisson problem using operator overloading
+</font>
+<center/>
+
+---
+
+# Brief history of FEniCS
+
+<!-- ![bg right:25%](./fenics_logo.png) -->
+
+**2003**: Creation of the FEniCS Project
+
+<font size="3">
+
+- Prof. Todd Dupont, University of Chicago
+- Dr. Johan Hoffman Courant Institute of Mathematical Sciences, New York
+- Prof. Claes Johnson, Chalmers University of Technology, Gothenburg
+- Ass. Prof. Robert C. Kirby, University of Chicago
+- Ass. Prof. Mats Larson, Chalmers
+- Mr. Anders Logg, Chalmers
+
+</font>
+
+<center>
+<img src="./fiat.png" width=400>
+<img src="./dolfin_title.png" width=400>
+<img src="./analysa.png" width=150>
+<br>
+<font size="5">
+The original core components of FEniCS
+</font>
+<center/>
+
+---
+
+# Brief history of FEniCS
+
+![bg right:25%](./fenics_logo.png)
+
+---
+
 <div data-marpit-fragment>
 
 - **2002**: First public version of a C++ library (DOLFIN)
