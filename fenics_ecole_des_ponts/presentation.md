@@ -348,6 +348,23 @@ The original core components of FEniCS
 <img src="numfocus_logo.png" width=300px>
 <center/>
 
+**FEniCS Steering council**
+
+<ul style="list-style-type:none;padding:0;margin:0;">
+<li style="font-size:18">
+Francesco Ballarin (Università Cattolica del Sacro Cuore)</li>
+<li style="font-size:18">Cécile Daversin-Catty (Simula Research Laboratory)</li>
+<li style="font-size:18">Jørgen S. Dokken (Simula Research Laboratory)</li>
+<li style="font-size:18">Michal Habera (University of Luxembourg)</li>
+<li style="font-size:18">Jack S. Hale (University of Luxembourg)</li>
+<li style="font-size:18">Chris Richardson (University of Cambridge)</li>
+<li style="font-size:18">Marie E. Rognes (Simula Research Laboratory)</li>
+<li style="font-size:18">Matthew W. Scroggs (University College London)</li>
+<li style="font-size:18">Nathan Sime (Carnegie Institution for Science)</li>
+<li style="font-size:18">Garth N. Wells (University of Cambridge)</li>
+</ul>
+</font>
+
 ---
 
 # Brief history of FEniCS
@@ -1030,8 +1047,8 @@ c_facets = mt.find(contact_bndry)
 submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)
 
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree, (gdim, )))
-
 W = dolfinx.fem.functionspace(submesh, ("Larange", degree))
+Q = ufl.MixedFunctionSpace(V, W)
 
 
 
@@ -1049,8 +1066,8 @@ c_facets = mt.find(contact_bndry)
 submesh, submesh_to_mesh, _, _ = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)
 
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", degree, (gdim, )))
-
 W = dolfinx.fem.functionspace(submesh, ("Larange", degree))
+Q = ufl.MixedFunctionSpace(V, W)
 
 facet_imap = mesh.topology.index_map(mt.dim)
 num_facets = facet_imap.size_local + facet_imap.num_ghosts
@@ -1064,11 +1081,10 @@ entity_maps = {submesh: mesh_to_submesh}
 # Mixed assembly using block structures
 
 ```python
-u = dolfinx.fem.Function(V)
-v = ufl.TestFunction(V)
-psi = dolfinx.fem.Function(W)
+v, w = ufl.TestFunctions(Q)
+u = dolfinx.fem.Function(V, name="displacement")
+psi = dolfinx.fem.Function(W, name="latent variable")
 psi_k = dolfinx.fem.Function(W)
-w = ufl.TestFunction(W)
 n = ufl.FacetNormal(mesh)
 alpha = dolfinx.fem.Constant(mesh, 1.0)
 f, g, n_g = ...
@@ -1094,12 +1110,14 @@ def sigma(w, mu, lmbda):
     return 2.0 * mu * epsilon(w) + lmbda * ufl.tr(ufl.grad(w)) * ufl.Identity(gdim)
 
 
-F0 = alpha * ufl.inner(sigma(u, mu, lmbda), epsilon(v)) * dx - alpha * ufl.inner(f, v) * dx
-F0 += -ufl.inner(psi - psi_k, ufl.dot(v, n)) * ds
-F1 = ufl.inner(ufl.dot(u, n_g), w) * ds
-F1 += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
+residual = alpha * ufl.inner(sigma(u, mu, lmbda), epsilon(v)) * ufl.dx(
+    domain=mesh
+) - alpha * ufl.inner(f, v) * ufl.dx(domain=mesh)
+residual += -ufl.inner(psi - psi_k, ufl.dot(v, n)) * ds
+residual += ufl.inner(ufl.dot(u, n_g), w) * ds
+residual += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
 
-F = dolfinx.fem.form([F0, F1], entity_maps=entity_maps)
+F = dolfinx.fem.form(ufl.extract_blocks(residual), entity_maps=entity_maps)
 ```
 
 ---
@@ -1107,16 +1125,12 @@ F = dolfinx.fem.form([F0, F1], entity_maps=entity_maps)
 # Mixed assembly continued
 
 ```python
-jac00 = ufl.derivative(F0, u)
-jac01 = ufl.derivative(F0, psi)
-jac10 = ufl.derivative(F1, u)
-jac11 = ufl.derivative(F1, psi)
-
-J = dolfinx.fem.form([[jac00, jac01], [jac10, jac11]],
-                     entity_maps=entity_maps)
+du, dpsi = ufl.TrialFunctions(Q)
+jac = ufl.derivative(residual, u, du) + ufl.derivative(residual, psi, dpsi)
+J = dolfinx.fem.form(ufl.extract_blocks(jac), entity_maps=entity_maps)
 ```
 
-**`J` and `F` can be passed to a blocked Newton solver**
+**`J` and `F` can be passed to a blocked Newton solver using PETSc block structures or PETSc nest**
 
 ---
 
