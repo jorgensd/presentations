@@ -340,28 +340,21 @@ The original core components of FEniCS
 
 # Brief history of FEniCS
 
-![bg right:25%](./fenics_logo.png)
-
-**2016--**: Sponsored by NumFOCUS
-
-<center>
-<img src="numfocus_logo.png" width=300px>
-<center/>
+**2016--**: Sponsored by <img src="numfocus_logo.png" width=100px>
 
 **FEniCS Steering council**
 
 <ul style="list-style-type:none;padding:0;margin:0;">
-<li style="font-size:18">
-Francesco Ballarin (Università Cattolica del Sacro Cuore)</li>
-<li style="font-size:18">Cécile Daversin-Catty (Simula Research Laboratory)</li>
-<li style="font-size:18">Jørgen S. Dokken (Simula Research Laboratory)</li>
-<li style="font-size:18">Michal Habera (University of Luxembourg)</li>
-<li style="font-size:18">Jack S. Hale (University of Luxembourg)</li>
-<li style="font-size:18">Chris Richardson (University of Cambridge)</li>
-<li style="font-size:18">Marie E. Rognes (Simula Research Laboratory)</li>
-<li style="font-size:18">Matthew W. Scroggs (University College London)</li>
-<li style="font-size:18">Nathan Sime (Carnegie Institution for Science)</li>
-<li style="font-size:18">Garth N. Wells (University of Cambridge)</li>
+<li style="font-size:18;">Francesco Ballarin (Università Cattolica del Sacro Cuore)</li>
+<li style="font-size:18;">Cécile Daversin-Catty (Simula Research Laboratory)</li>
+<li style="font-size:18;">Jørgen S. Dokken (Simula Research Laboratory)</li>
+<li style="font-size:18;">Michal Habera (University of Luxembourg)</li>
+<li style="font-size:18;">Jack S. Hale (University of Luxembourg)</li>
+<li style="font-size:18;">Chris Richardson (University of Cambridge)</li>
+<li style="font-size:18;">Marie E. Rognes (Simula Research Laboratory)</li>
+<li style="font-size:18;">Matthew W. Scroggs (University College London)</li>
+<li style="font-size:18;">Nathan Sime (Carnegie Institution for Science)</li>
+<li style="font-size:18;">Garth N. Wells (University of Cambridge)</li>
 </ul>
 </font>
 
