@@ -713,8 +713,48 @@ error = np.sqrt(msh.comm.allreduce(dolfinx.fem.assemble_scalar(M), op=MPI.SUM))
 
 ---
 
+# Proper representation of dual basis
+
+<iframe width="1000" height="500" src="https://defelement.com/elements/examples/triangle-nedelec1-lagrange-1.html", title="Nedelec 1 degree 1 on triangle"></iframe>
+
+---
+
+# Proper dual basis leads to accurate interpolation
+
+<center>
+<img src="./moments.png" width=1000px>
+</center>
+
+---
+
+# Mesh creation
+
+```python
+import numpy as np
+from mpi4py import MPI
+
+import basix.ufl
+import dolfinx
+import ufl
+
+x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
+cells = np.array([[0, 1, 3, 4], [1, 2, 4, 5]], dtype=np.int64)
+coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
+                                       shape=(x.shape[1],))
+msh = dolfinx.mesh.create_mesh(MPI.COMM_SELF, cells, x, ufl.Mesh(coordinate_element))
+
+```
+
+<!--  footer: $^1$ Scroggs, Dokken, Richardson, Wells, _Construction of Arbitrary Order Finite Element Degree-of-Freedom Maps on Polygonal and Polyhedral Cell Meshes_ , (2022) DOI: <a href=https://doi.org/10.1145/3524456>10.1145/3524456</a> <br>-->
+
+**No re-ordering$^1$** of cells to ensure consistent global orientations
+
+---
+
 # The FEniCS form compiler (FFCx) is used to generate C code from Python
 
+<!--  footer: <br>-->
 <!-- ![bg width:700px opacity:.2](./Simula_logo.png) -->
 
 ```python
@@ -909,9 +949,9 @@ compiled_form = dolfinx.fem.form(a)
 
 ---
 
-# The Signorini problem $^{1, 2}$
+# The Signorini problem $^{2, 3}$
 
-<!--  footer: $^1$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^2$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._ arXiv:2307.12444 (2023)<br>-->
+<!--  footer: $^2$ Dokken, Farrell, Keith, Surowiec, _The latent variable proximal point algorithm for problems with pointwise constraints_ , In preparation. $^3$ Keith, Surowiec. _Proximal Galerkin: A structure-preserving finite element method for pointwise bound constraints._  (2023) <a href=https://arxiv.org/abs/2307.12444>arXiv:2307.12444</a><br>-->
 <div class=columns>
 <div>
 
@@ -1017,9 +1057,9 @@ $$
 
 ---
 
-# DOLFINx supports sub-meshes$^3$
+# DOLFINx supports sub-meshes$^4$
 
-<!--footer: $^3$ Dean J., _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, DOI: 10.17863/CAM.108292 (2023)<br><br>-->
+<!--footer: $^4$ Dean J., _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, DOI: 10.17863/CAM.108292 (2023)<br><br>-->
 
 ```python
 c_facets = mt.find(contact_bndry)
@@ -1040,7 +1080,7 @@ submesh, submesh_to_mesh = dolfinx.mesh.create_submesh(mesh, mt.dim, c_facets)[0
 
 ---
 
-# DOLFINx supports sub-meshes$^3$
+# DOLFINx supports sub-meshes$^4$
 
 ```python
 c_facets = mt.find(contact_bndry)
@@ -1059,7 +1099,7 @@ Q = ufl.MixedFunctionSpace(V, W)
 
 ---
 
-# DOLFINx supports sub-meshes$^3$
+# DOLFINx supports sub-meshes$^4$
 
 ```python
 c_facets = mt.find(contact_bndry)
@@ -1093,6 +1133,8 @@ ds = ufl.Measure("ds", domain=mesh,
         subdomain_data=facet_tag,
         subdomain_id=contact_bndry)
 ```
+
+<!--footer: <br>-->
 
 ---
 
@@ -1232,6 +1274,49 @@ q.interpolate(compiled_expression)
 
 ---
 
+# Create explicit interpolation matrix
+
+```python
+def interpolation_matrix(expr: ufl.core.expr.Expr,
+                         V:dolfinx.fem.FunctionSpace,
+                         Q:dolfinx.fem.FunctionSpace) -> PETSc.Mat:
+    """
+    Example:
+      A = interpolation_matrix(ufl.grad(ufl.TestFunction(V)), V, Q)
+    """
+
+    q_points = Q.element.interpolation_points()
+    compiled_expr = dolfinx.fem.Expression(expr, q_points)
+    mesh = Q.mesh
+    tdim = mesh.topology.dim
+    num_cells = mesh.topology.index_map(tdim).size_local
+    array_evaluated = compiled_expr.eval(mesh, np.arange(num_cells, dtype=np.int32))
+
+    def unroll_dofmap(V: dolfinx.fem.FunctionSpace) -> npt.NDArray[np.int32]:
+        dofmap = V.dofmap.list.astype(np.int32)
+        dofmap_unrolled = (bs * np.repeat(dofmap, bs).reshape(-1, bs) + np.arange(bs)).flatten()
+        return dofmap_unrolled.reshape(-1, V.dofmap.dof_layout.num_dofs*bs).astype(np.int32)
+
+    row_dofmap = unroll_dofmap(Q)
+    col_dofmap = unroll_dofmap(V)
+
+    def scatter(A, array_evaluated, dofmap0, dofmap1):
+        for i in range(num_cells):
+            rows = dofmap0[i, :]
+            cols = dofmap1[i, :]
+            A_local = array_evaluated[i, :].reshape(len(rows), len(cols))
+            A.setValuesLocal(rows, cols, A_local, addv=PETSc.InsertMode.INSERT_VALUES)
+
+    q = ufl.TestFunction(Q)
+    a = dolfinx.fem.form(ufl.inner(expr, q)*ufl.dx)
+    A = dolfinx.fem.petsc.create_matrix(a)
+    scatter(A, array_evaluated, row_dofmap, col_dofmap)
+    A.assemble()
+    return A
+```
+
+---
+
 # Evaluation of expressions over facets
 
 ```python
@@ -1322,7 +1407,7 @@ def move_to_facet_quadrature(ufl_expr, mesh, sub_facets, scheme="default", degre
 
 ---
 
-# Example using Scifem$^4$
+# Example using Scifem$^5$
 
 ```python
 u = Function(V, name="Velocity")
@@ -1339,11 +1424,11 @@ with dolfinx.io.VTXWriter(mesh.comm, "flux.bp", [u]) as bp:
     bp.write(0.0)
 ```
 
-<!--  footer: $^4$ H. Finsberg & J.S. Dokken. (2024). scientificcomputing/scifem: v0.2.5. https://github.com/scientificcomputing/scifem <br><br>-->
+<!--  footer: $^5$ H. Finsberg & J.S. Dokken. (2024). scientificcomputing/scifem: v0.2.5. https://github.com/scientificcomputing/scifem <br><br>-->
 
 ---
 
-# Example using Scifem$^4$
+# Example using Scifem$^5$
 
 <center>
 <img src="./facet_flux.png" width=1000px>
@@ -1351,7 +1436,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "flux.bp", [u]) as bp:
 
 ---
 
-# Real function spaces in DOLFINx$^4$
+# Real function spaces in DOLFINx$^5$
 
 ```python
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", 1))
@@ -1365,7 +1450,7 @@ zero = dolfinx.fem.Constant(mesh, dolfinx.default_scalar_type(0.0))
 
 ---
 
-# Real function spaces in DOLFINx$^4$
+# Real function spaces in DOLFINx$^5$
 
 ```python
 a00 = ufl.inner(ufl.grad(u), ufl.grad(du)) * ufl.dx
@@ -1380,7 +1465,7 @@ L = dolfinx.fem.form([L0, L1])
 
 ---
 
-# Real function spaces in DOLFINx$^4$
+# Real function spaces in DOLFINx$^5$
 
 ```python
 A = dolfinx.fem.petsc.assemble_matrix_block(a)
@@ -1396,10 +1481,10 @@ b = dolfinx.fem.petsc.assemble_vector_block(L, a, bcs=[])
 
 # Resources
 
-- Checkpointing in DOLFINx$^5$
+- Checkpointing in DOLFINx$^6$
 - Multi-point constraints in DOLFINx: https://github.com/jorgensd/dolfinx_mpc
 - DOLFINx tutorial: https://jsdokken.com/dolfinx-tutorial/
 - FEniCS @ Sorbonne: https://jsdokken.com/FEniCS23-tutorial
 - SciFEM: https://scientificcomputing.github.io/scifem
 
-<!--  footer: $^5$ J.S. Dokken. _ADIOS4DOLFINx: A framework for checkpointing in FEniCS_ (2024) Journal of Open Source Software, 9(96), 6451, <a href=https://doi.org/10.21105/joss.06451>10.21105/joss.06451</a> <br><br>-->
+<!--  footer: $^6$ J.S. Dokken. _ADIOS4DOLFINx: A framework for checkpointing in FEniCS_ (2024) Journal of Open Source Software, 9(96), 6451, <a href=https://doi.org/10.21105/joss.06451>10.21105/joss.06451</a> <br><br>-->
