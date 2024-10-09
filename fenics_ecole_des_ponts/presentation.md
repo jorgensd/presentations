@@ -1382,7 +1382,10 @@ b = dolfinx.fem.petsc.assemble_vector_block(L, a, bcs=[])
 
 # Resources
 
+- Checkpointing in DOLFINx$^5$
+- Multi-point constraints in DOLFINx: https://github.com/jorgensd/dolfinx_mpc
 - DOLFINx tutorial: https://jsdokken.com/dolfinx-tutorial/
 - FEniCS @ Sorbonne: https://jsdokken.com/FEniCS23-tutorial
-- DOLFINx MPC: https://github.com/jorgensd/dolfinx_mpc
 - SciFEM: https://scientificcomputing.github.io/scifem
+
+<!--  footer: $^5$ J.S. Dokken. _ADIOS4DOLFINx: A framework for checkpointing in FEniCS_ (2024) Journal of Open Source Software, 9(96), 6451, <a href=https://doi.org/10.21105/joss.06451>10.21105/joss.06451</a> <br><br>-->
