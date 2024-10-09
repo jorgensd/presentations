@@ -293,41 +293,94 @@ The original core components of FEniCS
 
 ![bg right:25%](./fenics_logo.png)
 
+**2004**: Code generation (C++/C) introduced
+
+<center>
+<img src="./ffc_origin.png" width=600>
+<img src="./ffc_language.png" width=600>
+<br>
+
 ---
 
-<div data-marpit-fragment>
+# Brief history of FEniCS
 
-- **2002**: First public version of a C++ library (DOLFIN)
-- **2003**: FEniCS project was created
-
-</div>
-<div data-marpit-fragment>
-
-- **2004**: Code generation (C++) introduced
-- **2005**: First Python interface
-
-</div>
+![bg right:25%](./fenics_logo.png)
 
 <div data-marpit-fragment>
 
+- **2005**: First Python interface and PETSc used as solver backend
+- **2007**: Just in time compilation
 - **2009**: MPI support
 
-</div>
+---
 
-<div data-marpit-fragment>
+# Brief history of FEniCS
 
-- **2016--**: Sponsored by NumFOCUS
-- **2017--**: DOLFINx (DOI: [10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665))
+![bg right:25%](./fenics_logo.png)
 
-</div>
-<div data-marpit-fragment>
+**2009**: Unified Form Language introduced
 
-$\quad$~3300 registered users on the FEniCS Discourse
+<center>
+<img src="./ufl_paper.png" width=600>
+<br>
+<center>
 
-</div>
+---
+
+# Brief history of FEniCS
+
+**2012**: FEniCS book (~3800 citations)
+
+<center>
+<img src="./fenics_book.png" width=600>
+<br>
+<center>
+
+---
+
+# Brief history of FEniCS
+
+![bg right:25%](./fenics_logo.png)
+
+**2016--**: Sponsored by NumFOCUS
+
 <center>
 <img src="numfocus_logo.png" width=300px>
 <center/>
+
+---
+
+# Brief history of FEniCS
+
+![bg right:25%](./fenics_logo.png)
+
+**2017--**: DOLFINx development
+DOI: [10.5281/zenodo.10447665](https://doi.org/10.5281/zenodo.10447665)
+
+<center>
+<img src="./dolfinx_paper.png" width=800>
+<br>
+<center>
+<center>
+<img src="numfocus_logo.png" width=300px>
+<center/>
+
+---
+
+![bg right:25%](./fenics_logo.png)
+
+# Some statistics
+
+- Over 200 contributors over 22 years
+- 3 300 registered users on the [Discourse forum](https://fenicsproject.discourse.group/)
+- ~120 000 page views per month
+- ~5 000 citations accumulated for the referenced papers
+
+<center>
+<img src="numfocus_logo.png" width=300px>
+<center/>
+
+---
 
 ---
 
