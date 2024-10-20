@@ -135,7 +135,39 @@ backgroundSize: 150px
 backgroundPosition: bottom+10px left+10px
 ---
 
-# An introduction to finite element modelling in FEniCS
+# About me
+
+<div data-marpit-fragment>
+
+</div>
+<div data-marpit-fragment>
+
+- **2016-2019:** PhD in informatics from UiO/Simula
+
+</div>
+
+<div data-marpit-fragment>
+
+- **2019-**: Forum Admin for the FEniCS discourse
+- **2019-2022**: Post-doc at Department of Engineering, University of Cambridge
+
+</div>
+
+<div data-marpit-fragment>
+
+- **2022-**: Member of the FEniCS Steering Council
+- **2022-**: Consulting for Simula Consulting
+- **2022-2023**: Research Engineer at SRL
+- **2024--**: Senior Research Engineer at SRL
+</div>
+
+![bg right:30%](./me.jpg)
+
+---
+
+# FEniCS workshop
+
+### MIT Plasma Science and Fusion Center
 
 <center>
 Jørgen S. Dokken
@@ -200,36 +232,6 @@ Analysis and generic tools and algorithms for PDEs
 </div>
 </div>
 </div>
-
-<!-- --- -->
-
-<!-- # About me
-
-<div data-marpit-fragment>
-
-</div>
-<div data-marpit-fragment>
-
-- **2016-2019:** PhD in informatics from UiO/Simula
-
-</div>
-
-<div data-marpit-fragment>
-
-- **2019-**: Forum Admin for the FEniCS discourse
-- **2019-2022**: Post-doc at Department of Engineering, University of Cambridge
-
-</div>
-
-<div data-marpit-fragment>
-
-- **2022-**: Member of the FEniCS Steering Council
-- **2022-**: Consulting for Simula Consulting
-- **2022-2023**: Research Engineer at SRL
-- **2024--**: Senior Research Engineer at SRL
-</div>
-
-![bg right:30%](./me.jpg) -->
 
 ---
 
@@ -427,6 +429,10 @@ V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
 
 
 ```
+
+---
+
+---
 
 ---
 
