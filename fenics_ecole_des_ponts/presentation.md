@@ -135,6 +135,31 @@ backgroundSize: 150px
 backgroundPosition: bottom+10px left+10px
 ---
 
+# FEniCS workshop
+
+### MIT Plasma Science and Fusion Center
+
+<center>
+Jørgen S. Dokken
+<center/>
+
+<center>
+<b> dokken@simula.no </b>
+<center/>
+
+<center>
+<a href="https://jsdokken.com">https://jsdokken.com</a>
+<center/>
+
+<center>
+<div>
+<img src="fenics_logo.png" width=200px>
+</div>
+<!-- <img src="Simula_logo.png" width=300px> -->
+<center/>
+
+---
+
 # About me
 
 <div data-marpit-fragment>
@@ -162,31 +187,6 @@ backgroundPosition: bottom+10px left+10px
 </div>
 
 ![bg right:30%](./me.jpg)
-
----
-
-# FEniCS workshop
-
-### MIT Plasma Science and Fusion Center
-
-<center>
-Jørgen S. Dokken
-<center/>
-
-<center>
-<b> dokken@simula.no </b>
-<center/>
-
-<center>
-<a href="https://jsdokken.com">https://jsdokken.com</a>
-<center/>
-
-<center>
-<div>
-<img src="fenics_logo.png" width=200px>
-</div>
-<!-- <img src="Simula_logo.png" width=300px> -->
-<center/>
 
 ---
 
