@@ -183,17 +183,20 @@ Jørgen S. Dokken
 
 # FEniCS Steering council
 
-<ul style="list-style-type:none;padding:0;margin:0;">
-<li style="font-size:18;">Francesco Ballarin (Università Cattolica del Sacro Cuore)</li>
-<li style="font-size:18;">Cécile Daversin-Catty (Simula Research Laboratory)</li>
-<li style="font-size:18;">Jørgen S. Dokken (Simula Research Laboratory)</li>
-<li style="font-size:18;">Michal Habera (University of Luxembourg)</li>
-<li style="font-size:18;">Jack S. Hale (University of Luxembourg)</li>
-<li style="font-size:18;">Chris Richardson (University of Cambridge)</li>
-<li style="font-size:18;">Matthew W. Scroggs (University College London)</li>
-<li style="font-size:18;">Nathan Sime (Carnegie Institution for Science)</li>
-<li style="font-size:18;">Garth N. Wells (University of Cambridge)</li>
-</ul>
+<font size="6">
+
+Francesco Ballarin (Università Cattolica del Sacro Cuore)
+Cécile Daversin-Catty (Simula Research Laboratory)
+Jørgen S. Dokken (Simula Research Laboratory)
+Michal Habera (University of Luxembourg)
+Jack S. Hale (University of Luxembourg)
+Chris Richardson (University of Cambridge)
+Matthew W. Scroggs (University College London)
+Nathan Sime (Carnegie Institution for Science)
+Garth N. Wells (University of Cambridge)
+
+</font>
+
 <br>
 <center>
 <img src="./logos/numfocus.png" height=100px>
