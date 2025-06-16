@@ -339,7 +339,7 @@ tau, v = ufl.TestFunctions(Q)
 
 ---
 
-# Why do we need this?
+# Example of potential API rewrite
 
 ```python
 a = [
@@ -361,6 +361,43 @@ a = ufl.extract_blocks(a_mono)
 </div>
 
 ---
+
+# Why do we need this?
+
+```python
+gamma, gamma_to_omega = dolfinx.mesh.create_submesh(omega, fdim, ft.find(tag))[
+        0:2]
+V = dolfinx.fem.functionspace(omega, ("Lagrange", 1, (omega.geometry.dim, )))
+Q = dolfinx.fem.functionspace(gamma, ("Lagrange", 1))
+W = ufl.MixedFunctionSpace(V, Q)
+```
+
+<div data-marpit-fragment>
+
+For more information about mixed-dimensional assembly see: [https://fenicsproject.org/blog/v0.9.0/#mixed-assembly](https://fenicsproject.org/blog/v0.9.0/#mixed-assembly)
+
+</div>
+
+<!-- footer: An example where this is used can be found at: https://jsdokken.com/FEniCS-workshop/src/multiphysics/coupling.html <br><br>
+ -->
+
+---
+
+# Why do we need this (part 2)?
+
+```python
+interior_spaces = [Vi.clone() for _ in range(num_ions+1)]
+exterior_spaces = [Ve.clone() for _ in range(num_ions+1)]
+spaces = (interior_spaces+exterior_spaces)
+W = MixedFunctionSpace(*spaces)
+```
+
+<!-- footer: These lines of code is based on the KNP-EMI model in DOLFINx by Halvor Herlyng: https://github.com/scientificcomputing/fenics-in-the-wild/pull/8 <br><br>
+ -->
+
+---
+
+<!-- footer: <br> -->
 
 # Supported UFL operations
 
@@ -525,5 +562,129 @@ _, converged_reason, num_iterations = problem.solve()
 ```
 
 </div>
+
+---
+
+# Input/output
+
+---
+
+# Input
+
+- **GMSH**
+  - Output `gmshio` is `MeshData`: `mesh`, `*_tags`, `physical_groups`
+    ```python
+      mesh_data = gmshio.model_to_mesh(model, comm, rank=0)
+      ct = mesh_data.cell_tags
+      ft = mesh_data.facet_tags
+    ```
+
+<div data-marpit-fragment>
+
+- **VTKHDF**: New input format for meshes
+  - Supports mixed topology
+  - Vision: Replace XDMF
+  ```python
+      mesh = dolfinx.io.vtkhdf.read_mesh(comm, "grid.vtkhdf")
+  ```
+
+</div>
+<div data-marpit-fragment>
+
+- Support for branching meshes (e.g. T-joints)
+
+</div>
+
+---
+
+# Output
+
+- **VTKHDF**: Write to file
+  - Vision replace VTKHDF and VTXwriter
+
+```python
+  dolfinx.io.vtkhdf.write_mesh("mixed_mesh_second_order.vtkhdf", mesh)
+```
+
+<div data-marpit-fragment>
+
+- **Fides**: Removed support
+
+## </div>
+
+---
+
+# Unified refinement interface
+
+```python
+refined_mesh, parent_cell, parent_facet = dolfinx.mesh.refine(
+	domain, option=dolfinx.mesh.RefinementOption.parent_cell_and_facet
+)
+```
+
+See [https://fenicsproject.org/blog/v0.9.0/#refine](https://fenicsproject.org/blog/v0.9.0/#refine)
+for a complete example.
+
+---
+
+# Domain-independent form compilation
+
+```python
+real_type = np.float64
+dtype = np.complex 128
+c_el = basix.ufl.element("Lagrange", "triangle", 1, shape=(2,), dtype=real_type)
+domain = ufl.Mesh(c_el)
+el = basix.ufl.element("Lagrange", "triangle", 2, dtype=real_type)
+V = ufl.FunctionSpace(domain, el)
+u = ufl.Coefficient(V)
+c = ufl.Constant(domain)
+J = u* c * ufl.dx(domain=domain)
+compiled_form = dolfinx.fem.compile_form(
+   	MPI.COMM_WORLD, J, form_compiler_options={"scalar_type": dtype}
+)
+```
+
+---
+
+# Domain-independent form compilation
+
+```python
+for N in [2, 4, 8, 16]:
+    mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, N, dtype=real_type)
+    Vh = dolfinx.fem.functionspace(mesh, u.ufl_element())
+    uh = dolfinx.fem.Function(Vh, dtype=dtype)
+    uh.interpolate(lambda x: x[0])
+    wh = dolfinx.fem.Function(Vh, dtype=dtype)
+    wh.interpolate(lambda x: x[1])
+    eh = dolfinx.fem.Constant(mesh, dtype(3.0))
+    ch = dolfinx.fem.Constant(mesh, dtype(2.0))
+    form = dolfinx.fem.create_form(compiled_form, [], mesh, {u: uh}, {c: ch})
+```
+
+---
+
+# What's next?
+
+---
+
+# Mixed topology meshes
+
+<center>
+<img src="./images/mixed_grid.png" width=700px>
+<br>
+Prototype available at:
+
+<br>
+<a href="https://github.com/FEniCS/dolfinx/blob/main/python/demo/demo_mixed-topology.py">https://github.com/FEniCS/dolfinx/blob/main/python/demo/demo_mixed-topology.py</a>
+<br>
+</center>
+
+---
+
+# Optimization/Inverse problems
+
+- DOLFINx-adjoint based on pyadjoint?
+- Jax-based?
+- Other backend?
 
 ---
