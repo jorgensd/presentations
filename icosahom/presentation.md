@@ -431,9 +431,9 @@ $$
 \nabla \cdot (\sigma(\mathbf{u})) &= \mathbf{f} \text{ in } \Omega\\
 \mathbf{u} &= \mathbf{u}_D \text{ on } \delta\Omega_D \\
 \sigma(\mathbf{u})\mathbf{n} &= 0 \text{ on } \delta\Omega_N\\
-\mathbf{u}\cdot \mathbf{n} &\leq g \text{ on } \Gamma\\
+\mathbf{u}\cdot \hat{\mathbf{n}} &\leq g \text{ on } \Gamma\\
 \sigma_n(\mathbf{u})\mathbf{n} &\leq 0 \text{ on } \Gamma\\
-\sigma_n(\mathbf{u})(\mathbf{u}\cdot \mathbf{n}-g) &= 0 \text{ on } \Gamma
+\sigma_n(\mathbf{u})(\mathbf{u}\cdot \hat{\mathbf{n}}-g) &= 0 \text{ on } \Gamma
 \end{align*}
 $$
 
@@ -442,12 +442,12 @@ $$
 <div>
 
 **Latent variable proximal point algorithm**
-Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$
+Let $\mathbf{u}^k\in V(\Omega)$, $\psi^k\in Q(\Gamma)$,
 
 $$
 \begin{align*}
-\alpha_k(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -\alpha_k(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
-(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\psi}, w)_\Gamma &= (g, w)_\Gamma
+\alpha_k(\sigma(\mathbf{u^k}), \epsilon(\mathbf{v}))_\Omega - (\psi^k, \mathbf{v}\cdot \hat{\mathbf{n}})_\Gamma &= \alpha_k(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \hat{\mathbf{n}})_\Gamma\\
+(\mathbf{u}^k\cdot \hat{\mathbf{n}}, w)_\Gamma - (e^{\psi}, w)_\Gamma &= (g, w)_\Gamma
 \end{align*}
 $$
 
@@ -465,10 +465,14 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 ---
 
-# The Signorini problem $^{2, 3}$
+# The Signorini problem $^{1}$
+
+---
+
+# The Signorini problem $^{1}$
 
 <center>
-<img src="./contact.png" width=1000px>
+<img src="./images/signorini.png" width=850>
 </center>
 
 ---
