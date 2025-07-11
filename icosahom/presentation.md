@@ -147,11 +147,12 @@ Jørgen S. Dokken
 
 <center>
 <a href="https://jsdokken.com">https://jsdokken.com</a>
+<br> ICOSAHOM 2025 - MS 114
 <center/>
 
 <center>
 <div>
-<img src="./logos/fenics.png" width=150px>
+<img src="./logos/fenics.png" width=100px>
 </div>
 <div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -177,7 +178,8 @@ Jørgen S. Dokken
 
 ---
 
-<!-- footer: -->
+<!-- footer: <br>
+ -->
 
 # The Poisson equation
 
@@ -185,12 +187,11 @@ Jørgen S. Dokken
 
 ```python
 from mpi4py import MPI
-import dolfinx.fem.petsc
-import ufl
-import numpy as np
+import dolfinx.fem.petsc, ufl, numpy as np
 
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
 
 
 
@@ -224,9 +225,7 @@ V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
 
 ```python
 from mpi4py import MPI
-import dolfinx.fem.petsc
-import ufl
-import numpy as np
+import dolfinx.fem.petsc, ufl, numpy as np
 
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
@@ -253,6 +252,7 @@ L = ufl.inner(f, v) * ufl.dx
 
 
 
+
 ```
 
 ---
@@ -261,9 +261,7 @@ L = ufl.inner(f, v) * ufl.dx
 
 ```python
 from mpi4py import MPI
-import dolfinx.fem.petsc
-import ufl
-import numpy as np
+import dolfinx.fem.petsc, ufl, numpy as np
 
 mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
 V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
@@ -275,8 +273,45 @@ f = x * ufl.sin(y * ufl.pi)
 L = ufl.inner(f, v) * ufl.dx
 
 boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
-    V, lambda x: np.isclose(x[0], 0) | np.isclose(x[0], 1)
-)
+    V, lambda x: np.isclose(x[0], 0) | np.isclose(x[0], 1))
+bcs = [dolfinx.fem.dirichletbc(0.0, boundary_dofs, V)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+![bg contain right:30%](images/uh.png)
+
+---
+
+# The Poisson equation
+
+```python
+from mpi4py import MPI
+import dolfinx.fem.petsc, ufl, numpy as np
+
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(ufl.grad(u), ufl.grad(v)) * ufl.dx
+x, y = ufl.SpatialCoordinate(mesh)
+f = x * ufl.sin(y * ufl.pi)
+L = ufl.inner(f, v) * ufl.dx
+
+boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
+    V, lambda x: np.isclose(x[0], 0) | np.isclose(x[0], 1))
 bcs = [dolfinx.fem.dirichletbc(0.0, boundary_dofs, V)]
 options = {
     "ksp_type": "preonly",
@@ -284,17 +319,55 @@ options = {
     "pc_factor_mat_solver_type": "mumps",
     "ksp_error_if_not_converged": True,
 }
+uh = dolfinx.fem.Function(V, name="uh")
 problem = dolfinx.fem.petsc.LinearProblem(
-  a, L, bcs=bcs, petsc_options=options)
-uh = problem.solve()
-with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
-    bp.write(0.0)
+    a, L, u=uh, bcs=bcs, petsc_options=options,
+    petsc_options_prefix="poisson_"
+)
+problem.solve()
+
 
 ```
 
 ![bg contain right:30%](images/uh.png)
 
 ---
+
+# The Poisson equation
+
+```python
+from mpi4py import MPI
+import dolfinx.fem.petsc, ufl, numpy as np
+
+mesh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, 3, 3)
+V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
+
+u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
+a = ufl.inner(ufl.grad(u), ufl.grad(v)) * ufl.dx
+x, y = ufl.SpatialCoordinate(mesh)
+f = x * ufl.sin(y * ufl.pi)
+L = ufl.inner(f, v) * ufl.dx
+
+boundary_dofs = dolfinx.fem.locate_dofs_geometrical(
+    V, lambda x: np.isclose(x[0], 0) | np.isclose(x[0], 1))
+bcs = [dolfinx.fem.dirichletbc(0.0, boundary_dofs, V)]
+options = {
+    "ksp_type": "preonly",
+    "pc_type": "lu",
+    "pc_factor_mat_solver_type": "mumps",
+    "ksp_error_if_not_converged": True,
+}
+uh = dolfinx.fem.Function(V, name="uh")
+problem = dolfinx.fem.petsc.LinearProblem(
+    a, L, u=uh, bcs=bcs, petsc_options=options,
+    petsc_options_prefix="poisson_"
+)
+problem.solve()
+with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
+    bp.write(0.0)
+```
+
+![bg contain right:30%](images/uh.png)
 
 ---
 
