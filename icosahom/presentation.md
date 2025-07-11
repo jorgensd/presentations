@@ -138,7 +138,7 @@ backgroundPosition: bottom+10px left+10px
 # Mixed-domain and multi-physics modelling in the FEniCS framework
 
 <center>
-Jørgen S. Dokken
+<b>Jørgen S. Dokken</b>, Joseph Dean, Cécile Daversin Catty
 <center/>
 
 <center>
@@ -371,6 +371,110 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
 
 ---
 
+# Multi-physics in DOLFINx
+
+---
+
+# Step 1: Create a sub-mesh to represent some of the physics on
+
+```python
+gamma, gamma_to_omega = dolfinx.mesh.create_submesh(omega, fdim, ft.find(tag))[
+        0:2]
+
+
+
+
+
+```
+
+---
+
+# Step 2: Create a symbolic representation in UFL of the mixed problem
+
+```python
+gamma, gamma_to_omega = dolfinx.mesh.create_submesh(omega, fdim, ft.find(tag))[
+        0:2]
+V = dolfinx.fem.functionspace(omega, ("Lagrange", 1, (omega.geometry.dim, )))
+Q = dolfinx.fem.functionspace(gamma, ("Lagrange", 1))
+W = ufl.MixedFunctionSpace(V, Q)
+u, psi = ufl.TrialFunctions(W)
+v, q = ufl.TestFunctions(W)
+```
+
+---
+
+<!-- footer: <br> -->
+
+# Supported UFL operations
+
+- `ufl.derivative(F, [sigma, u], [ds, du])`
+- `ufl.lhs`, `ufl.rhs`, `ufl.system`: [UFL #350](https://github.com/FEniCS/ufl/pull/350)
+- `ufl.action`: [UFL 351](https://github.com/FEniCS/ufl/pull/351)
+- `ufl.adjoint`: [UFL #352](https://github.com/FEniCS/ufl/pull/352)
+
+---
+
+<!--  footer: $^1$ Dokken, Farrell, Keith, Papadopoulos, Surowiec, _The latent variable proximal point algorithm for variational problems with inequality constraints_, arxiv:2503.05672. (2025)<br><br> -->
+
+# Example: Contact mechanics$^1$
+
+---
+
+# The Signorini problem$^1$
+
+<br>
+<div class=columns>
+<div>
+
+$$
+\begin{align*}
+\nabla \cdot (\sigma(\mathbf{u})) &= \mathbf{f} \text{ in } \Omega\\
+\mathbf{u} &= \mathbf{u}_D \text{ on } \delta\Omega_D \\
+\sigma(\mathbf{u})\mathbf{n} &= 0 \text{ on } \delta\Omega_N\\
+\mathbf{u}\cdot \mathbf{n} &\leq g \text{ on } \Gamma\\
+\sigma_n(\mathbf{u})\mathbf{n} &\leq 0 \text{ on } \Gamma\\
+\sigma_n(\mathbf{u})(\mathbf{u}\cdot \mathbf{n}-g) &= 0 \text{ on } \Gamma
+\end{align*}
+$$
+
+</div>
+
+<div>
+
+**Latent variable proximal point algorithm**
+Let $\mathbf{u}\in V(\Omega)$, $\psi\in Q(\Gamma)$
+
+$$
+\begin{align*}
+\alpha_k(\sigma(\mathbf{u}), \epsilon(\mathbf{v}))_\Omega - (\psi, \mathbf{v}\cdot \mathbf{n})_\Gamma &= -\alpha_k(\mathbf{f}, v)_\Omega - (\psi^{k-1}, \mathbf{v}\cdot \mathbf{n})_\Gamma\\
+(\mathbf{u}\cdot \mathbf{n}, w)_\Gamma - (e^{\psi}, w)_\Gamma &= (g, w)_\Gamma
+\end{align*}
+$$
+
+Given $\alpha_k$, $\psi_{k-1}$
+
+- Solve saddle point problem
+- Check for convergence
+- Update latent variable $\psi^{k-1}$, $\alpha_k$
+
+</div>
+<br>
+<br>
+<br>
+</div>
+
+---
+
+# The Signorini problem $^{2, 3}$
+
+<center>
+<img src="./contact.png" width=1000px>
+</center>
+
+---
+
+---
+
 # A wrapper for writing blocked problems
 
 ## `ufl.MixedFunctionSpace`
@@ -443,17 +547,6 @@ W = MixedFunctionSpace(*spaces)
 
 <!-- footer: These lines of code is based on the KNP-EMI model in DOLFINx by Halvor Herlyng: https://github.com/scientificcomputing/fenics-in-the-wild/pull/8 <br><br>
  -->
-
----
-
-<!-- footer: <br> -->
-
-# Supported UFL operations
-
-- `ufl.derivative(F, [sigma, u], [ds, du])`
-- `ufl.lhs`, `ufl.rhs`, `ufl.system`: [UFL #350](https://github.com/FEniCS/ufl/pull/350)
-- `ufl.action`: [UFL 351](https://github.com/FEniCS/ufl/pull/351)
-- `ufl.adjoint`: [UFL #352](https://github.com/FEniCS/ufl/pull/352)
 
 ---
 
