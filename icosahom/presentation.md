@@ -467,6 +467,68 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 # The Signorini problem $^{1}$
 
+```python
+fdim = omega.topology.dim -1
+gamma, gamma_to_omega = dolfinx.mesh.create_submesh(omega, fdim, potential_contact_facets)[
+      0:2]
+
+gdim = omega.geometry.dim
+V = dolfinx.fem.functionspace(omega, ("Lagrange", degree, (gdim,)))
+Q = dolfinx.fem.functionspace(gamma, ("Lagrange", degree))
+W = ufl.MixedFunctionSpace(V, Q)
+
+v, w = ufl.TestFunctions(Q)
+u = dolfinx.fem.Function(V, name="Displacement")
+psi = dolfinx.fem.Function(W, name="LatentVariable")
+psi_k = dolfinx.fem.Function(W, name="PreviousLV")
+alpha = dolfinx.fem.Constant(omega, 1.)
+```
+
+---
+
+# The Signorini problem $^{1}$
+
+```python
+def epsilon(w):
+  return ufl.sym(ufl.grad(w))
+
+def sigma(w, mu, lmbda):
+  ew = epsilon(w)
+  gdim = ew.ufl_shape[0]
+  return 2.0 * mu * epsilon(w) + lmbda * ufl.tr(ufl.grad(w)) * ufl.Identity(gdim)
+
+dx = ufl.Measure("dx", domain=omega)
+ds = ufl.Measure("ds", domain=omega, subdomain_data=facet_tag subdomain_id=contact_tag)
+F = alpha * ufl.inner(sigma(u, mu, lmbda), epsilon(v)) * dx
+F -= alpha * ufl.inner(f, v) * dx
+F -= ufl.inner(psi - psi_k, ufl.dot(v, n_g)) * ds
+F += ufl.inner(ufl.dot(u, n_g), w) * ds
+F += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
+```
+
+---
+
+# The Signorini problem $^{1}$
+
+```python
+bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, bc_facets))
+petsc_options = {
+    "snes_type": "newtonls",
+    "snes_linesearch_type": "none",
+    "ksp_type": "preonly",
+    "pc_type": "lu",
+    "pc_factor_mat_solver_type": "mumps",
+    "ksp_error_if_not_converged": True,
+    "snes_error_if_not_converged": True,
+  }
+F_blocked = ufl.extract_blocks(residual)
+solver = dolfinx.fem.petsc.NonlinearProblem(F_blocked, [u, psi], bcs=bcs,
+kind="mpi",
+entity_maps=entity_maps,
+petsc_options=petsc_options, petsc_options_prefix="signorini_")
+solver.solve()
+```
+
 ---
 
 # The Signorini problem $^{1}$
@@ -479,86 +541,15 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 ---
 
-# A wrapper for writing blocked problems
-
-## `ufl.MixedFunctionSpace`
-
-```python
-msh = create_unit_square(MPI.COMM_WORLD, 96, 96, CellType.triangle)
-k = 1
-V = fem.functionspace(msh, ("RT", k))
-W = fem.functionspace(msh, ("Discontinuous Lagrange", k - 1))
-
-Q = ufl.MixedFunctionSpace(V, W)
-sigma, u = ufl.TrialFunctions(Q)
-tau, v = ufl.TestFunctions(Q)
-```
-
 ---
 
-# Example of potential API rewrite
+<!-- footer: <br> -->
 
-```python
-a = [
-    [ufl.inner(sigma, tau) * dx, ufl.inner(u, ufl.div(tau)) * dx],
-    [ufl.inner(ufl.div(sigma), v) * dx, None],
-]
-```
-
-<div data-marpit-fragment>
-
-`ufl.extract_blocks`
-
-```python
-a_mono = ufl.inner(sigma, tau) * dx + ufl.inner(u, ufl.div(tau)) * dx \
-  + ufl.inner(ufl.div(sigma), v) * dx
-a = ufl.extract_blocks(a_mono)
-```
-
-</div>
-
----
-
-# Why do we need this?
-
-```python
-gamma, gamma_to_omega = dolfinx.mesh.create_submesh(omega, fdim, ft.find(tag))[
-        0:2]
-V = dolfinx.fem.functionspace(omega, ("Lagrange", 1, (omega.geometry.dim, )))
-Q = dolfinx.fem.functionspace(gamma, ("Lagrange", 1))
-W = ufl.MixedFunctionSpace(V, Q)
-```
-
-<div data-marpit-fragment>
-
-For more information about mixed-dimensional assembly see: [https://fenicsproject.org/blog/v0.9.0/#mixed-assembly](https://fenicsproject.org/blog/v0.9.0/#mixed-assembly)
-
-</div>
-
-<!-- footer: An example where this is used can be found at: https://jsdokken.com/FEniCS-workshop/src/multiphysics/coupling.html <br><br>
- -->
-
----
-
-# Why do we need this (part 2)?
-
-```python
-interior_spaces = [Vi.clone() for _ in range(num_ions+1)]
-exterior_spaces = [Ve.clone() for _ in range(num_ions+1)]
-spaces = (interior_spaces+exterior_spaces)
-W = MixedFunctionSpace(*spaces)
-```
-
-<!-- footer: These lines of code is based on the KNP-EMI model in DOLFINx by Halvor Herlyng: https://github.com/scientificcomputing/fenics-in-the-wild/pull/8 <br><br>
- -->
-
----
-
-# Simplified interface
+# Extraction of blocks from UFL
 
 ```python
 a_blocked = ufl.extract_blocks(a_mono)
-a = dolfinx.fem.form(a_blocked)
+a = dolfinx.fem.form(a_blocked, entity_maps=entity_maps)
 ```
 
 <div data-marpit-fragment>
@@ -594,57 +585,20 @@ A.assemble()
 
 ---
 
-# Blocked vectors needed a major redesign
-
-Special handling of Dirichlet boundary conditions (lifting)
-
-```python
-b = assemble_vector_block(L_blocked, a_blocked, bcs=bcs)
-```
-
-<div data-marpit-fragment>
-
-Unified logic for all assembly modes
-
-```python
-b = assemble_vector(L_blocked, kind=PETSc.Vec.Type.MPI)
-bcs1 = fem.bcs_by_block(fem.extract_function_spaces(a_blocked, 1), bcs)
-apply_lifting(b, a_blocked, bcs=bcs1)
-b.ghostUpdate(addv=PETSc.InsertMode.ADD, mode=PETSc.ScatterMode.REVERSE)
-bcs0 = fem.bcs_by_block(fem.extract_function_spaces(L_blocked), bcs)
-set_bc(b, bcs0)
-```
-
-</div>
-
----
-
-# Interacting with PETSc vectors
-
-```python
-x = dolfinx.fem.petsc.create_vector(L_block, kind="mpi")
-assign((u, p), x) # Transfer data from DOLFINx functions to PETSc Vec
-assign(x, (u, p)) # Transfer data from PETSc Vec to DOLFINx functions
-```
-
----
-
-# What caused all this redesign?
-
-<div data-marpit-fragment>
-<center>
-Simpler solver interface
-</center>
-</div>
+# ADD EMI here
 
 ---
 
 # Linear problems
 
 ```python
+F = ....
+a, L = ufl.system(F)
+a_blocked = ufl.extract_blocks(a)
+L_blocked = ufl.extract_blocks(L)
 problem = fem.petsc.LinearProblem(
-    a,
-    L,
+    a_blocked,
+    L_blocked,
     u=[sigma, u],
     P=a_p,
     kind="nest",
@@ -664,32 +618,6 @@ nested_IS = problem.A.getNestISs()
 ksp = problem.solver
 ksp.getPC().setFieldSplitIS(("sigma", nested_IS[0][0]), ("u", nested_IS[0][1]))
 ksp_sigma, ksp_u = ksp.getPC().getFieldSplitSubKSP()
-```
-
-</div>
-
----
-
-# Non-linear problems
-
-- `dolfinx.nls.petsc.NewtonSolver` is being deprecated
-- `dolfinx.fem.petsc.NonlinearProblem` is being deprecated
-  - renamed to `dolfinx.fem.petsc.NewtonSolverNonlinearProblem`
-
-<div data-marpit-fragment>
-
-- `dolfinx.fem.petsc.NonlinearProblem` encapsulates the `PETSc.SNES` solver
-
-```python
-options = {
-    "snes_type": "newtonls",
-    "snes_linesearch_type": "none",
-    "ksp_type": "preonly",
-    "pc_type": "lu",
-    "snes_monitor": None,
-}
-problem = NonlinearProblem(F, u, petsc_options=options)
-_, converged_reason, num_iterations = problem.solve()
 ```
 
 </div>
