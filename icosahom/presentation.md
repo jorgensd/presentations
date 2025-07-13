@@ -157,7 +157,7 @@ backgroundPosition: bottom+10px left+10px
 <div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="./logos/wellcome.png" height=100px>
-<img src="./logos/simula.png" height=100px>
+<!-- <img src="./logos/simula.png" height=100px> -->
 <img src="./logos/batcat.png" height=100px>
 </div>
 <center/>
@@ -621,15 +621,40 @@ $$
 
 # Various ways of modelling this equation$^3$
 
-* Single-dimensional primal form
-* Multi-dimensional primal form
-* Single-dimensional mixed form
-* Multi-dimensional mixed form
+- Single-dimensional primal form
+- Multi-dimensional primal form
+- Single-dimensional mixed form
+- Multi-dimensional mixed form
+
+<div data-marpit-fragment >
+<center>
+<br>
+<b style="font-size:35px">All models can be implemented in DOLFINx</b>
+</center>
+</div>
 
 ---
 
 <!-- footer: <br>
  -->
+
+# Single-dimensional primal form
+
+Find $u^n_i\in V(\Omega_i)\equiv V_i$, $u^n_e\in V(\Omega_e)\equiv V_e$ such that
+
+$$
+\begin{align*}
+\int_{\Omega_e} \sigma_e \nabla u^n_e \cdot \nabla v_e ~\mathrm{d}x
++ \int_{\Gamma}C_m (\Delta t)^{-1} (u^n_e - u^n_i) v_e~\mathrm{d}s
+&=
+-\int_{\Gamma} \left(\frac{C_m}{\Delta t}(u^{n-1}_e - u^{n-1}_i) + I_{ion} \right)v_e~\mathrm{d} s\\
+\int_{\Omega_i} \sigma_i \nabla u^n_i \cdot \nabla v_i ~\mathrm{d}x
++ \int_{\Gamma}C_m (\Delta t)^{-1} (u^n_i - u^n_e) v_i~\mathrm{d}s
+&= \int_{\Gamma} \left(\frac{C_m}{\Delta t}(u^{n-1}_e - u^{n-1}_i) + I_{ion} \right)v_i~\mathrm{d} s
+\end{align*}
+$$
+
+---
 
 # Linear problems
 
