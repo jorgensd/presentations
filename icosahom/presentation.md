@@ -654,6 +654,8 @@ $$
 \end{align*}
 $$
 
+for all $v_e \in V_e$ and $v_i \in V_i$.
+
 ---
 
 # Linear problems
