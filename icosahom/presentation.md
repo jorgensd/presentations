@@ -539,11 +539,9 @@ solver.solve()
 
 ---
 
----
-
----
-
 <!-- footer: <br> -->
+
+---
 
 # Extraction of blocks from UFL
 
@@ -585,9 +583,53 @@ A.assemble()
 
 ---
 
-# ADD EMI here
+# The Extra, Intral Membrane (EMI) model
+
+<div class=columns>
+
+<div>
+<br>
+<br>
+<br>
+
+$$
+\begin{align*}
+-\nabla \cdot (\sigma_e\nabla u_e) &= 0&& \text{in } \Omega_e\\
+-\nabla \cdot (\sigma_i\nabla u_i) &= 0&& \text{in } \Omega_i\\
+\sigma_e\nabla u_e\cdot \mathbf{n}_e = - \sigma_i\nabla u_i\cdot \mathbf{n}_i &\equiv I_m&&\text{at } \Gamma\\
+v &=u_e-u_i&& \text{at } \Gamma\\
+\frac{\partial v}{\partial t} &= \frac{1}{C_m}(I_m-I_{ion})&& \text{at } \Gamma
+\end{align*}
+$$
+
+</div>
+<div style="font-size:25px">
+<br>
+<br>
+<center>
+<img src="./images/emi_sketch.png" width=450px>
+<sup>2</sup>Benedusi et al. 2024 <br>&nbsp; DOI: <a href="https://doi.org/10.1007/s10915-023-02449-2">10.1007/s10915-023-02449-2</a>
+</center>
+</div>
+
+<br>
 
 ---
+
+<!-- footer: Kutcha et al. (2020), Solving the EMI Equations using Finite Element Methods, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_5](https://doi.org/10.1007/978-3-030-61157-6_5)<br><br>
+-->
+
+# Various ways of modelling this equation$^3$
+
+* Single-dimensional primal form
+* Multi-dimensional primal form
+* Single-dimensional mixed form
+* Multi-dimensional mixed form
+
+---
+
+<!-- footer: <br>
+ -->
 
 # Linear problems
 
@@ -610,6 +652,8 @@ problem = fem.petsc.LinearProblem(
     },
 )
 ```
+
+---
 
 <div data-marpit-fragment>
 
