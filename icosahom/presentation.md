@@ -127,7 +127,7 @@ style: |
 
   .skewed-columns {
     display: grid;
-    grid-template-columns: minmax(0, 55fr) minmax(0, 35fr);
+    grid-template-columns: minmax(0, 35fr) minmax(0, 55fr);
   }
 
 backgroundImage: url('./logos/simula.png')
@@ -165,16 +165,6 @@ backgroundPosition: bottom+10px left+10px
 ---
 
 # What is FEniCS(x)?
-
----
-
-<!-- footer: Baratta, I. A. et al. (2023). DOLFINx: The next generation FEniCS problem solving environment. DOI: 10.5281/zenodo.10447666
- -->
-
-<center>
-<img src="./images/workflow.png" width=750px>
-<br>
-<center/>
 
 ---
 
@@ -371,6 +361,19 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
 
 ---
 
+<!-- footer: Baratta, I. A. et al. (2023). DOLFINx: The next generation FEniCS problem solving environment. DOI: 10.5281/zenodo.10447666
+ -->
+
+<center>
+<img src="./images/workflow.png" width=750px>
+<br>
+<center/>
+
+---
+
+<!-- footer: <br>
+ -->
+
 # Multi-physics in DOLFINx
 
 ---
@@ -472,6 +475,8 @@ $$
 \end{align*}
 $$
 
+<div data-marpit-fragment>
+
 Given $u^{k-1}\in V$, find $u^k\in V$, $\psi^k\in Q$ such that
 
 $$
@@ -483,23 +488,26 @@ $$
 
 where $\text{dom}R=C$, $(\nabla R)^*$ is the convex conjugate, $B^*$ the dual conjugate.
 
+</div>
+
 ---
 
 # Properties of the formulation
 
 <br>
-<div class=columns>
+<div class=skewed-columns>
 <div>
 
 - $\alpha_k$ is bounded
-- Can be discretized with FD, FV, FEM, SEM
+- Can be discretized with
+  FD, FV, FEM, SEM
 - Can use higher order function spaces
 
 </div>
 <div>
 
 <center>
-<img src="./images/lvpp_table.png" width=600>
+<img src="./images/lvpp_table.png" width=750>
 </center>
 
 </div>
@@ -533,7 +541,7 @@ Given $\alpha_k$, $\psi_{k-1}$
 
 ---
 
-# The Signorini problem $^{1}$
+# Implementation of the Signorini problem $^{1}$
 
 ```python
 fdim = omega.topology.dim -1
@@ -554,7 +562,7 @@ alpha = dolfinx.fem.Constant(omega, 1.)
 
 ---
 
-# The Signorini problem $^{1}$
+# Implementation of the Signorini problem $^{1}$
 
 ```python
 def epsilon(w):
@@ -576,7 +584,7 @@ F += ufl.inner(ufl.exp(psi), w) * ds - ufl.inner(g, w) * ds
 
 ---
 
-# The Signorini problem $^{1}$
+# Implementation of the Signorini problem $^{1}$
 
 ```python
 bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, bc_facets))
@@ -599,19 +607,19 @@ solver.solve()
 
 ---
 
-# The Signorini problem $^{1}$
+# Implementation of the Signorini problem $^{1}$
 
 <center>
 <img src="./images/signorini.png" width=850>
 </center>
 
----
+<!-- --- -->
 
 <!-- footer: <br> -->
 
----
+<!-- --- -->
 
-# Extraction of blocks from UFL
+<!-- # Extraction of blocks from UFL
 
 ```python
 a_blocked = ufl.extract_blocks(a_mono)
@@ -647,7 +655,7 @@ dolfinx.fem.petsc.assemble_matrix(A, a)
 A.assemble()
 ```
 
-</div>
+</div> -->
 
 ---
 
@@ -684,7 +692,7 @@ $$
 
 ---
 
-<!-- footer: Kutcha et al. (2020), Solving the EMI Equations using Finite Element Methods, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_5](https://doi.org/10.1007/978-3-030-61157-6_5)<br><br>
+<!-- footer: $^3$Kutcha et al. (2020), Solving the EMI Equations using Finite Element Methods, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_5](https://doi.org/10.1007/978-3-030-61157-6_5)<br><br>
 -->
 
 # Various ways of modelling this equation$^3$
