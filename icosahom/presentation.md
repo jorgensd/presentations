@@ -414,13 +414,17 @@ v, q = ufl.TestFunctions(W)
 
 ---
 
-<!--  footer: $^1$ Dokken, Farrell, Keith, Papadopoulos, Surowiec, _The latent variable proximal point algorithm for variational problems with inequality constraints_, arxiv:2503.05672. (2025)<br><br> -->
-
-# Example: Contact mechanics$^1$
+# Example: Contact mechanics
 
 ---
 
-# The Signorini problem$^1$
+# The Signorini problem
+
+<center>
+
+$\mathbf{u}\in V=\{\mathbf{u}\in H^1(\Omega, \mathbb{R}^3)~\vert~\mathbf{u}=\mathbf{u}_D~\text{on}~ \partial \Omega_D \}$
+
+</center>
 
 <br>
 <div class=columns>
@@ -439,9 +443,73 @@ $$
 
 </div>
 
+<div data-marpit-fragment>
+
+$$
+\begin{align*}
+\min_{u \in K}&= \frac{1}{2} \int_\Omega (C\epsilon(\mathbf{u})):\epsilon (\mathbf{u})~\mathrm{d}x - \int_\Omega \mathbf{f}\cdot \mathbf{u}~\mathrm{d}x\\
+K&=\{\mathbf{u}\in V ~\vert~ \mathbf{u}\cdot \hat{\mathbf{n}}\leq g ~\text{on}~\Gamma\}
+\end{align*}
+$$
+
+<div data-marpit-fragment>
+
+<b> How to enforce $\mathbf{u}\in K$? </b>
+
+</div>
+
+</div>
+
+---
+
+# Latent variable proximal point algorithm$^1$
+
+<!--  footer: $^1$ Dokken, Farrell, Keith, Papadopoulos, Surowiec, _The latent variable proximal point algorithm for variational problems with inequality constraints_, CMAME, 2025, DOI: [10.1016/j.cma.2025.118181](https://doi.org/10.1016/j.cma.2025.118181) <br><br> -->
+
+$$
+\begin{align*}
+&\min_{u\in K} J(u) \qquad K=\{v\in V~\vert~ Bv\in C(x)~ \text{for almost every}~ x\in \Omega\}
+\end{align*}
+$$
+
+Given $u^{k-1}\in V$, find $u^k\in V$, $\psi^k\in Q$ such that
+
+$$
+\begin{align*}
+ \alpha_k J'(u^k) + B^*\psi^k &= B^*\psi^{k-1}\\
+ Bu^k-\nabla R^*(\psi^k)&=0
+\end{align*}
+$$
+
+where $\text{dom}R=C$, $(\nabla R)^*$ is the convex conjugate, $B^*$ the dual conjugate.
+
+---
+
+# Properties of the formulation
+
+<br>
+<div class=columns>
 <div>
 
-**Latent variable proximal point algorithm**
+- $\alpha_k$ is bounded
+- Can be discretized with FD, FV, FEM, SEM
+- Can use higher order function spaces
+
+</div>
+<div>
+
+<center>
+<img src="./images/lvpp_table.png" width=600>
+</center>
+
+</div>
+
+---
+
+# Latent variable proximal point algorithm$^1$
+
+<div>
+
 Let $\mathbf{u}^k\in V(\Omega)$, $\psi^k\in Q(\Gamma)$,
 
 $$
