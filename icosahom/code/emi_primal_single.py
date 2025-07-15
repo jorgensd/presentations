@@ -231,6 +231,9 @@ def solve_problem(
     B.assemble()
     end_assembly = time.perf_counter()
     MPI.COMM_WORLD.Barrier()
+
+    nsp = PETSc.NullSpace().create(constant=True)
+    A.setNearNullSpace(nsp)
     ksp = PETSc.KSP().create(mesh.comm)
     ksp.setOperators(A, B)
     ksp.setType("cg")
