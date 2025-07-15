@@ -42,9 +42,10 @@ for i, row in op_table.iterrows():
         new_df["num_iterations"].append(int(row["num_iterations"]))
         new_df["Operation"].append(operation.split("_")[0])
         new_df["Time (s)"].append(row[operation])
-        new_df["degree"] = int(row["degree"])
+        new_df["degree"].append(int(row["degree"]))
 
 new_df = pandas.DataFrame.from_dict(new_df)
+
 num_processes = np.unique(new_df["Num processes"].array)
 assert len(num_processes) == 1, "Expected only one number of processes in the data"
 new_df = new_df[new_df["degree"] == args.degree]

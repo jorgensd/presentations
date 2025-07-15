@@ -34,6 +34,7 @@ new_df = {
     "Operation": [],
     "num_iterations": [],
     "Time (s)": [],
+    "degree": [],
 }
 for i, row in op_table.iterrows():
     for operation in operations:
@@ -42,7 +43,7 @@ for i, row in op_table.iterrows():
         new_df["num_iterations"].append(int(row["num_iterations"]))
         new_df["Operation"].append(operation.split("_")[0])
         new_df["Time (s)"].append(row[operation])
-        new_df["degree"] = int(row["degree"])
+        new_df["degree"].append(int(row["degree"]))
 
 new_df = pandas.DataFrame.from_dict(new_df)
 num_dofs = np.unique(new_df["num_dofs"].array)
