@@ -261,7 +261,9 @@ def solve_problem(
     dolfinx.fem.petsc.assign(x, [ui, ue])
     num_iterations = ksp.getIterationNumber()
     converged_reason = ksp.getConvergedReason()
-    print(f"Solver converged in: {num_iterations} with reason {converged_reason}")
+    PETSc.Sys.Print(
+        f"Solver converged in: {num_iterations} with reason {converged_reason}"
+    )
     assert converged_reason > 0
     # with dolfinx.io.VTXWriter(omega_i.comm, "uh_i.bp", [ui], engine="BP5") as bp:
     #     bp.write(0.0)
@@ -286,10 +288,9 @@ def solve_problem(
     min_local_h = np.min(local_h)
     glob_min_h = mesh.comm.allreduce(min_local_h, op=MPI.MIN)
 
-    if MPI.COMM_WORLD.rank == 0:
-        print(
-            f"Num dofs {num_dofs_e + num_dofs_i} {glob_min_h=:.2e} L2(ui): {global_ui:.2e}\n L2(ue): {global_ue:.2e}"
-        )
+    PETSc.Sys.Print(
+        f"Num dofs {num_dofs_e + num_dofs_i} {glob_min_h=:.2e} L2(ui): {global_ui:.2e} L2(ue): {global_ue:.2e}"
+    )
     sm_times = MPI.COMM_WORLD.allgather(submesh_creation)
     MPI.COMM_WORLD.Barrier()
     as_times = MPI.COMM_WORLD.allgather(end_assembly - start_assembly)
