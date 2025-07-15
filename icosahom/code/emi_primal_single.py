@@ -49,6 +49,9 @@ def solve_problem(
         z_bounds = (z_L, z_U)
     else:
         raise ValueError(f"Invalid geometric dimension: {gdim}. Must be 2 or 3.")
+    PETSc.Sys.Print(
+        f"Generating mesh with {num_refinements} refinements, degree {degree}"
+    )
     mesh, ct, ft = generate_mesh(
         MPI.COMM_WORLD,
         0,
@@ -66,6 +69,7 @@ def solve_problem(
         mesh.topology.index_map(mesh.topology.dim).size_local
         + mesh.topology.index_map(mesh.topology.dim).num_ghosts
     )
+    PETSc.Sys.Print("Creating submeshes")
     MPI.COMM_WORLD.Barrier()
     start_sm = time.perf_counter()
     omega_i, interior_to_parent, _, _ = dolfinx.mesh.create_submesh(
@@ -207,6 +211,8 @@ def solve_problem(
     )
 
     bc = dolfinx.fem.dirichletbc(u_bc, bc_dofs)
+
+    PETSc.Sys.Print("Assembling system")
     MPI.COMM_WORLD.Barrier()
     start_assembly = time.perf_counter()
     A = dolfinx.fem.petsc.assemble_matrix(a_compiled, kind="mpi", bcs=[bc])
@@ -252,7 +258,7 @@ def solve_problem(
     ui = dolfinx.fem.Function(Vi)
     ue = dolfinx.fem.Function(Ve)
     x = b.duplicate()
-
+    PETSc.Sys.Print("Solving system")
     start_solve = time.perf_counter()
     ksp.solve(b, x)
     end_solve = time.perf_counter()
