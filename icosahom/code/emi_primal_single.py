@@ -288,7 +288,6 @@ def solve_problem(
             f"Num dofs {num_dofs_e + num_dofs_i} {glob_min_h=:.2e} L2(ui): {global_ui:.2e}\n L2(ue): {global_ue:.2e}"
         )
     sm_times = MPI.COMM_WORLD.allgather(submesh_creation)
-    print(sm_times)
     MPI.COMM_WORLD.Barrier()
     as_times = MPI.COMM_WORLD.allgather(end_assembly - start_assembly)
     MPI.COMM_WORLD.Barrier()
