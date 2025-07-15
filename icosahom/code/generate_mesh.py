@@ -72,7 +72,7 @@ def generate_mesh(
         ]
         gmsh.model.addPhysicalGroup(tdim - 1, interface, tag=interface_marker)
         gmsh.model.addPhysicalGroup(tdim - 1, ext_boundary, tag=dirichlet_marker)
-
+        gmsh.option.setNumber("General.Terminal", 0)
         gmsh.option.setNumber("Mesh.CharacteristicLengthMax", 0.1)
         gmsh.model.mesh.generate(tdim)
 
