@@ -195,8 +195,14 @@ def solve_problem(
     L = T * inner(f, (tr_vi - tr_ve)) * dGamma
     L -= div(sigma_e * grad(ue_exact)) * ve * dxE
     L -= div(sigma_i * grad(ui_exact)) * vi * dxI
-    a_compiled = dolfinx.fem.form(extract_blocks(a), entity_maps=entity_maps)
-    L_compiled = dolfinx.fem.form(extract_blocks(L), entity_maps=entity_maps)
+    cffi_options = ["-Ofast", "-march=native"]
+    jit_options = {"cffi_extra_compile_args": cffi_options, "cffi_libraries": ["m"]}
+    a_compiled = dolfinx.fem.form(
+        extract_blocks(a), entity_maps=entity_maps, jit_options=jit_options
+    )
+    L_compiled = dolfinx.fem.form(
+        extract_blocks(L), entity_maps=entity_maps, jit_options=jit_options
+    )
 
     sub_tag, _ = scifem.mesh.transfer_meshtags_to_submesh(
         ft, omega_e, e_vertex_to_parent, exterior_to_parent
