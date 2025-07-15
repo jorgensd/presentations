@@ -243,9 +243,9 @@ def solve_problem(
     # ksp.getPC().setType("lu")
     # ksp.getPC().setFactorSolverType("mumps")
     ksp.setTolerances(1e-8, 1e-8)
-    # ksp.setMonitor(
-    #     lambda ksp, its, rnorm: PETSc.Sys.Print(f"Iteration: {its}, residual: {rnorm}")
-    # )
+    ksp.setMonitor(
+        lambda ksp, its, rnorm: PETSc.Sys.Print(f"Iteration: {its}, residual: {rnorm}")
+    )
     ksp.setNormType(PETSc.KSP.NormType.NORM_PRECONDITIONED)
     ksp.setErrorIfNotConverged(True)
 
