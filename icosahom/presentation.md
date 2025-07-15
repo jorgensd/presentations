@@ -599,9 +599,9 @@ petsc_options = {
   }
 F_blocked = ufl.extract_blocks(residual)
 solver = dolfinx.fem.petsc.NonlinearProblem(F_blocked, [u, psi], bcs=bcs,
-kind="mpi",
-entity_maps=entity_maps,
-petsc_options=petsc_options, petsc_options_prefix="signorini_")
+    kind="mpi",
+    entity_maps=entity_maps,
+    petsc_options=petsc_options, petsc_options_prefix="signorini_")
 solver.solve()
 ```
 
@@ -692,7 +692,7 @@ $$
 
 ---
 
-<!-- footer: $^3$Kutcha et al. (2020), Solving the EMI Equations using Finite Element Methods, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_5](https://doi.org/10.1007/978-3-030-61157-6_5)<br><br>
+<!-- footer: $^3$Kutcha et al. (2021), Solving the EMI Equations using Finite Element Methods, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_5](https://doi.org/10.1007/978-3-030-61157-6_5)<br><br>
 -->
 
 # Various ways of modelling this equation$^3$
@@ -734,7 +734,34 @@ for all $v_e \in V_e$ and $v_i \in V_i$.
 
 ---
 
-# Linear problems
+# Use known preconditioner$^4$ of this problem
+
+$$
+\begin{pmatrix}
+\int_{\Omega_e} \sigma_e \nabla u_e \cdot \nabla v_e~\mathrm{d} x & 0\\
+0 & \int_{\Omega_i} \sigma_i \nabla u_i \cdot \nabla v_i + u_i v_i ~\mathrm{d}x
+\end{pmatrix}
+$$
+
+```python
+P = sigma_e * inner(grad(ue), grad(ve)) * dxE
+P += sigma_i * inner(grad(ui), grad(vi)) * dxI
+P += inner(ui, vi) * dxI
+P_compiled = dolfinx.fem.form(extract_blocks(P), entity_maps=entity_maps)
+bc_P = dolfinx.fem.dirichletbc(0.0, bc_dofs, Ve)
+B = dolfinx.fem.petsc.assemble_matrix(P_compiled, kind="mpi", bcs=[bc_P])
+B.assemble()
+```
+
+<!-- footer: $^4$Kutcha and Mardal. (2021), Iterative Solvers for EMI Models, In: Modeling Excitable Tissue. Simula SpringerBriefs on Computing, DOI: [10.1007/978-3-030-61157-6_6](https://doi.org/10.1007/978-3-030-61157-6_6)<br><br>
+-->
+
+---
+
+<!-- footer: <br>
+ -->
+
+# Alternatively one can use PETSc fieldsplit
 
 ```python
 F = ....
@@ -748,23 +775,40 @@ problem = fem.petsc.LinearProblem(
     P=a_p,
     kind="nest",
     bcs=bcs,
+    petsc_options_prefix="my_solver",
     petsc_options={
         "ksp_type": "gmres",
         "pc_type": "fieldsplit",
         "pc_fieldsplit_type": "additive",
-    },
+        "ksp_rtol": 1e-8,
+      },
 )
 ```
 
 ---
 
-<div data-marpit-fragment>
+# Performance
 
-```python
-nested_IS = problem.A.getNestISs()
-ksp = problem.solver
-ksp.getPC().setFieldSplitIS(("sigma", nested_IS[0][0]), ("u", nested_IS[0][1]))
-ksp_sigma, ksp_u = ksp.getPC().getFieldSplitSubKSP()
-```
+<!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
+ -->
 
-</div>
+- Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
+- CG with boomeramg (Hypre)
+
+---
+
+# Summary
+
+<!-- footer:  <br><br>
+ -->
+
+- DOLFINx can support multiphysics problems by creating submeshes of codimension 0 (3D-3D, 2D-2D) and 1 (3D-2D, 2D-1D)
+  - Show-cased using the **Latent Variable Proximal Point algorithm** for the Signorini problem
+- It can easily be interfaced with PETSc (KSP, SNES, NEST)
+- Shows descent performance
+
+### Future work
+
+- Codimension 2 coupling (3D-1D, 2D-0D)
+  - Coupling non-conforming meshes
+- Support of fractional Laplacian's for preconditioning the mixed dimensional EMI equations
