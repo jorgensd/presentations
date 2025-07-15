@@ -283,10 +283,14 @@ def solve_problem(
     #     bp.write(0.0)
 
     error_ui = dolfinx.fem.form(
-        inner(ui - ui_exact, ui - ui_exact) * dxI, entity_maps=entity_maps
+        inner(ui - ui_exact, ui - ui_exact) * dxI,
+        entity_maps=entity_maps,
+        jit_options=jit_options,
     )
     error_ue = dolfinx.fem.form(
-        inner(ue - ue_exact, ue - ue_exact) * dxE, entity_maps=entity_maps
+        inner(ue - ue_exact, ue - ue_exact) * dxE,
+        entity_maps=entity_maps,
+        jit_options=jit_options,
     )
     local_ui = dolfinx.fem.assemble_scalar(error_ui)
     local_ue = dolfinx.fem.assemble_scalar(error_ue)

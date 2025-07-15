@@ -797,10 +797,14 @@ problem = fem.petsc.LinearProblem(
 
 <div class=columns>
 <div>
-
+<center>
+<img src="./code/timing_3.png" height=350px>
+</center>
 </div>
 <div>
-
+<center>
+<img src="./code/timing_processes_3.png" height=350px>
+</center>
 </div>
 
 ---
