@@ -795,6 +795,14 @@ problem = fem.petsc.LinearProblem(
 - Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
 - CG with boomeramg (Hypre)
 
+<div class=columns>
+<div>
+
+</div>
+<div>
+
+</div>
+
 ---
 
 # Summary
