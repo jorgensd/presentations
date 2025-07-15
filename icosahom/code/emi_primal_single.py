@@ -66,7 +66,7 @@ def solve_problem(
         mesh.topology.index_map(mesh.topology.dim).size_local
         + mesh.topology.index_map(mesh.topology.dim).num_ghosts
     )
-
+    MPI.COMM_WORLD.Barrier()
     start_sm = time.perf_counter()
     omega_i, interior_to_parent, _, _ = dolfinx.mesh.create_submesh(
         mesh, mesh.topology.dim, ct.find(interior_marker)
@@ -207,7 +207,7 @@ def solve_problem(
     )
 
     bc = dolfinx.fem.dirichletbc(u_bc, bc_dofs)
-
+    MPI.COMM_WORLD.Barrier()
     start_assembly = time.perf_counter()
     A = dolfinx.fem.petsc.assemble_matrix(a_compiled, kind="mpi", bcs=[bc])
     A.assemble()
@@ -230,7 +230,7 @@ def solve_problem(
     B = dolfinx.fem.petsc.assemble_matrix(P_compiled, kind="mpi", bcs=[bc_P])
     B.assemble()
     end_assembly = time.perf_counter()
-
+    MPI.COMM_WORLD.Barrier()
     ksp = PETSc.KSP().create(mesh.comm)
     ksp.setOperators(A, B)
     ksp.setType("cg")
@@ -239,7 +239,7 @@ def solve_problem(
     ksp.setErrorIfNotConverged(True)
     # ksp.getPC().setType("lu")
     # ksp.getPC().setFactorSolverType("mumps")
-    ksp.setTolerances(1e-12, 1e-12)
+    ksp.setTolerances(1e-8, 1e-8)
     # ksp.setMonitor(
     #     lambda ksp, its, rnorm: PETSc.Sys.Print(f"Iteration: {its}, residual: {rnorm}")
     # )

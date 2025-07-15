@@ -310,7 +310,7 @@ options = {
     "ksp_error_if_not_converged": True,
 }
 problem = dolfinx.fem.petsc.LinearProblem(
-  a, L, bcs=bcspetsc_options=options)
+  a, L, bcs=bcs, petsc_options=options)
 uh = problem.solve()
 with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
     bp.write(0.0)
@@ -603,7 +603,7 @@ _, converged_reason, num_iterations = problem.solve()
 # Output
 
 - **VTKHDF**: Write to file
-  - Vision replace VTKHDF and VTXwriter
+  - Vision replace VTXwriter with VTKHDF
 
 ```python
   dolfinx.io.vtkhdf.write_mesh("mixed_mesh_second_order.vtkhdf", mesh)
@@ -691,3 +691,12 @@ Prototype available at:
 - Other backend?
 
 ---
+
+# Fully matrix-free solver
+
+- Prototype using PETSc "Python"-matrices
+- Some internal changes in FFCx required to make it work for any preconditioner
+
+---
+
+# Questions?
