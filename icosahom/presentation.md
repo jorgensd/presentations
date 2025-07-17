@@ -168,9 +168,9 @@ backgroundPosition: bottom+10px left+10px
 
 ![bg contain right:30%](./logos/fenics.png)
 
-* A collection of libraries for solving PDEs with FEM in C++/Python
-* Supports arbitrary triangles, tetrahedra, quadrilateral, hexahedral meshes
-  * Support for wedges/pyramids and mixed-cell grids is in development
+- A collection of libraries for solving PDEs with FEM in C++/Python
+- Supports arbitrary triangles, tetrahedra, quadrilateral, hexahedral meshes
+  - Support for wedges/pyramids and mixed-cell grids is in development
 
 ---
 
@@ -519,7 +519,7 @@ where $\text{dom}R=C$, $(\nabla R)^*$ is the convex conjugate, $B^*$ the dual co
 - Can be discretized with
   FD, FV, FEM, SEM
 - Can use higher order function spaces
-- 
+-
 
 </div>
 <div>
@@ -814,12 +814,12 @@ problem = fem.petsc.LinearProblem(
 - Conjugate gradient with boomeramg (Hypre)
 
 <div class=columns>
-<div>
+<div data-marpit-fragment>
 <center>
 <img src="./code/timing_1.png" height=350px>
 </center>
 </div>
-<div>
+<div data-marpit-fragment>
 <center>
 <img src="./code/timing_processes_1.png" height=350px>
 </center>
@@ -841,9 +841,31 @@ problem = fem.petsc.LinearProblem(
 <img src="./code/timing_3.png" height=350px>
 </center>
 </div>
-<div>
+<div data-marpit-fragment>
 <center>
 <img src="./code/timing_processes_3.png" height=350px>
+</center>
+</div>
+
+---
+
+# Performance (P5)
+
+<!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
+ -->
+
+- Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
+- Lagrange-variant: Gauss–Lobatto–Legendre (warped)
+
+<div class=columns>
+<div>
+<center>
+<img src="./code/timing_5.png" height=350px>
+</center>
+</div>
+<div data-marpit-fragment>
+<center>
+<img src="./code/timing_processes_5.png" height=350px>
 </center>
 </div>
 
