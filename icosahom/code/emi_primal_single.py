@@ -248,13 +248,21 @@ def solve_problem(
     A.setNearNullSpace(nsp)
     ksp = PETSc.KSP().create(mesh.comm)
     ksp.setOperators(A, B)
-    ksp.setType("cg")
-    ksp.getPC().setType("hypre")
-    ksp.getPC().setHYPREType("boomeramg")
-    ksp.setErrorIfNotConverged(True)
-    # ksp.getPC().setType("lu")
-    # ksp.getPC().setFactorSolverType("mumps")
-    ksp.setTolerances(1e-8, 1e-8)
+
+    opts = PETSc.Options()
+    opts["ksp_type"] = "cg"
+    opts["pc_type"] = "hypre"
+    opts["pc_hypre_type"] = "boomeramg"
+    opts["ksp_error_if_not_converged"] = True
+    thres = 0.25 if mesh.geometry.dim == 2 else 0.7
+    opts["pc_hypre_boomeramg_strong_threshold"] = thres
+    opts["pc_hypre_boomeramg_agg_nl"] = 4
+    opts["pc_hypre_boomeramg_agg_num_paths"] = 2
+    opts["ksp_error_if_not_converged"] = True
+    opts["ksp_atol"] = 1e-8
+    opts["ksp_rtol"] = 1e-8
+    ksp.setFromOptions()
+
     ksp.setMonitor(
         lambda ksp, its, rnorm: PETSc.Sys.Print(f"Iteration: {its}, residual: {rnorm}")
     )
