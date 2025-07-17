@@ -168,9 +168,9 @@ backgroundPosition: bottom+10px left+10px
 
 ![bg contain right:30%](./logos/fenics.png)
 
-- A collection of libraries for solving PDEs with FEM in C++/Python
-- Supports arbitrary triangles, tetrahedra, quadrilateral, hexahedral meshes
-  - Support for wedges/pyramids and mixed-cell grids is in development
+* A collection of libraries for solving PDEs with FEM in C++/Python
+* Supports arbitrary triangles, tetrahedra, quadrilateral, hexahedral meshes
+  * Support for wedges/pyramids and mixed-cell grids is in development
 
 ---
 
@@ -519,6 +519,7 @@ where $\text{dom}R=C$, $(\nabla R)^*$ is the convex conjugate, $B^*$ the dual co
 - Can be discretized with
   FD, FV, FEM, SEM
 - Can use higher order function spaces
+- 
 
 </div>
 <div>
