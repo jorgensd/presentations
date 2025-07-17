@@ -805,7 +805,7 @@ problem = fem.petsc.LinearProblem(
 
 ---
 
-# Performance
+# Performance (P1)
 
 <!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
  -->
