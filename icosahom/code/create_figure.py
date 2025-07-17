@@ -51,11 +51,15 @@ assert len(num_processes) == 1, "Expected only one number of processes in the da
 new_df = new_df[new_df["degree"] == args.degree]
 plt.title(f"Timing breakdown for {num_processes[0]} process for P{args.degree}")
 
+
+operations = np.unique(new_df["Operation"].array)
+
 seaborn.lineplot(
     new_df,
     x="#Dofs",
     y="Time (s)",
     hue="Operation",
+    hue_order=operations,
     ax=ax,
     style="Operation",
     markers=True,
@@ -64,6 +68,22 @@ seaborn.lineplot(
     zorder=1,
 )
 
+dof_counts = np.unique(new_df["#Dofs"].array)
+operations = np.unique(new_df["Operation"].array)
+for i, operation in enumerate(operations):
+    filtered_op = new_df[new_df["Operation"] == operation]
+    op_dofs = filtered_op["#Dofs"]
+    ref_time = filtered_op[filtered_op["#Dofs"] == np.min(op_dofs)]["Time (s)"]
+    ref_line = np.array([ref_time * (dof / np.min(op_dofs)) for dof in dof_counts])
+    arg_sort = np.argsort(dof_counts)
+    ax.plot(
+        dof_counts[arg_sort],
+        ref_line[arg_sort],
+        label=f"{operation} reference",
+        linestyle="--",
+        color=seaborn.color_palette()[i],
+        zorder=0,
+    )
 for pos, row in new_df.iterrows():
     if row["Operation"] == "solve":
         ax.annotate(
