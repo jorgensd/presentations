@@ -157,7 +157,7 @@ backgroundPosition: bottom+10px left+10px
 <div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="./logos/wellcome.png" height=100px>
-<!-- <img src="./logos/simula.png" height=100px> -->
+<img src="./logos/simula.png" height=100px>
 <img src="./logos/batcat.png" height=100px>
 </div>
 <center/>
