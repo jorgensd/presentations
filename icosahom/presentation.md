@@ -166,6 +166,23 @@ backgroundPosition: bottom+10px left+10px
 
 # What is FEniCS(x)?
 
+![bg contain right:30%](./logos/fenics.png)
+
+- A collection of libraries for solving PDEs with FEM in C++/Python
+- Supports arbitrary triangles, tetrahedra, quadrilateral, hexahedral meshes
+  - Support for wedges/pyramids and mixed-cell grids is in development
+
+---
+
+# What is FEniCS(x)?
+
+<!-- footer: Baratta, I. A. et al. (2023). DOLFINx: The next generation FEniCS problem solving environment. DOI: 10.5281/zenodo.10447666 <br><br>
+ -->
+
+<center>
+<img src="./images/supported_elements.png" height=480px>
+</center>
+
 ---
 
 <!-- footer: <br>
@@ -793,7 +810,29 @@ problem = fem.petsc.LinearProblem(
  -->
 
 - Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
-- CG with boomeramg (Hypre)
+- Conjugate gradient with boomeramg (Hypre)
+
+<div class=columns>
+<div>
+<center>
+<img src="./code/timing_1.png" height=350px>
+</center>
+</div>
+<div>
+<center>
+<img src="./code/timing_processes_1.png" height=350px>
+</center>
+</div>
+
+---
+
+# Performance (P3)
+
+<!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
+ -->
+
+- Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
+- Conjugate gradient with boomeramg (Hypre)
 
 <div class=columns>
 <div>
