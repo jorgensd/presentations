@@ -51,7 +51,6 @@ assert len(num_dofs) == 1, "Expected only one number of processes in the data"
 plt.title(f"Timing breakdown for {num_dofs[0]:.2e} dofs for P{args.degree}")
 new_df = new_df[new_df["degree"] == args.degree]
 
-breakpoint()
 operations = np.unique(new_df["Operation"].array)
 
 seaborn.lineplot(
