@@ -221,7 +221,9 @@ def solve_problem(
     P = sigma_e * inner(grad(ue), grad(ve)) * dxE
     P += sigma_i * inner(grad(ui), grad(vi)) * dxI
     P += inner(ui, vi) * dxI
-    P_compiled = dolfinx.fem.form(extract_blocks(P), entity_maps=entity_maps)
+    P_compiled = dolfinx.fem.form(
+        extract_blocks(P), entity_maps=entity_maps, jit_options=jit_options
+    )
     bc_P = dolfinx.fem.dirichletbc(0.0, bc_dofs, Ve)
 
     PETSc.Sys.Print("Assembling system")
