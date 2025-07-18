@@ -427,7 +427,7 @@ v, q = ufl.TestFunctions(W)
 
 # Supported UFL operations
 
-- `ufl.derivative(F, [sigma, u], [ds, du])`
+- `ufl.derivative(F, [u, psi], [du, dpsi])`
 - `ufl.lhs`, `ufl.rhs`, `ufl.system`: [UFL #350](https://github.com/FEniCS/ufl/pull/350)
 - `ufl.action`: [UFL 351](https://github.com/FEniCS/ufl/pull/351)
 - `ufl.adjoint`: [UFL #352](https://github.com/FEniCS/ufl/pull/352)
@@ -788,7 +788,7 @@ L_blocked = ufl.extract_blocks(L)
 problem = fem.petsc.LinearProblem(
     a_blocked,
     L_blocked,
-    u=[sigma, u],
+    u=[u_i, u_e],
     P=a_p,
     kind="nest",
     bcs=bcs,
@@ -797,9 +797,8 @@ problem = fem.petsc.LinearProblem(
         "ksp_type": "gmres",
         "pc_type": "fieldsplit",
         "pc_fieldsplit_type": "additive",
-        "ksp_rtol": 1e-8,
-      },
-)
+        "ksp_rtol": 1e-8, .....
+      })
 ```
 
 ---
