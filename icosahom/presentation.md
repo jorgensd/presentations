@@ -871,6 +871,16 @@ problem = fem.petsc.LinearProblem(
 
 ---
 
+# A similar kind of scheme will be implemented in FESTIM 2.0$^{4,5}$
+
+<center>
+<img src="./images/festim.png" width=900px>
+</center>
+
+<!-- footer:  $^4$ R. Delaporte-Mathurin et al. *FESTIM: An open-source code for hydrogen transport simulations*, Int. J. Hydrog. Energy (2024) <br> $^5$ J. Dark, R. Delaporte-Mathurina, J.S. Dokken, G. Ferreroc, V. Kulagind, S. Meschini *FESTIM v2.0*, In preparation  <br><br> -->
+
+---
+
 # Summary
 
 <!-- footer:  <br><br>
