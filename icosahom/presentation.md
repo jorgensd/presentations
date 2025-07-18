@@ -570,10 +570,10 @@ V = dolfinx.fem.functionspace(omega, ("Lagrange", degree, (gdim,)))
 Q = dolfinx.fem.functionspace(gamma, ("Lagrange", degree))
 W = ufl.MixedFunctionSpace(V, Q)
 
-v, w = ufl.TestFunctions(Q)
+v, w = ufl.TestFunctions(W)
 u = dolfinx.fem.Function(V, name="Displacement")
-psi = dolfinx.fem.Function(W, name="LatentVariable")
-psi_k = dolfinx.fem.Function(W, name="PreviousLV")
+psi = dolfinx.fem.Function(Q, name="LatentVariable")
+psi_k = dolfinx.fem.Function(Q, name="PreviousLV")
 alpha = dolfinx.fem.Constant(omega, 1.)
 ```
 
