@@ -823,7 +823,7 @@ c_z &=\cos (\pi (z-z_l)(z-z_u))
 $$
 
 </div>
-<div data-marpit-fragment>
+<div>
 <center>
 <img src="./images/emi_figure.png" height=550px>
 </center>
