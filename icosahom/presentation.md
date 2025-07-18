@@ -519,7 +519,6 @@ where $\text{dom}R=C$, $(\nabla R)^*$ is the convex conjugate, $B^*$ the dual co
 - Can be discretized with
   FD, FV, FEM, SEM
 - Can use higher order function spaces
--
 
 </div>
 <div>
