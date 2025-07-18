@@ -808,7 +808,7 @@ problem = fem.petsc.LinearProblem(
 # Manufactured solution
 
 <div class=columns>
-<div data-marpit-fragment>
+<div>
 <br>
 <br>
 
