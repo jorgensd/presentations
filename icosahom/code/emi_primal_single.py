@@ -218,6 +218,12 @@ def solve_problem(
 
     bc = dolfinx.fem.dirichletbc(u_bc, bc_dofs)
 
+    P = sigma_e * inner(grad(ue), grad(ve)) * dxE
+    P += sigma_i * inner(grad(ui), grad(vi)) * dxI
+    P += inner(ui, vi) * dxI
+    P_compiled = dolfinx.fem.form(extract_blocks(P), entity_maps=entity_maps)
+    bc_P = dolfinx.fem.dirichletbc(0.0, bc_dofs, Ve)
+
     PETSc.Sys.Print("Assembling system")
     MPI.COMM_WORLD.Barrier()
     start_assembly = time.perf_counter()
@@ -234,11 +240,6 @@ def solve_problem(
     )
     dolfinx.fem.petsc.set_bc(b, bcs0)
 
-    P = sigma_e * inner(grad(ue), grad(ve)) * dxE
-    P += sigma_i * inner(grad(ui), grad(vi)) * dxI
-    P += inner(ui, vi) * dxI
-    P_compiled = dolfinx.fem.form(extract_blocks(P), entity_maps=entity_maps)
-    bc_P = dolfinx.fem.dirichletbc(0.0, bc_dofs, Ve)
     B = dolfinx.fem.petsc.assemble_matrix(P_compiled, kind="mpi", bcs=[bc_P])
     B.assemble()
     end_assembly = time.perf_counter()
