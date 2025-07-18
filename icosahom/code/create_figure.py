@@ -98,6 +98,6 @@ for pos, row in new_df.iterrows():
 ax.set_xscale("log")
 ax.set_yscale("log")
 out_file = f"timing_{args.degree}.png"
-ax.grid(True)
+ax.grid(True, which="both", ls="--", c="gray")
 
 fig.savefig(out_file, bbox_inches="tight")
