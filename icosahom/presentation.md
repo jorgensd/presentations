@@ -805,6 +805,32 @@ problem = fem.petsc.LinearProblem(
 
 ---
 
+# Manufactured solution
+
+<div class=columns>
+<div data-marpit-fragment>
+<br>
+<br>
+
+$$
+\begin{align*}
+u_e&=\sin ( x + y + z)\\
+u_i&= \frac{\sigma_e}{\sigma_i} u_e + c_{x}c_y c_z\\
+c_x &=\cos (\pi (x-x_l)(x-x_u))\\
+c_y &=\cos (\pi (y-y_l)(y-y_u))\\
+c_z &=\cos (\pi (z-z_l)(z-z_u))
+\end{align*}
+$$
+
+</div>
+<div data-marpit-fragment>
+<center>
+<img src="./images/emi_figure.png" height=550px>
+</center>
+</div>
+
+---
+
 # Performance (P1)
 
 <!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
