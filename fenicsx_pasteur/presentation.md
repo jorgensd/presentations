@@ -315,6 +315,7 @@ V = dolfinx.fem.functionspace(mesh, ("Lagrange", 5))
 
 
 
+
 ```
 
 ---
@@ -338,6 +339,7 @@ a = ufl.inner(ufl.grad(u), ufl.grad(v)) * ufl.dx
 x, y = ufl.SpatialCoordinate(mesh)
 f = x * ufl.sin(y * ufl.pi)
 L = ufl.inner(f, v) * ufl.dx
+
 
 
 
@@ -381,7 +383,8 @@ u_bc = dolfinx.fem.Constant(mesh, 0.0)
 bcs = [dolfinx.fem.dirichletbc(u_bc, boundary_dofs, V)]
 options = {"ksp_type": "preonly", "pc_type": "lu"}
 problem = petsc.LinearProblem(
-    a, L, bcs=bcs, petsc_options=options
+    a, L, bcs=bcs, petsc_options=options,
+    petsc_options_prefix="solver"
 )
 uh = problem.solve()
 with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
@@ -423,7 +426,7 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp",
 - Custom finite elements
 
 </div>
-<iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.7.0.post0/python/", title="Basix github repository"></iframe>
+<iframe width="600" height="500" src="https://docs.fenicsproject.org/basix/v0.9.0/python/", title="Basix github repository"></iframe>
 
 ---
 
@@ -485,8 +488,7 @@ def approximate_sawtooth(N: int, M: int, variant: basix.LagrangeVariant)->float:
 
     msh = dolfinx.mesh.create_unit_square(MPI.COMM_WORLD, N, M,
                                           cell_type=dolfinx.mesh.CellType.quadrilateral)
-    ufl_element = basix.ufl.element(basix.ElementFamily.P,
-                                    msh.topology.cell_name(), 10, variant)
+    ufl_element = basix.ufl.element(basix.ElementFamily.P, msh.basix_cell(), 10, variant)
     V = dolfinx.fem.functionspace(msh, ufl_element)
     uh = dolfinx.fem.Function(V)
     uh.interpolate(lambda x: saw_tooth(x))
@@ -707,10 +709,9 @@ mesh = dolfinx.mesh.create_unit_cube(
     MPI.COMM_WORLD, 10, 12, 13,
     cell_type=dolfinx.mesh.CellType.tetrahedron)
 
-el = basix.ufl.element("Lagrange", mesh.topology.cell_name(), 3)
+el = basix.ufl.element("Lagrange", mesh.basix_cell(), 3)
 
 V = dolfinx.fem.functionspace(mesh, el)
-
 u, v = ufl.TrialFunction(V), ufl.TestFunction(V)
 a = ufl.inner(u, v) * ufl.dx
 compiled_form = dolfinx.fem.form(a)
@@ -743,18 +744,24 @@ $$
 # Apply chain rule
 
 $$
-\frac{\mathrm{d}\hat J}{\mathrm{d} c} = \frac{\partial J}{\partial u}\frac{\mathrm{d} u}{\mathrm{d} m} + \frac{\partial J}{\partial m}
+\begin{align*}
+\frac{\mathrm{d}\hat J}{\mathrm{d} c} = \frac{\partial J}{\partial u}\frac{\mathrm{d} u}{\mathrm{d} c} + \frac{\partial J}{\partial c}
+\end{align*}
 $$
 
 <div data-marpit-fragment>
 
 <div>
 <center>
-<b>
 <br>
 In a discretized setting, what is the size of this problem?
-</b>
 </center>
+
+$$
+\begin{align*}
+c &= \sum_{i=0}^Mc_i \psi_i(x) &&& u=\sum_{j=0}^N u_j\phi_j(x)
+\end{align*}
+$$
 
 </div>
 </div>
@@ -763,60 +770,136 @@ In a discretized setting, what is the size of this problem?
 
 # The adjoint approach
 
----
-
-# Mesh creation using Numpy arrays
-
-```python
-import numpy as np
-from mpi4py import MPI
-
-import basix.ufl
-import dolfinx
-import ufl
-
-x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
-cells = np.array([[0, 1, 3, 4], [1, 2, 4, 5]], dtype=np.int64)
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_SELF, cells, x, ufl.Mesh(coordinate_element))
-
-```
+$$
+\begin{align*}
+\left(\frac{\mathrm{d}{\hat J}}{\mathrm{d} c}\right)^*&=
+\left(\frac{\partial F}{\partial c} \right)^*\lambda
++ \left(\frac{\partial J}{\partial c}\right)^*\\
+\left(\frac{\partial F}{\partial u} \right)^*\lambda &= -\left(\frac{\partial J}{\partial u}\right)^*
+\end{align*}
+$$
 
 <div data-marpit-fragment>
 
 <div>
-
-No re-ordering of cells to ensure consistent global orientations, see: Scroggs, Dokken, Richardson, Wells, 2022: [DOI: 10.1145/3524456](https://doi.org/10.1145/3524456)
-
+<center>
+By solving an extra (linear) PDE, the adjoint equation, we can get the sensitivity with respect to any variation in c
+</center>
+</div>
 </div>
 
 ---
 
-# How to create a mesh in parallel?
+# Similar equations to compute the hessian-vector product
 
-```python
-if (rank:=MPI.COMM_WORLD.rank) == 0:
-    x = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=np.float32)
-    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
-elif rank == 1:
-    x = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]], dtype=np.float32)
-    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
-else:
-    x = np.empty((0, 2), dtype=np.float32)
-    cells = np.empty((0, 4), dtype=np.int64)
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element))
-```
-
-- Array interface makes it easier to interface with any meshing format
-- No copying when moving data to C++ through nanobind (`std::span`)
+**Requires:**
+- First order adjoint equation
+- Tangent linear equation
+- Second order adjoint equiaton
 
 ---
 
-# When a mesh is read in with multiple processes (MPI) the cells are distributed
+# How would we compute an adjoint in FEniCS?
+
+### Example: Poisson mother problem
+
+$$
+\min_{f\in Q} J(u) = \frac{1}{2} \int_\Omega (u-d)^2~\mathrm{d} x + \frac{\alpha}{2} \int_\Omega f^2~\mathrm{d} x
+$$
+subject to
+$$
+\begin{align*}
+  -\kappa \Delta u &= f &&\text{ in }\Omega,\\
+  u&=0 &&\text{ on } \partial\Omega.
+\end{align*}
+$$
+
+<!-- footer: <center>For a complete description of this problem see for instance<br> [https://jsdokken.com/dxa/demos/poisson_mother.html](https://jsdokken.com/dxa/demos/poisson_mother.html)</center> -->
+
+---
+
+<!-- footer: <b></b> -->
+
+
+# We use UFL to define the functional and the PDE
+
+```python
+  V = dolfinx.fem.functionspace(mesh, ("Lagrange", 1))
+  Q = dolfinx.fem.functionspace(mesh, ("DG", 0))
+  du = ufl.TrialFunction(V)
+  f = dolfinx.fem.Function(Q)
+  uh = dolfinx.fem.Function(V)
+  dv = ufl.TestFunction(V)
+  alpha = dolfinx.fem.Constant(mesh, 1.0)
+  F = ufl.inner(ufl.grad(uh), ufl.grad(dv)) * ufl.dx - ufl.inner(f, dv) * ufl.dx
+  J = 1 / 2 * ufl.inner(uh - d, uh - d) * ufl.dx + alpha / 2 * f**2 * ufl.dx
+```
+
+---
+
+# We use UFL to derive the adjoint equation 
+
+```python
+dFdu = ufl.derivative(F, uh, du)
+dFdu_adj = ufl.adjoint(dFdu)
+dJdu = ufl.derivative(J, uh)
+lmbda = dolfinx.fem.Function(V)
+problem_adj = dolfinx.fem.petsc.LinearProblem(
+        dFdu_adj, dJdu, u=lmbda, petsc_options=petsc_options,
+        petsc_options_prefix="adjoint_problem_", bcs=[bc]
+    )
+problem_adj.solve()
+```
+
+---
+
+# We can easily compute the sensitivity
+
+```python
+dJdf = ufl.derivative(J, f)
+dFdf = ufl.derivative(F, f)
+Jac_adj = -ufl.action(ufl.adjoint(dFdm), lmbda) + dJdm
+Jac_vec = dolfinx.fem.assemble_vector(dolfinx.fem.form(Jac_adj))
+Jac_vec.scatter_reverse(dolfinx.la.InsertMode.add)
+Jac_vec.scatter_forward()
+```
+
+---
+
+# This reciepe is the same for any linear or non-linear PDE
+
+With the caviat that it is painful to implement time-stepping, which is usually done through finite differencing
+
+$$
+\frac{\partial u}{\partial t} - \kappa \nabla \cdot \nabla u = g
+$$
+
+$$
+\frac{u^{n}-u^{n-1}}{\Delta t} - \kappa \nabla \cdot \nabla u^n = g^n
+$$
+
+<div data-marpit-fragment>
+<div style="font-size:30px">
+This results in a sequence of adjoint equations that propagates backwards in time.
+</div>
+</div>
+
+---
+
+# For this we introduce an AD tool: pyadjoint
+
+- Github: [dolfin-adjoint/pyadjoint](https://github.com/dolfin-adjoint/pyadjoint)
+- Started as part of dolfin-adjoint/firedrake-adjoint, DOI: [10.21105/joss.01292](https://doi.org/10.21105/joss.01292)
+- Operator-overloading (You provide the tlm, adjoint, second order adjoint for each operation that is overloaded)
+- Creates a computational tape that we can propagate through forwards and backwards
+
+---
+
+<iframe width="1200" height="600" src="https://jsdokken.com/dxa/demos/poisson_mother.html", title="Poisson mother in DOLFINx-adjoint"></iframe>
+
+---
+
+# Does it work for large problems?
 
 <div class="columns">
 <div>
@@ -831,196 +914,36 @@ msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_ele
 </div>
 </div>
 
-<div data-marpit-fragment>
+---
 
-Custom partitioning example: [jsdokken.com/dolfinx_docs/meshes.html](https://jsdokken.com/dolfinx_docs/meshes.html)
+### We use MPI neighborhood communicators
 
-</div>
+<center>
+<img src="./scaling_archer.png" width=560>
+</center>
+
+<!-- footer: <center>Created by Chris Richardson, Institute for Energy and Environmental Flows, University of Cambridge<br> Funded by UKRI EPSRC: EP/S005072/1  </center> -->
+
+--- 
+
+<!-- footer: <center></center> -->
+
+
+# Summary
+
+- Presented the finite element method and how it works within the FEniCS framework
+- Covered the basics of PDE constrained optimization
+- How one can implement automatic differentiation within FEniCS
+
 
 ---
 
-<!-- # All entities (vertex, edge, facet, cell) has a notion of ownership
+---
 
-Makes mesh-view construction in parallel "easy" and safe
-
-<div class="columns">
-<div>
-
-![Vertex ownership and ghost distribution; width:15cm](vertex_ownership.png)
-
-</div>
-<div>
-
-![Vertex index map; width:15cm](vertex_indexmap.png)
-
-</div>
-</div>
-
---- -->
-
-<!--
-# Custom partitioning
-
-```python
-if (rank:=MPI.COMM_WORLD.rank) == 0:
-    cells = np.array([[0, 1, 3, 4]], dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # The cell on this process will be owned by rank 2, and ghosted on rank 0
-        return dolfinx.graph.adjacencylist(np.array([2, 0], dtype=np.int32), np.array([0,2],dtype=np.int32))
-elif rank == 1:
-    cells = np.array([[1, 2, 4, 5]], dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # The cell on this process will be owned by rank 1, and ghosted on 0 and 2
-        return dolfinx.graph.adjacencylist(np.array([1, 0, 2], dtype=np.int32), np.array([0,3],dtype=np.int32))
-else:
-    cells = np.empty((0, 4), dtype=np.int64)
-    def partitioner(comm: MPI.Intracomm, n, m, topo):
-        # No cells on process
-        return dolfinx.graph.adjacencylist(np.empty(0, dtype=np.int32), np.zeros(1, dtype=np.int32))
-
-coordinate_element = basix.ufl.element("Lagrange", "quadrilateral", 1,
-                                       shape=(x.shape[1],))
-msh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, cells, x, ufl.Mesh(coordinate_element), partitioner=partitioner)
-```
-<div data-marpit-fragment>
-
-<div>
-
-```bash
-rank=0 Owned cells: 0 Ghosted cells: 2 Total cells: 2
-rank=1 Owned cells: 1 Ghosted cells: 0 Total cells: 2
-rank=2 Owned cells: 1 Ghosted cells: 1 Total cells: 2
-```
-
-</div>
-</div>
-
---- -->
-
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-</div>
+<iframe width="1200" height="600" src="https://jsdokken.com/FEniCS-workshop/src/multiphysics/coupling.html", title="Co-dimensional coupling"></iframe>
 
 ---
 
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    # Wrap pointers as a Numpy arrays
-    A = numba.carray(A_, (dim, dim))
-    coordinate_dofs = numba.carray(coords_, (3, 3))
-
-    # Compute Jacobian determinant
-    x0, y0 = coordinate_dofs[0, :2]
-    x1, y1 = coordinate_dofs[1, :2]
-    x2, y2 = coordinate_dofs[2, :2]
-    detJ = abs((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1))
-    # M_hat is pre-computed local mass matrix
-    A[:] = detJ * M_hat
-
-
-
-
-
-
-
-
-```
-
-</div>
-
----
-
-### What if I want to create my own integration kernels?
-
-```python
-c_signature = ffcx.codegeneration.utils.numba_ufcx_kernel_signature(
-    dolfinx.default_scalar_type, dolfinx.default_real_type)
-
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    # Wrap pointers as a Numpy arrays
-    A = numba.carray(A_, (dim, dim))
-    coordinate_dofs = numba.carray(coords_, (3, 3))
-
-    # Compute Jacobian determinant
-    x0, y0 = coordinate_dofs[0, :2]
-    x1, y1 = coordinate_dofs[1, :2]
-    x2, y2 = coordinate_dofs[2, :2]
-    detJ = abs((x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1))
-    # M_hat is pre-computed local mass matrix
-    A[:] = detJ * M_hat
-
-formtype = dolfinx.cpp.fem.Form_float64
-top = msh.topology
-cells = np.arange(top.index_map(top.dim).size_local, dtype=np.int32)
-integrals = {dolfinx.fem.IntegralType.cell: [(-1, tabulate_A.address, cells), ]}
-coefficients_A, constants_A = [], []
-a = dolfinx.fem.Form(formtype([V._cpp_object, V._cpp_object],
-                              integrals, [], [], False, None))
-```
-
-</div>
-
----
-
-# What if I want to do something custom with local tensors generated by DOLFINx?
-
-```python
-@numba.cfunc(c_signature, nopython=True)
-def tabulate_A_wrapped(A_, w_, c_, coords_, entity_local_index, quadrature_permutation=None):
-    A = numba.carray(A_, (dim, dim))
-
-    # Allocate new Numpy array where temporary tabulation is stored
-    M = np.zeros_like(A)
-
-    w = numba.carray(w_, (dim, ))
-    c = numba.carray(c_, (1, ))
-
-    # Call the compiled kernel (from_buffer is required to extract the
-    # underlying data pointer)
-    ufcx_kernel(ffi.from_buffer(M), ffi.from_buffer(w),
-                ffi.from_buffer(c), coords_, entity_local_index,
-                quadrature_permutation)
-
-    # Row sum matrix M and store into diagonal of the output matrix A
-    np.fill_diagonal(A, np.sum(M, axis=1))
-```
-
----
-
-<iframe width="1200" height="600" src="https://fenicsproject.org/fenics-2024/", title="FEniCS 24 Conference"></iframe>
+<iframe width="1200" height="600" src="https://jsdokken.com/dolfinx-tutorial/chapter2/amr.html", title="Adaptive mesh refinement in DOLFINx"></iframe>
 
 ---
