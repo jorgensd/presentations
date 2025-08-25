@@ -222,8 +222,8 @@ $$
 
 <div data-marpit-fragment>
 
-* **2002**: First public version of a C++ library (DOLFIN)
-* **2003**: FEniCS project was created
+- **2002**: First public version of a C++ library (DOLFIN)
+- **2003**: FEniCS project was created
 
 </div>
 <div data-marpit-fragment>
@@ -263,7 +263,7 @@ $$
 <div class="columns">
 
 <div>
-<iframe width="600" height="420" src="https://jsdokken.com/dolfinx-tutorial/", title="FEniCS tutorial"></iframe>
+<img src="./amr.gif" width=600px>
 </div>
 
 <div data-marpit-fragment>
@@ -271,10 +271,10 @@ $$
 <div>
 
 <center>
-<img src="./deformation.gif" width=400px>
+<img src="./deformation.gif" width=500px>
 <center/>
 <center>
-<img src="./velocity.gif" width=400px>
+<img src="./velocity.gif" width=500px>
 <center/>
 </div>
 
