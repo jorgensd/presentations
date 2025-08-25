@@ -716,6 +716,53 @@ a = ufl.inner(u, v) * ufl.dx
 compiled_form = dolfinx.fem.form(a)
 ```
 
+
+---
+
+# Automatic differentiation in FEniCS
+
+
+
+---
+
+# General PDE-constrained optimization
+
+$$
+\min_c \hat J (c) = \min_c J(c, u(c))
+$$
+
+such that
+
+$$
+F(u, c) = 0
+$$
+
+
+---
+
+# Apply chain rule
+
+$$
+\frac{\mathrm{d}\hat J}{\mathrm{d} c} = \frac{\partial J}{\partial u}\frac{\mathrm{d} u}{\mathrm{d} m} + \frac{\partial J}{\partial m}
+$$
+
+<div data-marpit-fragment>
+
+<div>
+<center>
+<b>
+<br>
+In a discretized setting, what is the size of this problem?
+</b>
+</center>
+
+</div>
+</div>
+
+---
+
+# The adjoint approach
+
 ---
 
 # Mesh creation using Numpy arrays
