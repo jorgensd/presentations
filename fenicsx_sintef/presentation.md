@@ -888,7 +888,7 @@ bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, 
 
 ---
 
-<!-- footer: ${}^{12}$ Dark, James, et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br><br> -->
+<!-- footer: ${}^{12}$ Dark, James, <b>Dokken</b> et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br><br> -->
 
 # Conclusion
 
