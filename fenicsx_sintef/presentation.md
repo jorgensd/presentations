@@ -175,10 +175,6 @@ Workshop on challenges associated with real-world poromechanical simulation
 
 ---
 
-# What do we do at Simula?
-
----
-
 <center>
 <img src="valnesmri2femii.png" width=1000px>
 <br>
