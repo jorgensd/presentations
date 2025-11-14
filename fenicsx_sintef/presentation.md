@@ -896,7 +896,7 @@ bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, 
 
 ---
 
-<!-- footer: ${}^{12}$ Dark, James, <b>Dokken</b> et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br> ${}^{13}$Řehoř, M. and Hale, J.S. _FEniCSx-pctools: Tools for PETSc Block Linear Algebra Preconditioning in FEniCSx_, JORS, DOI: 10.5334/jors.494 (2025)<br><br> -->
+<!-- footer: ${}^{12}$ Dark, Delaporte, <b>Dokken</b> et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br> ${}^{13}$Řehoř, M. and Hale, J.S. _FEniCSx-pctools: Tools for PETSc Block Linear Algebra Preconditioning in FEniCSx_, JORS, DOI: 10.5334/jors.494 (2025)<br><br> -->
 
 # Conclusion
 
