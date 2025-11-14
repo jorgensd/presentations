@@ -183,12 +183,12 @@ Workshop on challenges associated with real-world poromechanical simulation
 <img src="valnesmri2femii.png" width=1000px>
 <br>
 <p style="font-size: 20px;">
-Meshed brain with subarachnoid spaces from Valnes and Mardal
+Meshed brain with subarachnoid spaces from Valnes and Mardal,
 <i>
 Meshing the intracranial compartments: The
 cerebellum, cerebrum, brainstem, and
 cerebrospinal fluid
-</i>, 2025, To appear in Dokken et al. 
+</i>, 2025, To appear in <b>Dokken</b> et al. 
 </i>Mathematical Modelling of the Human Brain II From Glymphatics to Deep Learning</i>
 </p>
 <center>
@@ -259,7 +259,7 @@ modelling framework
 </div>
 </div>
 <p style="font-size: 20px;">
-Stokes flow in Cereboral Spinal Fluid. <b>1155 GMRES iterations</b> to convergence with a <b>left preconditioner</b> from Hornkjøl et al. <i>Segmenting, meshing, and modeling CSF spaces</i>, , to appear in Dokken et al. 
+Stokes flow in Cereboral Spinal Fluid. <b>1155 GMRES iterations</b> to convergence with a <b>left preconditioner</b> from Hornkjøl et al. <i>Segmenting, meshing, and modeling CSF spaces</i>, , to appear in <b>Dokken</b> et al. 
 </i>Mathematical Modelling of the Human Brain II From Glymphatics to Deep Learning</i>
 </p>
 
