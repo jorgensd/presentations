@@ -658,7 +658,7 @@ B.assemble()
 
 ---
 
-<!-- footer: $^6$ Dean, J.P, _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, PhD Thesis, DOI: 10.17863/CAM.108292<br> ${}^7$ Dean, <b>Dokken</b>, Wells, _Parallel algorithms for mixed-domain problems_, To be published<br>
+<!-- footer: $^6$ Dean, J.P, _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, PhD Thesis, DOI: 10.17863/CAM.108292<br> ${}^7$ Dean, <b>Dokken</b>, Wells, _Parallel algorithms for mixed-domain problems_, In preparation<br>
 -->
 
 # Mixed-dimensional support$^{6,7}$
@@ -672,7 +672,7 @@ B.assemble()
 
 ---
 
-# Always aiming to be scalable
+# Always aiming to be scalable$^{6,7}$
 
 <center>
 <img src="./weak_scaling_dean.png" width=700>
