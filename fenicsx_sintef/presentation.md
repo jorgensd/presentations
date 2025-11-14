@@ -309,8 +309,6 @@ Stokes flow in Cereboral Spinal Fluid. <b>1155 GMRES iterations</b> to convergen
 
 ---
 
----
-
 <!--  footer: $^1$ Baratta, Dean, <b>Dokken</b>, Habera, Hale, Richardson, Rognes, Scroggs, Sime, Wells. 2023. DOLFINx: _The next generation FEniCS problem solving environment_. Zenodo. DOI: 10.5281/zenodo.10447666 <br><br> -->
 
 # How does it work?
@@ -365,6 +363,8 @@ basix_ufl_element = symfem.basix_interface.create_basix_element(element, ufl=Tru
 <!--  footer: $^2$ Scroggs, 2021 _Symfem: a symbolic finite element definition library._, JOSS, DOI: 10.21105/joss.03556 <br><br> -->
 
 ---
+
+<!--  footer:  <br><br> -->
 
 # Define problem specific symbolic variables
 
@@ -441,7 +441,6 @@ J = 1 / 2 * ufl.inner(uh - d, uh - d) * ufl.dx + alpha / 2 * f**2 * ufl.dx
 dFdu = ufl.derivative(F, uh, du)
 dFdu_adj = ufl.adjoint(dFdu)
 dJdu = ufl.derivative(J, uh)
-lmbda = dolfinx.fem.Function(V)
 ```
 
 ---
@@ -461,8 +460,6 @@ lmbda = dolfinx.fem.Function(V)
 <br>DOI: <a href="https://doi.org/10.5281/zenodo.10447665">10.5281/zenodo.10447665</a>
 <br><img src="fenics_logo.png" width=200px>
 <center/>
-
----
 
 <!--  footer: <br> -->
 
@@ -538,7 +535,7 @@ v, q = ufl.TestFunctions(W)
 
 ---
 
-# Pass blocked system to linear or nonlinear solver
+# Pass blocked system to solver interface
 
 ```python
 F = ....
@@ -669,10 +666,21 @@ B.assemble()
 - Native support for:
   - Codim 0: 1D-1D, 2D-2D, 3D-3D
   - Codim 1: 3D-2D and 2D-1D, 1D-0D
+- Grids can be higher order
 - Future work for native DOLFINx:
   - Codim 2: 3D-1D, 2D-0D
 
 ---
+
+# Always aiming to be scalable
+
+<center>
+<img src="./weak_scaling_dean.png" width=700>
+</center>
+
+---
+
+<!--  footer: $^8$ <b>Dokken</b>, Farrell, Keith, Papadopoulos, Surowiec, _The latent variable proximal point algorithm for variational problems with inequality constraints_, CMAME, 2025, DOI: [10.1016/j.cma.2025.118181](https://doi.org/10.1016/j.cma.2025.118181) <br><br> -->
 
 # The Signorini problem
 
@@ -877,8 +885,8 @@ bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, 
 
 <div>
 
-- Represent Network-x graphs as meshes in DOLFINx${}^10$
-- Use 1D submeshes with graph coloring${}^11$
+- Represent Network-x graphs as meshes in DOLFINx${}^{10}$
+- Use 1D submeshes with graph coloring${}^{11}$
 - _New_: MPI support and 0D submeshes for bifurcations
 
 </div>
@@ -888,17 +896,16 @@ bc = dolfinx.fem.dirichletbc(u_bc, dolfinx.fem.locate_dofs_topological(V, fdim, 
 
 ---
 
-<!-- footer: ${}^{12}$ Dark, James, <b>Dokken</b> et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br><br> -->
+<!-- footer: ${}^{12}$ Dark, James, <b>Dokken</b> et al. "FESTIM v2.0: Upgraded framework for multi-species hydrogen transport and enhanced performance." arXiv preprint arXiv:2509.24760 (2025). <br> ${}^{13}$Řehoř, M. and Hale, J.S. _FEniCSx-pctools: Tools for PETSc Block Linear Algebra Preconditioning in FEniCSx_, JORS, DOI: 10.5334/jors.494 (2025)<br><br> -->
 
 # Conclusion
 
 <div class=columns>
 <div>
 
-- FEniCSx is an extendible collection of packages for solving PDEs with FEM
 - Mixed-domain support (codim=0, codim=1, codim=2)
-- Scalability compared to legacy FEniCS${^{12}}$
-
+- Scalability${^{12}}$
+- Modularity for custom preconditioning${^{13}}$
 </div>
 <div>
 <img src="festim2.png" width=600>
