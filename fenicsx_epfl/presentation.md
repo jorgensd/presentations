@@ -795,7 +795,7 @@ B.assemble()
 
 # Always aiming to be scalable$^{6,7}$
 
-<div class="columns">
+<div class="right-skewed-columns">
 <div>
 <br>
 
@@ -810,7 +810,7 @@ $$
 </div>
 <div>
 <center>
-<img src="./weak_scaling_dean.png" width=600>
+<img src="./weak_scaling_dean.png" width=700>
 </center>
 </div>
 </div>
