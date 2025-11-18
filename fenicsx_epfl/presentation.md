@@ -1080,7 +1080,8 @@ Implemented together with Umberto Zerbinati.<br>
 <div class=columns>
 <div>
 
-- Mixed-domain support (codim=0, codim=1, codim=2)
+- Mixed-domain support
+  - codim 0, 1, 2
 - Scalability${^{12}}$
 - Modularity for custom preconditioning${^{13}}$
 </div>
