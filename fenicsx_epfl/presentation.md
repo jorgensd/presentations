@@ -271,7 +271,7 @@ Garth N. Wells (University of Cambridge)
 <img src="dolfinx_paper.png" width=960>
 <br>DOI: <a href="https://doi.org/10.5281/zenodo.10447665">10.5281/zenodo.10447665</a>
 <br><img src="fenics_logo.png" width=200px>
-<center/>
+</center>
 
 ---
 
@@ -725,7 +725,7 @@ $$
 <center>
 <br>
 <b style="font-size:35px">All models are implemented at:
-<a href="https://scientificcomputing.github.io/fenics-in-the-wild/src/ucs/emi/emi.html">https://scientificcomputing.github.io/fenics-in-the-wild/src/ucs/emi/emi.html</b>
+<a href="https://scientificcomputing.github.io/fenics-in-the-wild/src/ucs/emi/emi.html">https://scientificcomputing.github.io/fenics-in-the-wild/src/ucs/emi/emi.html</a></b>
 </center>
 <br>
 </div>
