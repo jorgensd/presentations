@@ -779,6 +779,76 @@ B.assemble()
 
 ---
 
+# Manufactured solution
+
+<div class=columns>
+<div>
+<br>
+<br>
+
+$$
+\begin{align*}
+u_e&=\sin ( x + y + z)\\
+u_i&= \frac{\sigma_e}{\sigma_i} u_e + c_{x}c_y c_z\\
+c_x &=\cos (\pi (x-x_l)(x-x_u))\\
+c_y &=\cos (\pi (y-y_l)(y-y_u))\\
+c_z &=\cos (\pi (z-z_l)(z-z_u))
+\end{align*}
+$$
+
+</div>
+<div>
+<center>
+<img src="./emi_figure.png" height=550px>
+</center>
+</div>
+
+---
+
+# Performance (P1)
+
+<!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
+ -->
+
+- Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
+- Conjugate gradient with boomeramg (Hypre)
+
+<div class=columns>
+<div data-marpit-fragment>
+<center>
+<img src="./timing_1.png" height=350px>
+</center>
+</div>
+<div data-marpit-fragment>
+<center>
+<img src="./timing_processes_1.png" height=350px>
+</center>
+</div>
+
+---
+
+# Performance (P5)
+
+<!-- footer: $^*$Thanks to Chris Richardson, Department of Earth Sciences, University of Cambridge for providing the computational resources <br><br>
+ -->
+
+- Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz$^*$
+- Lagrange-variant: Gauss–Lobatto–Legendre (warped)
+
+<div class=columns>
+<div>
+<center>
+<img src="./timing_5.png" height=350px>
+</center>
+</div>
+<div data-marpit-fragment>
+<center>
+<img src="./timing_processes_5.png" height=350px>
+</center>
+</div>
+
+---
+
 <!-- footer: $^6$ Dean, J.P, _Mathematical and computational aspects of solving mixed-domain problems using the finite element method_, PhD Thesis, DOI: 10.17863/CAM.108292<br> ${}^7$ Dean, <b>Dokken</b>, Wells, _Parallel algorithms for mixed-domain problems_, In preparation<br><br>
 -->
 
