@@ -231,11 +231,10 @@ def create_mesh(comm, h, d, order, vol_ids, bound_ids):
         gmsh.model.mesh.setOrder(order)
 
     partitioner = mesh.create_cell_partitioner(mesh.GhostMode.none)
-    msh, ct, ft = io.gmshio.model_to_mesh(
+    mesh_data = io.gmsh.model_to_mesh(
         gmsh.model, comm, 0, gdim=d, partitioner=partitioner)
     gmsh.finalize()
-    return msh, ct, ft
-
+    return mesh_data.mesh, mesh_data.cell_tags, mesh_data.facet_tags
 
 if __name__ == "__main__":
 
