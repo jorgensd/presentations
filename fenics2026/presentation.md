@@ -176,25 +176,60 @@ FEniCS 2026 at University of Chicago in Paris
 <div>
 <img src="hpl2005.png" vspace=0px width=600px>
 <figcaption style="font-size: 50%; padding-top: 10px;">
-FEniCS 05 (Chicago) - <i>Tools for a-Physics Simulation</i><br>  by Hans Petter Langtangen (Simula/UiO)
+FEniCS 05 (Chicago) - <i>Tools for Multi-Physics Simulation</i><br>  by Hans Petter Langtangen (Simula/UiO)
 </figcaption>
 </div>
 <div>
 <div data-marpit-fragment>
 
-Packages developed or maintained at SRL
+Packages developed or maintained
 
-- UFL
+- UFL/FFC(x)/DOLFIN(x)
 - DOLFINx_MPC
-- adios4dolfinx
-- scifem
-- io4dolfinx
-- fenicsx_ii
-- DOLFIN(x)-adjoint 
+- <b>scifem</b>
+- <b>io4dolfinx</b> (<s>adios4dolfinx</s>)
+- <b>fenicsx_ii</b>
+- <b>DOLFIN(x)-adjoint</b>
+- <b>networks_fenicsx</b>
 
 </div>
+
 </div>
 </div>
 
 ---
+
+# Scifem
+
+Why/Purpose
+
+---
+
+# IO4DOLFINx
+
+
+---
+
+# FEniCSx_ii
+
+
+
+---
+
+# DOLFINx-adjoint
+
+
+---
+
+# Networks_FEniCSx
+
+
+---
+
+# Whats next?
+
+
+---
+
+
 
