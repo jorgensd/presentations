@@ -201,7 +201,10 @@ Packages developed or maintained
 
 # Scifem
 
-Why/Purpose
+<div>
+Not all ideas are good ideas <div data-marpit-fragment> <b>in the beginning</b> </div>
+
+</div>
 
 ---
 
