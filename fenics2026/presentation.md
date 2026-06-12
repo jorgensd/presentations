@@ -316,28 +316,71 @@ assert len(u.x.array) == 3
 </div>
 </div>
 <div>
-<img src="simple_function.png" vspace=0px width=400>
+<img src="simple_function.png" vspace=0px width=500>
 </div>
 </div>
 </div>
 
 ---
 
+
+<img src="qr_codes/scifem_qr.png" class="qr-code" vspace=0px width=200px>
+
+<h1> What is next?</h1>
+<div class="skewed-columns">
+<div>
+<br>
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+<code class="language-python">from scifem import closest_point_projection
+points, ref_points = closest_point_projection(
+    mesh,
+    closest_cells,
+    points,
+    tol_x=1e-7,
+)
+</code></pre>
+<div font_size=10>
+Based on simplex projections<sup>2,3,4</sup>
+</div>
+</div>
+<div>
+<img src="cp.png" vspace=0px width=500>
+<figcaption style="font-size: 50%; padding-top: 0px;">
+<center>
+Figure from the morning tutorial<sup>1</sup>
+</center>
+</figcaption>
+</div>
+</div>
+</div>
+
+
+<!--  footer: <sup>1</sup> Dokken, J.S <a href="https://a-latyshev.github.io/fenics26-tutorials/grid-mapping/">https://a-latyshev.github.io/fenics26-tutorials/grid-mapping/</a><br><sup>2</sup>Held, Wolfe, & Crowder (1974). DOI: <a href="https://doi.org/10.1007/BF01580223">10.1007/bf01580223</a><br><sup>3</sup>Bertsekas, (1976). DOI: <a href="https://doi.org/10.1109/tac.1976.1101194">10.1109/tac.1976.1101194</a> <br> <sup>4</sup>Condat, L. (2015). DOI: <a href="https://doi.org/10.1007/s10107-015-0946-6">10.1007/s10107-015-0946-6</a><br><br> -->
+
+
+---
+
+
 <!--  footer: <sup>1</sup> Habera, Demarle, Hale, Richardson, Zilian , <i>XDMF and Paraview Checkpointing format</i>), FEniCS'18 <br><br> -->
 
 # IO4DOLFINx - a unified IO?
 
-<center>
-Visualization and checkpointing (write/read functions) has diverged due to N+1 different
-file formats and finite elements.
-
+<div class="skewed-columns">
+<div>
 <br>
-<img src="./acknowledged_screenshots/habera2017.png" vspace=0px width=400>
+<center>
+Visualization and checkpointing (write/read functions) has diverged due to N+1 different file formats and finite elements.
+</center>
+</div>
+<div>
+<center>
+<br>
+<img src="./acknowledged_screenshots/habera2017.png" vspace=0px width=450>
 <figcaption style="font-size: 50%; padding-top: 10px;">
 From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 </figcaption>
 </center>
-
+</div>
 
 
 <div class="columns">
@@ -357,23 +400,33 @@ From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 
 ---
 
-<!--  footer: <sup>2</sup> Dokken, J. S., (2024). <i>ADIOS4DOLFINx: A framework for checkpointing in FEniCS</i>. Journal of Open Source Software, 9(96), 6451, DOI:10.21105/joss.06451 <br> <sup>3</sup>Dokken J.S (2023) <i>Checkpointing in FEniCSx</i>. FEniCS'23 <br> -->
+
+
+
+<!--  footer: <sup>2</sup> Dokken, J. S., (2024). <i>ADIOS4DOLFINx: A framework for checkpointing in FEniCS</i>. Journal of Open Source Software, 9(96), 6451, DOI:10.21105/joss.06451 <br> <sup>3</sup>Dokken J.S (2023) <i>Checkpointing in FEniCSx</i>. FEniCS'23 <br><br> -->
 
 # IO4DOLFINx - a unified IO?
 
 <img src="qr_codes/io4dolfinx_qr.png" class="qr-code" vspace=0px width=200px>
 
+<div class="right-skewed-columns">
+<div>
+<center>
 ADIOS4DOLFINx<sup>2</sup> introduced a specific split between readable and visualizable functions.
+</center>
+</div>
+<div>
 <center>
 <figure>
-<img src="./acknowledged_screenshots/adios4dolfinx2023_1.png" vspace=0px width=350>
-<img src="./acknowledged_screenshots/adios4dolfinx2023_2.png" vspace=0px width=350>
+<img src="./acknowledged_screenshots/adios4dolfinx2023_1.png" vspace=0px width=300>
+<img src="./acknowledged_screenshots/adios4dolfinx2023_2.png" vspace=0px width=270>
 <figcaption style="font-size: 50%; padding-top: 0px;">
 Snapshots from the FEniCS 2023 presentation on checkpointing<sup>3</sup>.
 </figcaption>
 </figure>
 </center>
-<br>
+</div>
+</div>
 
 ---
 
