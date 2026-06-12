@@ -154,7 +154,7 @@ style: |
   }
 
 
-backgroundImage: url('Simula_logo.png')
+backgroundImage: url('logos/simula.png')
 backgroundSize: 150px
 backgroundPosition: bottom+10px left+10px
 ---
@@ -168,11 +168,13 @@ FEniCS 2026 at University of Chicago in Paris
 <br/>
 <b>Henrik N.T. Finsberg</b>
 <br>
-<img src="simula.png" vspace=20px width=150px>
+<img src="logos/simula.png" vspace=20px width=150px>
 
 <br/>
-<div>
-<img src="fenics_logo.png" vspace=20px width=150px>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; width: 100%;">
+  <img src="logos/wellcome.png" alt="Wellcome Logo" style="margin: 20px 0; width: 120px;">
+  <img src="logos/fenics.png" alt="Fenics Logo" style="margin: 20px 0; width: 150px;">
+  <img src="logos/batcat.png" alt="Batcat Logo" style="margin: 20px 0; width: 300px; max-width: 100%;">
 </div>
 
 </center>
@@ -184,7 +186,7 @@ FEniCS 2026 at University of Chicago in Paris
 
 <div class="skewed-columns">
 <div>
-<img src="hpl2005.png" vspace=0px width=600px>
+<img src="./acknowledged_screenshots/hpl2005.png" vspace=0px width=600px>
 <figcaption style="font-size: 50%; padding-top: 10px;">
 FEniCS 05 (Chicago) - <i>Tools for Multi-Physics Simulation</i><br>  by Hans Petter Langtangen (Simula/UiO)
 </figcaption>
@@ -330,7 +332,7 @@ Visualization and checkpointing (write/read functions) has diverged due to N+1 d
 file formats and finite elements.
 
 <br>
-<img src="habera2017.png" vspace=0px width=400>
+<img src="./acknowledged_screenshots/habera2017.png" vspace=0px width=400>
 <figcaption style="font-size: 50%; padding-top: 10px;">
 From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 </figcaption>
@@ -364,8 +366,8 @@ From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 ADIOS4DOLFINx<sup>2</sup> introduced a specific split between readable and visualizable functions.
 <center>
 <figure>
-<img src="adios4dolfinx2023_1.png" vspace=0px width=350>
-<img src="adios4dolfinx2023_2.png" vspace=0px width=350>
+<img src="./acknowledged_screenshots/adios4dolfinx2023_1.png" vspace=0px width=350>
+<img src="./acknowledged_screenshots/adios4dolfinx2023_2.png" vspace=0px width=350>
 <figcaption style="font-size: 50%; padding-top: 0px;">
 Snapshots from the FEniCS 2023 presentation on checkpointing<sup>3</sup>.
 </figcaption>
