@@ -448,73 +448,333 @@ IO4DOLFINx is a <b>backend agnositic</b> interface to many mesh formats.
 
 ---
 
+<!--  footer: <sup>7</sup>Laurino and Zunino. <i>Derivation and analysis of coupled PDEs on manifolds with high dimensionality gap arising from topological model reduction.</i> ESAIM: M2AN, 2019. DOI: <a href="https://doi.org/10.1051/m2an/2019042">10.1051/m2an/2019042</a>. <br><br> -->
+
+<img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
 
 # FEniCSx_ii
 
-<div class="columns">
 
+<div class="skewed-columns">
+<div>
+Example based on<sup>7</sup>
+<br><br>
+
+$$
+\begin{align*}
+  - \nabla \cdot (\alpha_1 \nabla u) + \xi (\Pi_R(u) - p))\delta_\Gamma &= f
+  && \text{in } \Omega, \\
+  - d_s(A d_s p) + P \xi (p - \Pi(u)) &= A \hat f  &&  \text{in } \Lambda, \\
+  u&=g &&\text{on } \partial\Omega,\\
+  A d_s p &=0 && \text{at } s\in\{0, 1\}.\\
+  \int_\Omega \alpha_1 \nabla u \cdot \nabla v~\mathrm{d}x
+  + \int_\Gamma P\xi (\Pi_R(u) - p)\Pi_R(v)~\mathrm{d}s
+  &= \int_\Omega f\cdot v~\mathrm{d}x\\
+  \int_\Gamma A d_s p \cdot d_s q~\mathrm{d}s
+  + \int_\Gamma P\xi (p - \Pi_R(u))q~\mathrm{d}s
+  &= \int_\Gamma A\hat f\cdot q~\mathrm{d}s
+\end{align*}
+$$
+
+</div>
 <div>
 
+<figure>
+<img src="./3D_1D.png" vspace=0px width=350>
 <br>
+</figure>
+
+</div>
+</div>
+
+
+---
+
 <img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
 
-</div>
+
+<!--  footer: <sup>8</sup>M, Kuchta. <i>Assembly of multiscale linear PDE operators</i>. ENUMATH 2019 (2021), DOI: <a href="https://doi.org/10.1007/978-3-030-55874-1_63">10.1007/978-3-030-55874-1_63</a>. <br><br> -->
+
+
+# Re-implementation of FEniCS_ii<sup>8</sup>
+
+```python
+from fenicsx_ii import Average, Circle, LinearProblem, assemble_scalar
+V = dolfinx.fem.functionspace(omega, ("Lagrange", 1))
+Q = dolfinx.fem.functionspace(lmbda, ("Lagrange", 1))
+W = ufl.MixedFunctionSpace(*[V, Q])
+
+R, q_degree = 0.05, 20
+restriction_trial = Circle(lmbda, R, degree=q_degree)
+restriction_test = Circle(lmbda, R, degree=q_degree)
+
+(u, p) = ufl.TrialFunctions(W)
+(v, q) = ufl.TestFunctions(W)
+
+q_el = basix.ufl.quadrature_element(lmbda.basix_cell(), value_shape=(), degree=q_degree)
+Rs = dolfinx.fem.functionspace(lmbda, q_el)
+avg_u = Average(u, restriction_trial, Rs)
+avg_v = Average(v, restriction_test, Rs)
+```
+
+---
+
+<img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
+
+<h1 > Uses intermediate non-matching <br>interpolation matrices as<sup>8</sup></h1>
+
+```python
+dx_3D = ufl.Measure("dx", domain=omega)
+dx_1D = ufl.Measure("dx", domain=lmbda)
+
+A = ufl.pi * R**2
+P = 2 * ufl.pi * R
+xi = dolfinx.fem.Constant(omega, 1.0)
+x = ufl.SpatialCoordinate(omega)
+a = ufl.inner(ufl.grad(u), ufl.grad(v)) * dx_3D
+a += P * xi * ufl.inner(avg_u - p, avg_v) * dx_1D
+a += A * ufl.inner(ufl.grad(p), ufl.grad(q)) * dx_1D
+a += P * xi * ufl.inner(p - avg_u, q) * dx_1D
+L = f_vol * v * dx_3D
+L += f_line * q * dx_1D
+```
+
+<br>
+
+---
+
+<img src="qr_codes/networks_fenicsx_qr.png" class="qr-code" vspace=0px width=200px>
+
+<!-- footer: <sup>9</sup>I.G. Gjerde. <i>Graphnics: Combining FEniCS and NetworkX to simulate flow in complex networks</i>. 2022. <br>DOI: <a href="https://doi.org/10.48550/arXiv.2212.02916">10.48550/arXiv.2212.02916</a>.<br><sup>10</sup> Daversin-Catty, Dean, and Rognes. <i>Finite Element Software and Performance for Network Models with Multipliers</i>. 2024.<br>DOI: <a href="https://doi.org/10.1007/978-3-031-58519-7_4">10.1007/978-3-031-58519-7_4</a> <br><br> -->
+
+# Networks_FEniCSx
+
+<div class="skewed-columns">
 
 <div>
 
+MPI compatible FEniCSx+Networkx based on <sup>9,10</sup>
+
+```python
+from networks_fenicsx import HydraulicNetworkAssembler, NetworkMesh, Solver
+from networks_fenicsx.network_generation import make_arterial_tree
+from networks_fenicsx.post_processing import export_functions, extract_global_flux
+n = 5
+G = make_arterial_tree(N=n, direction=np.array([0.1, 1, 0]))
+network_mesh = NetworkMesh(
+    G, N=40, color_strategy=nx.coloring.strategy_largest_first)
+assembler = HydraulicNetworkAssembler(
+    network_mesh, flux_degree=1, pressure_degree=0)
+assembler.compute_forms(p_bc_ex=p_bc_expr)
+solver = Solver(assembler, kind="nest")
+solver.assemble()
+sol = solver.solve()
+global_flux = extract_global_flux(network_mesh, sol)
+```
+
+</div>
+
+<div>
+<figure>
+<center>
+<img src="./arterial_tree.png" vspace=0px width=400px>
+<figcaption style="font-size: 50%; padding-top: 0px;">
+</figcaption>
+</center>
+</figure>
+<br>
 </div>
 </div>
 
+
+---
+
+<!-- footer:  <br><br> -->
+
+<img src="qr_codes/DOLFINx_adjoint_qr.png" class="qr-code" vspace=0px width=200px>
+
+
+# DOLFINx-adjoint
+
+```python
+u = ufl.TrialFunction(V)
+v = ufl.TestFunction(V)
+F = ufl.inner(kappa * ufl.grad(u), ufl.grad(v)) * ufl.dx - f * v * ufl.dx
+a, L = ufl.system(F)
+uh = dolfinx_adjoint.Function(V, name="State")
+petsc_options = {
+    "ksp_type": "preonly",
+    "pc_type": "lu",
+    "pc_factor_mat_solver_type": "mumps",
+    "ksp_error_if_not_converged": True,
+}
+problem = dolfinx_adjoint.LinearProblem(
+    a,
+    L,
+    u=uh,
+    bcs=[bc],
+    petsc_options=petsc_options,
+    adjoint_petsc_options=petsc_options,
+    tlm_petsc_options=petsc_options,  # type: ignore
+)
+problem.solve()
+```
 
 ---
 
 # DOLFINx-adjoint
 
-<div class="columns">
-
-<div>
-
-<br>
 <img src="qr_codes/DOLFINx_adjoint_qr.png" class="qr-code" vspace=0px width=200px>
 
-</div>
+```python
 
-<div>
+J_symbolic = 0.5 * ufl.inner(uh - d, uh - d) * ufl.dx
+J_symbolic += 0.5 * alpha * ufl.inner(f, f) * ufl.dx
+J = dolfinx_adjoint.assemble_scalar(J_symbolic)
 
-</div>
-</div>
+control = pyadjoint.Control(f)
+Jhat = pyadjoint.ReducedFunctional(J, control)
 
+optimization_problem = pyadjoint.MoolaOptimizationProblem(Jhat)
+f_moola = DolfinxPrimalVector(f)
+
+optimization_opts = {
+  "jtol": 0, "gtol": 1e-9,
+  "Hinit": "default", "maxiter": 100,
+  "mem_lim": 10, "rjtol": 0}
+solver = moola.BFGS(optimization_problem, f_moola, options=optimization_opts)
+solution = solver.solve()
+```
 
 ---
 
-# Networks_FEniCSx
+<!-- footer: <br><br><sup>11</sup>Farrell, Kirby, Marchena-Menéndez. <i>Irksome: Automating Runge–Kutta Time-stepping for Finite Element Methods</i>. ACM Trans. Math. Softw. 2021 DOI: <a href="https://doi.org/10.1145/3466168">10.1145/3466168</a>https://doi.org/10.1145/3466168 <br> -->
 
+<img src="qr_codes/Irksome_qr.png" class="qr-code" vspace=0px width=300px>
+
+<h1> Irksome<sup>11</sup> - time derivatives in UFL </h1>
+
+```python
+from irkesome import Dt, MeshConstant
+el_u = basix.ufl.element("Lagrange", ct, 3, shape=(gdim,))
+el_p = basix.ufl.element("Lagrange", ct, 2)
+W = dolfinx.fem.functionspace(msh, basix.ufl.mixed_element([el_u, el_p]))
+
+MC = MeshConstant(msh, backend="dolfinx")
+t, dt = MC.Constant(0.0), MC.Constant(1.0 / N)
+z = dolfinx.fem.Function(W)
+u, p = split(z)
+(v, q) = TestFunctions(W)
+F = inner(Dt(u), v) * dx + inner(grad(u), grad(v)) * dx \
+  - inner(p, div(v)) * dx - inner(div(u), q) * dx \
+  - inner(f, v) * dx
+```
+
+---
+
+<img src="qr_codes/Irksome_qr.png" class="qr-code" vspace=0px width=300px>
+
+<!-- footer: <br> -->
+
+# Dirichlet BCs with UFL-expressions
+
+
+```python
+from irksome.backends.dolfinx import dirichletbc
+bc = dirichletbc(bc_u_as_ufl_expr, boundary_dofs, W.sub(0))
+bc_p = dirichletbc(bc_p_as_ufl_expr, corner_dof, W.sub(1))
+bcs = [bc, bc_p]
+```
+
+---
+
+<img src="qr_codes/Irksome_qr.png" class="qr-code" vspace=0px width=300px>
+
+<h1>We can now choose the accuracy of the<br> time-derivative</h1>
+
+```python
+from irksome import GaussLegendre
+from irksome.stage_derivative import StageDerivativeTimeStepper
+from irksome.tools import AI
+
+butcher_tableau = GaussLegendre(num_stages=num_stages)
+linear_stepper = StageDerivativeTimeStepper(
+        F, butcher_tableau, t, dt, z,
+        bcs=bcs,
+        Fp=None,
+        bc_type="DAE",
+        splitting=AI,
+        solver_parameters=solver_parameters,
+        backend="dolfinx",
+    )
+linear_stepper.advance()
+
+```
+
+---
+
+# What's next?
+
+* Combining external operator and JAX
+<img src="qr_codes/FEniCSx_JAX_qr.png" vspace=0px width=200px>
+
+* Extending Irksome support and moving DirichletBC to DOLFINx
+* Extend DOLFINx-adjoint
+* Extend and combine these frameworks
+
+---
+
+
+<!--  footer: <br>The work has been funded by the Wellcome Trust, grant number 313298/Z/24/Z and by Horizon Europe under the call Cross-sectoral solutions for the climate transition (HORIZON-CL5-2023-D2-01). <br>-->
+
+<style scoped>
+section {
+  background-image: url('logos/simula.png') !important;
+  background-size: 150px !important;
+  background-position: right 60px bottom 10px !important;
+  background-repeat: no-repeat !important;
+}
+</style>
+
+# Thanks to all my collaborators
 <div class="columns">
-
-<div>
-
-<br>
-<img src="qr_codes/networks_fenicsx_qr.png" class="qr-code" vspace=0px width=200px>
-
+  <div>
+    <center>
+      <figure style="margin: 0 0 10px 0;">
+        <img src="people/henrik.png" vspace="0px" height="150px">
+        <img src="people/marie.png" vspace="0px" height="150px">
+        <figcaption style="font-size: 50%; padding-top: 0px;">
+          H.N.T Finsberg & M.E. Rognes<br>FEniCSx_ii, scifem, dolfinx_adjoint
+        </figcaption>
+      </figure>
+      <figure style="margin: 0;">
+        <img src="people/cecile.jpg" vspace="0px" height="150px">
+        <img src="people/paul.png" vspace="0px" height="150px">
+        <img src="people/joe.jpg" vspace="0px" height="150px">
+        <figcaption style="font-size: 50%; padding-top: 0px;">
+          C. Catty-Daversin, P.T. Kühner & J.P. Dean<br>
+          Networks_FEniCSx
+        </figcaption>
+      </figure>
+    </center>
+  </div>
+  <div>
+    <center>
+      <figure style="margin: 0 0 10px 0;">
+        <img src="people/Ahsan_Ali.jpg" vspace="0px" height="150">
+        <img src="people/kirby.png" vspace="0px" height="150">
+        <img src="people/pablo.jpg" vspace="0px" height="150">
+        <figcaption style="font-size: 50%; padding-top: 0px;">
+          A. Ali, R. Kirby & P. Brubeck Martinez<br>
+          Irksome
+        </figcaption>
+      </figure>
+      <figure style="margin: 0;">
+        <img src="people/matteo.jpg" vspace="0px" height="150px">
+        <figcaption style="font-size: 50%; padding-top: 0px;">
+          M. Croci <br> FEniCSx_JAX
+        </figcaption>
+      </figure>
+    </center>
+  </div>
 </div>
-
-<div>
-
-</div>
-</div>
-
-
----
-
-# Whats next?
-
-
-
----
-
-<img src="qr_codes/irksome_qr.png" vspace=0px width=200px>
-
----
-
-<img src="qr_codes/FEniCSx_JAX_qr.png" class="qr-code"  vspace=0px width=200px>
-
