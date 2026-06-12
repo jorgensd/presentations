@@ -361,7 +361,7 @@ Figure from the morning tutorial<sup>1</sup>
 ---
 
 
-<!--  footer: <sup>1</sup> Habera, Demarle, Hale, Richardson, Zilian , <i>XDMF and Paraview Checkpointing format</i>), FEniCS'18 <br><br> -->
+<!--  footer: <sup>5</sup> Habera, Demarle, Hale, Richardson, Zilian , <i>XDMF and Paraview Checkpointing format</i>), FEniCS'18 <br><br> -->
 
 # IO4DOLFINx - a unified IO?
 
@@ -377,7 +377,7 @@ Visualization and checkpointing (write/read functions) has diverged due to N+1 d
 <br>
 <img src="./acknowledged_screenshots/habera2017.png" vspace=0px width=450>
 <figcaption style="font-size: 50%; padding-top: 10px;">
-From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
+From M. Habera's presentation<sup>5</sup> at FEniCS 2018 on the XDMF format
 </figcaption>
 </center>
 </div>
@@ -403,7 +403,7 @@ From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 
 
 
-<!--  footer: <sup>2</sup> Dokken, J. S., (2024). <i>ADIOS4DOLFINx: A framework for checkpointing in FEniCS</i>. Journal of Open Source Software, 9(96), 6451, DOI:10.21105/joss.06451 <br> <sup>3</sup>Dokken J.S (2023) <i>Checkpointing in FEniCSx</i>. FEniCS'23 <br><br> -->
+<!--  footer: <sup>6</sup>Dokken, J. S., (2024). <i>ADIOS4DOLFINx: A framework for checkpointing in FEniCS</i>. JOSS, DOI:<a href="https://doi.org/10.21105/joss.06451">10.21105/joss.06451</a> <br> <sup>7</sup>Dokken J.S (2023) <i>Checkpointing in FEniCSx</i>. FEniCS'23 <br><br> -->
 
 # IO4DOLFINx - a unified IO?
 
@@ -412,7 +412,7 @@ From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
 <div class="right-skewed-columns">
 <div>
 <center>
-ADIOS4DOLFINx<sup>2</sup> introduced a specific split between readable and visualizable functions.
+ADIOS4DOLFINx<sup>6</sup> introduced a specific split between readable and visualizable functions.
 </center>
 </div>
 <div>
@@ -421,7 +421,7 @@ ADIOS4DOLFINx<sup>2</sup> introduced a specific split between readable and visua
 <img src="./acknowledged_screenshots/adios4dolfinx2023_1.png" vspace=0px width=300>
 <img src="./acknowledged_screenshots/adios4dolfinx2023_2.png" vspace=0px width=270>
 <figcaption style="font-size: 50%; padding-top: 0px;">
-Snapshots from the FEniCS 2023 presentation on checkpointing<sup>3</sup>.
+Snapshots from the FEniCS 2023 presentation on checkpointing<sup>7</sup>.
 </figcaption>
 </figure>
 </center>
