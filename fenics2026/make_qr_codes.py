@@ -30,14 +30,14 @@ def generate_qr_with_text(text: str, url: str):
         bg_img.save(temp_file.name)
         temp_file.seek(0)
 
-        qrcode = segno.make_qr(url, error="h", version=15)
+        qrcode = segno.make_qr(url, error="h")#, version=20)
         cwd = Path.cwd() / "qr_codes"
         cwd.mkdir(exist_ok=True)
         # Blend the QR code with the intermediate image
         qrcode.to_artistic(
             background=temp_file.name,
             target=(cwd / f"{text}_qr.png").as_posix(),
-            scale=10,
+            scale=5,
             dark="black",  # The color of the QR code's data modules
         )
 

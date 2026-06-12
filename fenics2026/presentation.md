@@ -144,6 +144,16 @@ style: |
     font-family: Helvetica, sans-serif;
   }
 
+  .qr-code {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 120px; /* Adjust size as needed */
+
+
+  }
+
+
 backgroundImage: url('Simula_logo.png')
 backgroundSize: 150px
 backgroundPosition: bottom+10px left+10px
@@ -199,32 +209,244 @@ Packages developed or maintained
 
 ---
 
-# Scifem
+<h1> Scifem - FEM prototyping playground </h1>
+
+<!-- <div class="columns"> -->
 
 <div>
-Not all ideas are good ideas <div data-marpit-fragment> <b>in the beginning</b> </div>
+<center>
+Not all ideas are good ideas <span data-marpit-fragment> <b>in the beginning</b></span>
 
+<img src="qr_codes/scifem_qr.png" class="qr-code" vspace=0px width=200px>
+</div>
+<br>
+<div data-marpit-fragment>
+<b>Examples that are now in DOLFINx</b>
+
+</center>
+<!-- Real spaces -->
+<div class="columns">
+<div data-marpit-fragment>
+  <ul>
+ <li>Real function spaces <code>scifem.create_real_functionspace</code>
+  </ul>
+</div>
+<div data-marpit-fragment>
+  <pre is="marp-pre" data-auto-scaling="downscale-only">
+  <code class="language-python"
+>r_el = basix.ufl.real_element(mesh.basix_cell(), shape=(2, 3))
+R = dolfinx.fem.functionspace(mesh, r_el)
+</code></pre>
+</div>
+</div>
+<!-- Blocked solvers -->
+<div class="skewed columns">
+<div data-marpit-fragment>
+  <ul>
+ <li>Blocked Newton solvers <code>scifem.BlockedNewtonSolver</code>
+  </ul>
+</div>
+<div data-marpit-fragment>
+  <pre is="marp-pre" data-auto-scaling="downscale-only">
+  <code class="language-python"
+  >dolfinx.fem.petsc.NonlinearProblem
+</code></pre>
+</div>
+</div>
+
+<!-- Transfer tags -->
+<div class="columns">
+<div data-marpit-fragment>
+  <ul>
+ <li>Transfer tags to submesh <code>scifem.transfer_meshtags_to_submesh</code>
+  </ul>
+</div>
+<div data-marpit-fragment>
+  <pre is="marp-pre" data-auto-scaling="downscale-only">
+  <code class="language-python"
+  >dolfinx.mesh.transfer_meshtags_to_submesh
+</code></pre>
+</div>
 </div>
 
 ---
 
-# IO4DOLFINx
+<img src="qr_codes/scifem_qr.png" class="qr-code" vspace=0px width=200px>
+
+# What is next?
+
+<center>
+<code>scifem.create_space_of_simple_functions</code>
+</center>
+
+<div class="skewed-columns">
+<div>
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+<code class="language-python">mesh = dolfinx.mesh.create_unit_square(comm, 10, 10)
+tdim = mesh.topology.dim
+tol = 1e-14
+</code></pre>
+<div data-marpit-fragment style="margin: 0; padding: 0;">
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-radius: 0;">
+<code class="language-python"><span style="color: #2e8b57;"># Divide cell into three regions</span>
+tags = (4,5,8)
+cell_map = mesh.topology.index_map(tdim)
+num_cells_local = cell_map.size_local + cell_map.num_ghosts
+markers = np.full(num_cells_local, tags[0],  dtype=np.int32)
+markers[dolfinx.mesh.locate_entities(
+    mesh, tdim, lambda x: x[0] <= 0.5+tol)] = tags[1]
+markers[dolfinx.mesh.locate_entities(
+    mesh, tdim, lambda x: x[1] <= 0.5+tol)] = tags[2]
+cells = np.arange(num_cells_local, dtype=np.int32)
+ct = dolfinx.mesh.meshtags(mesh, tdim, cells, markers)
+</code></pre>
+</div>
+<div data-marpit-fragment style="margin: 0; padding: 0;">
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-top: 0; padding-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
+<code class="language-python"><span style="color: #2e8b57;"># Create a piecewise constant (per region) function space</span>
+V = create_space_of_simple_functions(mesh, ct, tags)
+u = dolfinx.fem.Function(V)
+u.x.array[0] = 3.2
+u.x.array[1] = 5.5
+u.x.array[2] = 4.2
+assert len(u.x.array) == 3
+</code></pre>
+</div>
+</div>
+<div>
+<img src="simple_function.png" vspace=0px width=400>
+</div>
+</div>
+</div>
+
+---
+
+<!--  footer: <sup>1</sup> Habera, Demarle, Hale, Richardson, Zilian , <i>XDMF and Paraview Checkpointing format</i>), FEniCS'18 <br><br> -->
+
+# IO4DOLFINx - a unified IO?
+
+<center>
+Visualization and checkpointing (write/read functions) has diverged due to N+1 different
+file formats and finite elements.
+
+<br>
+<img src="habera2017.png" vspace=0px width=400>
+<figcaption style="font-size: 50%; padding-top: 10px;">
+From M. Habera's presentation<sup>1</sup> at FEniCS 2018 on the XDMF format
+</figcaption>
+</center>
+
+
+
+<div class="columns">
+
+<div>
+
+<br>
+<img src="qr_codes/io4dolfinx_qr.png" class="qr-code" vspace=0px width=200px>
+
+</div>
+
+<div>
+
+</div>
+</div>
 
 
 ---
 
+<!--  footer: <sup>2</sup> Dokken, J. S., (2024). <i>ADIOS4DOLFINx: A framework for checkpointing in FEniCS</i>. Journal of Open Source Software, 9(96), 6451, DOI:10.21105/joss.06451 <br> <sup>3</sup>Dokken J.S (2023) <i>Checkpointing in FEniCSx</i>. FEniCS'23 <br> -->
+
+# IO4DOLFINx - a unified IO?
+
+<img src="qr_codes/io4dolfinx_qr.png" class="qr-code" vspace=0px width=200px>
+
+ADIOS4DOLFINx<sup>2</sup> introduced a specific split between readable and visualizable functions.
+<center>
+<figure>
+<img src="adios4dolfinx2023_1.png" vspace=0px width=350>
+<img src="adios4dolfinx2023_2.png" vspace=0px width=350>
+<figcaption style="font-size: 50%; padding-top: 0px;">
+Snapshots from the FEniCS 2023 presentation on checkpointing<sup>3</sup>.
+</figcaption>
+</figure>
+</center>
+<br>
+
+---
+
+<!--  footer: <br><br> -->
+
+# IO4DOLFINx - a unified IO?
+
+<img src="qr_codes/io4dolfinx_qr.png" class="qr-code" vspace=0px width=200px>
+
+Reality is that most users use iso-parameteric finite elements (often P1).
+
+IO4DOLFINx is a <b>backend agnositic</b> interface to many mesh formats.
+
+- `gmsh`, `PyVista`, `XDMF`, `VTKHDF`
+  - `{read/write}_{point/mesh}_data`  
+- `adios2`, `h5py`
+  - `{read/write}_checkpoint`
+
+
+---
+
+
 # FEniCSx_ii
 
+<div class="columns">
+
+<div>
+
+<br>
+<img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
+
+</div>
+
+<div>
+
+</div>
+</div>
 
 
 ---
 
 # DOLFINx-adjoint
 
+<div class="columns">
+
+<div>
+
+<br>
+<img src="qr_codes/DOLFINx_adjoint_qr.png" class="qr-code" vspace=0px width=200px>
+
+</div>
+
+<div>
+
+</div>
+</div>
+
 
 ---
 
 # Networks_FEniCSx
+
+<div class="columns">
+
+<div>
+
+<br>
+<img src="qr_codes/networks_fenicsx_qr.png" class="qr-code" vspace=0px width=200px>
+
+</div>
+
+<div>
+
+</div>
+</div>
 
 
 ---
@@ -232,7 +454,12 @@ Not all ideas are good ideas <div data-marpit-fragment> <b>in the beginning</b> 
 # Whats next?
 
 
+
 ---
 
+<img src="qr_codes/irksome_qr.png" vspace=0px width=200px>
 
+---
+
+<img src="qr_codes/FEniCSx_JAX_qr.png" class="qr-code"  vspace=0px width=200px>
 
