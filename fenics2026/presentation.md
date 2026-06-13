@@ -448,7 +448,7 @@ IO4DOLFINx is a <b>backend agnositic</b> interface to many mesh formats.
 
 ---
 
-<!--  footer: <sup>7</sup>Laurino and Zunino. <i>Derivation and analysis of coupled PDEs on manifolds with high dimensionality gap arising from topological model reduction.</i> ESAIM: M2AN, 2019. DOI: <a href="https://doi.org/10.1051/m2an/2019042">10.1051/m2an/2019042</a>. <br><br> -->
+<!--  footer: <sup>8</sup>Laurino and Zunino. <i>Derivation and analysis of coupled PDEs on manifolds with high dimensionality gap arising from topological model reduction.</i> ESAIM: M2AN, 2019. DOI: <a href="https://doi.org/10.1051/m2an/2019042">10.1051/m2an/2019042</a>. <br><br> -->
 
 <img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
 
@@ -457,7 +457,7 @@ IO4DOLFINx is a <b>backend agnositic</b> interface to many mesh formats.
 
 <div class="skewed-columns">
 <div>
-Example based on<sup>7</sup>
+Example based on<sup>8</sup>
 <br><br>
 
 $$
@@ -493,10 +493,10 @@ $$
 <img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
 
 
-<!--  footer: <sup>8</sup>M, Kuchta. <i>Assembly of multiscale linear PDE operators</i>. ENUMATH 2019 (2021), DOI: <a href="https://doi.org/10.1007/978-3-030-55874-1_63">10.1007/978-3-030-55874-1_63</a>. <br><br> -->
+<!--  footer: <sup>9</sup>M, Kuchta. <i>Assembly of multiscale linear PDE operators</i>. ENUMATH 2019 (2021), DOI: <a href="https://doi.org/10.1007/978-3-030-55874-1_63">10.1007/978-3-030-55874-1_63</a>. <br><br> -->
 
 
-# Re-implementation of FEniCS_ii<sup>8</sup>
+# Re-implementation of FEniCS_ii<sup>9</sup>
 
 ```python
 from fenicsx_ii import Average, Circle, LinearProblem, assemble_scalar
@@ -521,7 +521,7 @@ avg_v = Average(v, restriction_test, Rs)
 
 <img src="qr_codes/FEniCSx_ii_qr.png" class="qr-code" vspace=0px width=200px>
 
-<h1 > Uses intermediate non-matching <br>interpolation matrices as<sup>8</sup></h1>
+<h1 > Uses intermediate non-matching <br>interpolation matrices as<sup>9</sup></h1>
 
 ```python
 dx_3D = ufl.Measure("dx", domain=omega)
@@ -543,9 +543,9 @@ L += f_line * q * dx_1D
 
 ---
 
-<img src="qr_codes/networks_fenicsx_qr.png" class="qr-code" vspace=0px width=200px>
+<img src="qr_codes/networks_FEniCSx_qr.png" class="qr-code" vspace=0px width=200px>
 
-<!-- footer: <sup>9</sup>I.G. Gjerde. <i>Graphnics: Combining FEniCS and NetworkX to simulate flow in complex networks</i>. 2022. <br>DOI: <a href="https://doi.org/10.48550/arXiv.2212.02916">10.48550/arXiv.2212.02916</a>.<br><sup>10</sup> Daversin-Catty, Dean, and Rognes. <i>Finite Element Software and Performance for Network Models with Multipliers</i>. 2024.<br>DOI: <a href="https://doi.org/10.1007/978-3-031-58519-7_4">10.1007/978-3-031-58519-7_4</a> <br><br> -->
+<!-- footer: <sup>10</sup>I.G. Gjerde. <i>Graphnics: Combining FEniCS and NetworkX to simulate flow in complex networks</i>. 2022. <br>DOI: <a href="https://doi.org/10.48550/arXiv.2212.02916">10.48550/arXiv.2212.02916</a>.<br><sup>11</sup> Daversin-Catty, Dean, and Rognes. <i>Finite Element Software and Performance for Network Models with Multipliers</i>. 2024.<br>DOI: <a href="https://doi.org/10.1007/978-3-031-58519-7_4">10.1007/978-3-031-58519-7_4</a> <br><br> -->
 
 # Networks_FEniCSx
 
@@ -553,7 +553,7 @@ L += f_line * q * dx_1D
 
 <div>
 
-MPI compatible FEniCSx+Networkx based on <sup>9,10</sup>
+MPI compatible FEniCSx+Networkx based on <sup>10,11</sup>
 
 ```python
 from networks_fenicsx import HydraulicNetworkAssembler, NetworkMesh, Solver
@@ -648,11 +648,11 @@ solution = solver.solve()
 
 ---
 
-<!-- footer: <br><br><sup>11</sup>Farrell, Kirby, Marchena-Menéndez. <i>Irksome: Automating Runge–Kutta Time-stepping for Finite Element Methods</i>. ACM Trans. Math. Softw. 2021 DOI: <a href="https://doi.org/10.1145/3466168">10.1145/3466168</a>https://doi.org/10.1145/3466168 <br> -->
+<!-- footer: <sup>11</sup>Farrell, Kirby, Marchena-Menéndez. ACM Trans. Math. Softw. 2021 DOI: <a href="https://doi.org/10.1145/3466168">10.1145/3466168</a>https://doi.org/10.1145/3466168 <br> <sup>12</sup> Kirby, MacLachlan. 2025. ACM Trans. Math. Softw. 51, 3 DOI: <a href="https://doi.org/10.1145/3759245">10.1145/3759245</a><br><sup>13</sup>Kirby, MacLachlan, Brubeck. 2025. arXiv:<a href="https://doi.org/10.48550/arXiv.2508.20255">2508.20255</a>-->
 
 <img src="qr_codes/Irksome_qr.png" class="qr-code" vspace=0px width=300px>
 
-<h1> Irksome<sup>11</sup> - time derivatives in UFL </h1>
+<h1> Irksome - time derivatives in UFL<sup>11,12,13</sup>  </h1>
 
 ```python
 from irkesome import Dt, MeshConstant
@@ -669,6 +669,16 @@ F = inner(Dt(u), v) * dx + inner(grad(u), grad(v)) * dx \
   - inner(p, div(v)) * dx - inner(div(u), q) * dx \
   - inner(f, v) * dx
 ```
+<br>
+
+<style scoped>
+section {
+  background-image: url('logos/simula.png') !important;
+  background-size: 150px !important;
+  background-position: right 60px bottom 10px !important;
+  background-repeat: no-repeat !important;
+}
+</style>
 
 ---
 
