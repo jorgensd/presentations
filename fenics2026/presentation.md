@@ -660,7 +660,7 @@ solution = solver.solve()
 <h1> Irksome - time derivatives in UFL<sup>11,12,13</sup>  </h1>
 
 ```python
-from irkesome import Dt, MeshConstant
+from irksome import Dt, MeshConstant
 el_u = basix.ufl.element("Lagrange", ct, 3, shape=(gdim,))
 el_p = basix.ufl.element("Lagrange", ct, 2)
 W = dolfinx.fem.functionspace(msh, basix.ufl.mixed_element([el_u, el_p]))
