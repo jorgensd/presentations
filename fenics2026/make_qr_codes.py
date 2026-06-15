@@ -47,6 +47,49 @@ def generate_qr_with_text(text: str, url: str, custom_text: str = None):
             dark="black"
         )
 
+def generate_event(logos_dir : Path, out_dir : Path, event_url : str):
+    simula_path = logos_dir / "simula.png"
+    fenics_path = logos_dir / "fenics.png"
+    combined_path = logos_dir / "combined_logos.png"
+
+    # --- 2. Stack the Images ---
+    # Open the original images
+    img_simula = Image.open(simula_path)
+    img_fenics = Image.open(fenics_path)
+
+    # Calculate the dimensions for the new combined image
+    # Width will be the maximum of the two widths, Height will be the sum of both
+    new_width = max(img_simula.width, img_fenics.width)
+    new_height = img_simula.height + img_fenics.height
+
+    # Create a new blank canvas with a transparent background (RGBA)
+    combined_img = Image.new("RGBA", (new_width, new_height), (255, 255, 255, 0))
+
+    # Paste the images onto the new canvas (centered horizontally)
+    # Format: paste(image, (x_offset, y_offset))
+    simula_x = (new_width - img_simula.width) // 2
+    fenics_x = (new_width - img_fenics.width) // 2
+
+    combined_img.paste(img_fenics, (fenics_x, 0))
+    combined_img.paste(img_simula, (simula_x, img_fenics.height))
+
+    # Save the stacked image so segno can use it
+    combined_img.save(combined_path)
+
+    # Generate the QR code base
+    qrcode = segno.make_qr(event_url, error="h", version=8)
+
+    # Create the artistic QR code using the new combined image
+    qrcode.to_artistic(
+        background=combined_path.as_posix(),
+        target=(out_dir / "event_qr.png").as_posix(),
+        scale=5,
+        dark="black"
+    )
+
+    print(f"QR code successfully generated at: {(out_dir / 'event_qr.png').as_posix()}")
+
+
 projects = [
     ("scifem", "https://github.com/scientificcomputing/scifem", None),
     ("Irksome", "https://github.com/firedrakeproject/Irksome/", None),
@@ -61,3 +104,10 @@ projects = [
 # 1. Generate the QR code with High error correction ('h')
 for text, url, custom_text in projects:
     generate_qr_with_text(text, url, custom_text)
+
+
+
+event_url ="https://www.simula.no/about/events/simula-25-years-fenics-workshop"
+logos_dir = Path.cwd() / "logos"
+out_dir = Path.cwd() / "qr_codes"
+generate_event(logos_dir, out_dir, event_url)

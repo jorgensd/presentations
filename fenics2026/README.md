@@ -26,11 +26,11 @@ For people that really want to know how to use DOLFINx, I would go through mater
 You can either use marp for vscode, or generate the presentation from commandline with:
 
 ```bash
-npx @marp-team/marp-cli@latest presentation.md -o presentation.html --html
+npx @marp-team/marp-cli@latest presentation.md  -o presentation.html --html
 ```
 
 Server with live updates
 
 ```bash
-npx @marp-team/marp-cli@latest -s .  --html
+npx @marp-team/marp-cli@latest -s . --html
 ```

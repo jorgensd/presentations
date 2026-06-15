@@ -130,6 +130,10 @@ style: |
     display: grid;
     grid-template-columns: minmax(0, 50fr) minmax(0, 35fr);
   }
+  .sskewed-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 60fr) minmax(0, 25fr);
+  }
   .right-skewed-columns {
     display: grid;
     grid-template-columns: minmax(0, 35fr) minmax(0, 50fr);
@@ -306,7 +310,7 @@ ct = dolfinx.mesh.meshtags(mesh, tdim, cells, markers)
 <div data-marpit-fragment style="margin: 0; padding: 0;">
 <pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-top: 0; padding-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
 <code class="language-python"><span style="color: #2e8b57;"># Create a piecewise constant (per region) function space</span>
-V = create_space_of_simple_functions(mesh, ct, tags)
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">V = create_space_of_simple_functions(mesh, ct, tags)</span>
 u = dolfinx.fem.Function(V)
 u.x.array[0] = 3.2
 u.x.array[1] = 5.5
@@ -498,24 +502,24 @@ $$
 
 # Re-implementation of FEniCS_ii<sup>9</sup>
 
-```python
-from fenicsx_ii import Average, Circle, LinearProblem, assemble_scalar
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+<code class="language-python">from fenicsx_ii import Average, Circle, LinearProblem, assemble_scalar
 V = dolfinx.fem.functionspace(omega, ("Lagrange", 1))
 Q = dolfinx.fem.functionspace(lmbda, ("Lagrange", 1))
 W = ufl.MixedFunctionSpace(*[V, Q])
 
 R, q_degree = 0.05, 20
-restriction_trial = Circle(lmbda, R, degree=q_degree)
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">restriction_trial = Circle(lmbda, R, degree=q_degree)
 restriction_test = Circle(lmbda, R, degree=q_degree)
-
+</span>
 (u, p) = ufl.TrialFunctions(W)
 (v, q) = ufl.TestFunctions(W)
 
 q_el = basix.ufl.quadrature_element(lmbda.basix_cell(), value_shape=(), degree=q_degree)
 Rs = dolfinx.fem.functionspace(lmbda, q_el)
-avg_u = Average(u, restriction_trial, Rs)
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">avg_u = Average(u, restriction_trial, Rs)
 avg_v = Average(v, restriction_test, Rs)
-```
+</span></code></pre>
 
 ---
 
@@ -523,8 +527,7 @@ avg_v = Average(v, restriction_test, Rs)
 
 <h1 > Uses intermediate non-matching <br>interpolation matrices as<sup>9</sup></h1>
 
-```python
-dx_3D = ufl.Measure("dx", domain=omega)
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><code class="language-python">dx_3D = ufl.Measure("dx", domain=omega)
 dx_1D = ufl.Measure("dx", domain=lmbda)
 
 A = ufl.pi * R**2
@@ -532,12 +535,12 @@ P = 2 * ufl.pi * R
 xi = dolfinx.fem.Constant(omega, 1.0)
 x = ufl.SpatialCoordinate(omega)
 a = ufl.inner(ufl.grad(u), ufl.grad(v)) * dx_3D
-a += P * xi * ufl.inner(avg_u - p, avg_v) * dx_1D
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">a += P * xi * ufl.inner(avg_u - p, avg_v) * dx_1D</span>
 a += A * ufl.inner(ufl.grad(p), ufl.grad(q)) * dx_1D
-a += P * xi * ufl.inner(p - avg_u, q) * dx_1D
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">a += P * xi * ufl.inner(p - avg_u, q) * dx_1D</span>
 L = f_vol * v * dx_3D
 L += f_line * q * dx_1D
-```
+</code></pre>
 
 <br>
 
@@ -596,19 +599,18 @@ global_flux = extract_global_flux(network_mesh, sol)
 
 # DOLFINx-adjoint
 
-```python
-u = ufl.TrialFunction(V)
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><code class="language-python">u = ufl.TrialFunction(V)
 v = ufl.TestFunction(V)
 F = ufl.inner(kappa * ufl.grad(u), ufl.grad(v)) * ufl.dx - f * v * ufl.dx
 a, L = ufl.system(F)
-uh = dolfinx_adjoint.Function(V, name="State")
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">uh = dolfinx_adjoint.Function(V, name="State")</span>
 petsc_options = {
     "ksp_type": "preonly",
     "pc_type": "lu",
     "pc_factor_mat_solver_type": "mumps",
     "ksp_error_if_not_converged": True,
 }
-problem = dolfinx_adjoint.LinearProblem(
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">problem = dolfinx_adjoint.LinearProblem(
     a,
     L,
     u=uh,
@@ -616,9 +618,9 @@ problem = dolfinx_adjoint.LinearProblem(
     petsc_options=petsc_options,
     adjoint_petsc_options=petsc_options,
     tlm_petsc_options=petsc_options,  # type: ignore
-)
+)</span>
 problem.solve()
-```
+</code></pre>
 
 ---
 
@@ -626,18 +628,19 @@ problem.solve()
 
 <img src="qr_codes/DOLFINx_adjoint_qr.png" class="qr-code" vspace=0px width=200px>
 
-```python
-
-J_symbolic = 0.5 * ufl.inner(uh - d, uh - d) * ufl.dx
+<pre is="marp-pre" data-auto-scaling="downscale-only" style="margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"><code class="language-python">J_symbolic = 0.5 * ufl.inner(uh - d, uh - d) * ufl.dx
 J_symbolic += 0.5 * alpha * ufl.inner(f, f) * ufl.dx
-J = dolfinx_adjoint.assemble_scalar(J_symbolic)
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">J = dolfinx_adjoint.assemble_scalar(J_symbolic)</span>
 
-control = pyadjoint.Control(f)
-Jhat = pyadjoint.ReducedFunctional(J, control)
+<span style="background-color: rgba(255, 193, 7, 0.2); display: inline-block; width: 100%;">control = pyadjoint.Control(f)
+Jhat = pyadjoint.ReducedFunctional(J, control)</span>
+</code></pre>
 
+<div data-marpit-fragment>
+
+```python
 optimization_problem = pyadjoint.MoolaOptimizationProblem(Jhat)
 f_moola = DolfinxPrimalVector(f)
-
 optimization_opts = {
   "jtol": 0, "gtol": 1e-9,
   "Hinit": "default", "maxiter": 100,
@@ -645,6 +648,8 @@ optimization_opts = {
 solver = moola.BFGS(optimization_problem, f_moola, options=optimization_opts)
 solution = solver.solve()
 ```
+
+</div>
 
 ---
 
@@ -787,4 +792,54 @@ section {
       </figure>
     </center>
   </div>
+</div>
+
+---
+
+<!-- footer: <br>-->
+
+
+# Simula 25 years - FEniCS workshop
+
+### Hybrid workshop September 8th - 9th
+
+<div class="sskewed-columns">  
+  <div>
+    <b>Confirmed invited speakers</b> 
+    <div class="columns" style="font-size: 50%; margin-top: 10px;">
+      <div>
+        Antonio B. Svizzero (Undabit)<br>
+        Cécile Daversin-Catty (SRL)<br>
+        Chris Richardson (Cantab)<br>
+        David Ham (IC)<br>
+        Francesco Ballarin (UNICATT)<br>
+        Henrik N. T. Finsberg (SRL)<br>
+        Hyunsun Alicia Kim (UCSD)<br>
+        Jack S. Hale (UNI.LU.)<br>
+        Jeremy Bleyer (ENPC)<br>
+        Joakim Sundnes (SRL)<br>
+      </div>
+      <div>
+        Johan Hoffman (KTH)<br>
+        Kent Andre Mardal (SRL/UIO)<br>
+        Martin Řehoř (Rafinex)<br>
+        Neeraj Cherukunnath (Rolls Royce)<br>
+        Padmini Rangamani (UCSD)<br>
+        Remi Delaporte-Mathurin (MIT)<br>
+        Robert Kirby (BU)<br>
+        Simon W. Funke (formely SRL)<br>
+        Susanne Claus (ONERA)<br>
+        Thomas M. Surowiec (SRL)
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <img src="qr_codes/event_qr.png" style="width: 300px; margin: 0;">
+    <br>
+    <div style="font-size:30%">
+    Organizers: Jørgen S. Dokken, Cécile Daversin-Catty, Ada Johanne Ellingsrud, Eirik Valseth
+    </div>
+  </div>
+</div>
 </div>
