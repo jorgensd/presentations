@@ -34,3 +34,9 @@ Server with live updates
 ```bash
 npx @marp-team/marp-cli@latest -s . --html
 ```
+
+Merge into mega html
+```bash
+npx @marp-team/marp-cli@latest presentation.md  -o presentation.html --html
+monolith presentation.html -o fenics26_bundle.html
+```

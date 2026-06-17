@@ -728,17 +728,6 @@ linear_stepper.advance()
 
 ---
 
-# What's next?
-
-* Combining external operator and JAX
-<img src="qr_codes/FEniCSx_JAX_qr.png" vspace=0px width=200px>
-
-* Extending Irksome support and moving DirichletBC to DOLFINx
-* Extend DOLFINx-adjoint
-* Extend and combine these frameworks
-
----
-
 
 <!--  footer: <br>The work has been funded by the Wellcome Trust, grant number 313298/Z/24/Z and by Horizon Europe under the call Cross-sectoral solutions for the climate transition (HORIZON-CL5-2023-D2-01). <br>-->
 
@@ -786,6 +775,7 @@ section {
       </figure>
       <figure style="margin: 0;">
         <img src="people/matteo.jpg" vspace="0px" height="150px">
+        <img src="qr_codes/FEniCSx_JAX_qr.png" vspace=0px height="150px">
         <figcaption style="font-size: 50%; padding-top: 0px;">
           M. Croci <br> FEniCSx_JAX
         </figcaption>
