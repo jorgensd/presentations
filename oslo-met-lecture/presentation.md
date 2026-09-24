@@ -1144,84 +1144,103 @@ $$
 # Back to the brain: Extracting the CSF spaces$^2$
 
 ```python
-domain, ct, ft = read_from_svmtk_npz(MPI.COMM_WORLD, filename)
-ft = extend_facet_marker_with_outlet(
-    domain, ft, x_bounds=(-28, 4), y_bounds=(-100, 11), z_bound=40
+domain, ct, ft = read_mesh(
+    infile, facet_infile, grid_name, cell_tags_name, facet_tags_name
 )
+new_tag = extend_facet_marker_with_outlet(domain, ft, x_bounds, y_bounds, z_bound)
 ```
 
 <div data-marpit-fragment>
 
 ```python
-fluid_markers = (1, 4, 5, 6)  # Markers for the fluid regions
 fluid_cells = ct.indices[np.isin(ct.values, fluid_markers)]
-mesh, c_map, v_map, _ = dolfinx.mesh.create_submesh(domain, ct.dim, fluid_cells)
-cell_tags = transfer_meshtags_to_submesh(domain, ct, mesh, v_map, c_map)
-facet_tags = transfer_meshtags_to_submesh(domain, ft, mesh, v_map, c_map)
+fluid_mesh, cell_to_full, vertex_to_full, node_to_full = dolfinx.mesh.create_submesh(
+    domain, domain.topology.dim, fluid_cells
+)
+sub_cell_tags = transfer_meshtags_to_submesh(
+    ct, fluid_mesh, vertex_to_parent=vertex_to_full, cell_to_parent=cell_to_full
+)
+sub_facet_tags = transfer_meshtags_to_submesh(
+    new_tag, fluid_mesh, vertex_to_parent=vertex_to_full, cell_to_parent=cell_to_full
+)
 ```
 
 </div>
+<br>
 
 ---
 
-# Stokes flow in the CSF spaces$^2$
+### Stokes flow in the CSF spaces$^2$
 
 ```python
-cell = mesh.basix_cell()
-P2 = element("Lagrange", cell, 2, shape=(3,))
+cell = fluid_mesh.basix_cell()
+P2 = element("Lagrange", cell, 2, shape=(fluid_mesh.geometry.dim,))
+V = dolfinx.fem.functionspace(mesh, P2)
 P1 = element("Lagrange", cell, 1)
-taylor_hood = mixed_element([P2, P1])
-W = dolfinx.fem.functionspace(mesh, taylor_hood)
-dx = ufl.Measure("dx", domain=mesh, subdomain_data=cell_tags)
+Q = dolfinx.fem.functionspace(mesh, P1)
+W = ufl.MixedFunctionSpace(V, Q)
 
-cp_marker = 5  # Integer id for choroid plexus
-comm = mesh.comm
-choroid_plexus_volume = dolfinx.fem.form(1 * dx(cp_marker))
-vol = comm.allreduce(dolfinx.fem.assemble_scalar(choroid_plexus_volume), op=MPI.SUM)
+dx = ufl.Measure("dx", domain=fluid_mesh, subdomain_data=sub_cell_tags)
+
+# Compute volume of mesh here
+# ...
 g_source = dolfinx.fem.Constant(mesh, production_value / vol)
-
 mu = dolfinx.fem.Constant(mesh, water_viscosity)
+```
+
+---
+
+### Define variational form$^2$ and preconditioner
+
+```python
 (u, p) = ufl.TrialFunctions(W)
 (v, q) = ufl.TestFunctions(W)
 a = mu * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx
 a -= ufl.div(v) * p * dx
 a -= q * ufl.div(u) * dx
-L = -g_source * q * dx(cp_marker)
+L = [ufl.ZeroBaseForm((v,)), -g_source * q * dx(cp_marker)]
+a = ufl.extract_blocks(a)
+
+P = mu * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx
+P += (1.0 / mu) * p * q * dx
+P = ufl.extract_blocks(P)
 ```
 
 ---
 
-### Boundary conditions and preconditioned solver$^2$
+### Create boundary conditions$^2$
 
 ```python
-W0 = W.sub(0)
-V, _ = W0.collapse()
 no_slip = dolfinx.fem.Function(V)
+no_slip.x.array[:] = 0
 bcs = []
-mesh.topology.create_connectivity(2, 3)
+mesh.topology.create_connectivity(sub_facet_tags.dim, mesh.topology.dim)
 for marker in noslip_markers:
-    facets = facet_tags.find(marker)
-    fixed_dofs = dolfinx.fem.locate_dofs_topological((W0, V), 2, facets)
-    bcs.append(dolfinx.fem.dirichletbc(no_slip, fixed_dofs, W0))
+    facets = sub_facet_tags.find(marker)
+    fixed_dofs = dolfinx.fem.locate_dofs_topological(V, sub_facet_tags.dim, facets)
+    bcs.append(dolfinx.fem.dirichletbc(no_slip, fixed_dofs))
+```
 
-P = mu * ufl.inner(ufl.grad(u), ufl.grad(v)) * dx
-P += (1.0 / mu) * p * q * dx
-p_compiled = dolfinx.fem.form(P)
-P = dolfinx.fem.petsc.assemble_matrix(p_compiled, bcs=bcs)
-P.assemble()
+---
 
+### Preconditioned (iterative) linear solver
+
+```python
 opts = {
     "ksp_type": "minres",
     "pc_type": "hypre",
     "pc_hypre_type": "boomeramg",
+    "ksp_monitor": None,
     "ksp_error_if_not_converged": True,
     "ksp_atol": 1e-6,
     "ksp_rtol": 1e-6,
 }
-problem = dolfinx.fem.petsc.LinearProblem(a, L, bcs=bcs, petsc_options=opts)
-problem.solver.setOperators(problem.A, P)
-wh = problem.solve()
+problem = dolfinx.fem.petsc.LinearProblem(
+    a, L, bcs=bcs, petsc_options=opts, P=P, petsc_options_prefix="stokes_"
+)
+(uh, ph) = problem.solve()
 ```
+<br>
 
 ---
 
