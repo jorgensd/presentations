@@ -1139,9 +1139,9 @@ $$
 
 ---
 
-<!-- footer: $^2$Code from Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a>, <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
+<!-- footer: $^{11}$Hornkjøl, M. (2024). <i>mri2fem-ii-chapter-3-code</i> v1.0.0, code accompanying Hornkjøl, Valnes, <b>Dokken</b>, <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
 
-# Back to the brain: Extracting the CSF spaces$^2$
+# Back to the brain: Extracting the CSF spaces$^{11}$
 
 ```python
 domain, ct, ft = read_mesh(
@@ -1170,7 +1170,7 @@ sub_facet_tags = transfer_meshtags_to_submesh(
 
 ---
 
-### Stokes flow in the CSF spaces$^2$
+### Stokes flow in the CSF spaces$^{11}$
 
 ```python
 cell = fluid_mesh.basix_cell()
@@ -1190,7 +1190,7 @@ mu = dolfinx.fem.Constant(mesh, water_viscosity)
 
 ---
 
-### Define variational form$^2$ and preconditioner
+### Define variational form and preconditioner$^{11}$
 
 ```python
 (u, p) = ufl.TrialFunctions(W)
@@ -1208,7 +1208,7 @@ P = ufl.extract_blocks(P)
 
 ---
 
-### Create boundary conditions$^2$
+### Create boundary conditions$^{11}$
 
 ```python
 no_slip = dolfinx.fem.Function(V)
@@ -1223,7 +1223,7 @@ for marker in noslip_markers:
 
 ---
 
-### Preconditioned (iterative) linear solver
+### Preconditioned (iterative) linear solver$^{11}$
 
 ```python
 opts = {
