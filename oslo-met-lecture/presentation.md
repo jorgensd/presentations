@@ -224,20 +224,6 @@ Guest lecture, Oslo Metropolitan University
 ---
 
 
-# How I ended up at Simula
-
-
-* Finished a master's in fluid mechanics and started looking for a job
-* A professor at UiO encouraged me to apply for a PhD
-* I applied, and got the position
-* Near the end of the PhD, I accepted a job as a consultant
-* Before I started, a colleague pointed me to a post-doc position: *"apply for this, it suits you"*
-* I applied, and got the post-doc
-* ...and got hooked on developing finite element software
-* Became known for my FEniCS expertise, which led to a permanent position at Simula
-
----
-
 # About Simula
 
 Founded in 2001 by the Norwegian Government
@@ -253,7 +239,9 @@ Founded in 2001 by the Norwegian Government
 
 ---
 
-# Department of Scientific Computing and Numerical Analysis
+<!-- footer: $^1$ Vinje, V., Zapf, B., Ringstad, G. et al. Human brain solute transport quantified by glymphatic MRI-informed biophysics during sleep and sleep deprivation. Fluids Barriers CNS 20, 62 (2023). https://doi.org/10.1186/s12987-023-00459-8 <br><br> -->
+
+### Department of Scientific Computing and Numerical Analysis
 
 <div class="columns">
 
@@ -266,20 +254,33 @@ Analysis and generic tools and algorithms for PDEs
 <center/>
 </div>
 <div>
-<div data-marpit-fragment>
 <center>
-  Modelling the brain
+  Modelling the brain$^1$
   <img src="./images/brain_clearance.png" width=500>
-   <font size="4">
-   Vinje et al. (2023)
-  <a href="https://doi.org/10.1186/s12987-023-00459-8">10.1186/s12987-023-00459-8</a>
-   </font> 
 <center/>
 </div>
 </div>
-</div>
+<br>
 
 ---
+
+
+<!-- footer: <br><br> -->
+
+# How I ended up at Simula
+
+
+* Finished a master's in fluid mechanics and started looking for a job
+* A professor at UiO encouraged me to apply for a PhD
+* I applied, and got the position
+* Near the end of the PhD, I accepted a job as a consultant
+* Before I started, a colleague pointed me to a post-doc position: *"apply for this, it suits you"*
+* I applied, and got the post-doc
+* ...and got hooked on developing finite element software
+* Became known for my FEniCS expertise, which led to a permanent position at Simula
+
+---
+
 
 # A typical workday
 
@@ -297,594 +298,6 @@ As a core developer of the FEniCS project, my work reaches thousands of users.
 3. With the time left, think about and develop new features
 
 </div>
-
----
-
-# Fluid flows in my work
-
-In my work, I regularly encounter fluid flows in physical systems:
-
-- Biological systems
-  - Cerebrospinal fluid (CSF) spaces surrounding our brains
-  - Blood vasculature and aneurysms
-- ARC (Affordable Robust Compact) fusion reactors
-- Redox-flow batteries
-
-<br>
-
-To model these systems we use a variety of numerical methods, including the **Finite Element Method** (using FEniCS) coupled with the **Finite Volume Method** (OpenFOAM).
-
----
-
-<!-- footer: $^1$Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>. In: <b>Dokken</b> et al. (eds.) <i>Mathematical Modelling of the Human Brain II</i>, Simula SpringerBriefs on Computing 18, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a><br><br> -->
-
-# Cerebrospinal fluid (CSF) flow$^1$
-
-<style scoped>
-ul li { font-size: 24px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-<div class="left-skewed-columns">
-<div>
-
-$$
-\begin{align*}
-\mu\nabla^2 u-\nabla p&= 0 &&\text{in } \Omega_F\\
-\nabla\cdot u&= g &&\text{in } \Omega_F\\
-u&= 0 &&\text{in } \Omega_P\\
-u&= 0 &&\text{on } \Gamma_{FP}\\
-\mu\nabla u\cdot n-pn&= 0 &&\text{on } \partial\Omega_{ps}\\
-u&= 0 &&\text{on } \partial\Omega \setminus \partial\Omega_{ps}
-\end{align*}
-$$
-
-- Stokes: the Reynolds number is very low $\rightarrow$ flow is laminar
-- $g$: CSF production in the choroid plexus (0.5 L/day)
-- Zero velocity in the brain tissue ($\sim 0.2~\mu\text{m/min}$)
-
-</div>
-<div>
-<center>
-<img src="images/csf_regions.png" width=380>
-<p style="font-size: 20px; text-align: center;">
-SAS, cortical gray matter (CGM), brain tissue (BT), ventricles (V), and choroid plexus (CP)
-</p>
-</center>
-</div>
-</div>
-<br>
-
----
-
-# Fluid spaces and interfaces$^1$
-
-<center>
-<img src="images/csf_interfaces.png" width=750>
-</center>
-<p style="font-size: 20px;">
-Left: the fluid spaces surrounding the brain. Right: the interfaces considered in the simulations. The outlet is the parasagittal sinus, and CP/V is the internal interface in the ventricles to the choroid plexus, which produces the CSF.
-</p>
-<br>
-<br>
-
----
-
-<style scoped>
-ul li { font-size: 24px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-
-<!-- _footer: $^1$Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>. In: <b>Dokken</b> et al. (eds.) <i>Mathematical Modelling of the Human Brain II</i>, Simula SpringerBriefs on Computing 18, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a><br>$^2$Hu, Schneider, Wang, Zorin, Panozzo. <i>Fast tetrahedral meshing in the wild</i>. ACM Transactions on Graphics 39(4), 2020. DOI: <a href="https://doi.org/10.1145/3386569.3392385">10.1145/3386569.3392385</a><br>My work on this is funded by the Wellcome Trust grant <a href="https://wellcome.org/research-funding/funding-portfolio/funded-grants/next-generation-simulation-and-learning-imaging"><i>Next-generation simulation and learning in imaging-based biomedicine</i></a> (FEniCS in the wild)<br><br> -->
-
-# From MRI surfaces to a fluid mesh$^1$
-
-<div class="left-skewed-columns">
-<div>
-
-- The choroid plexus is thin and often not well resolved in MR images
-  - Can lead to degenerate meshes and unphysical results
-- The SAS can be so thin that it is hard to resolve
-  - Expand it by 2 mm in SVM-Tk
-- Thin regions (aqueduct, SAS) need refinement
-  - Otherwise the flow is effectively stopped
-- Working with researchers in mesh generation to improve meshing of complex medical images$^2$
-
-</div>
-<div>
-<center>
-<img src="images/csf_aqueduct.png" width=500>
-<p style="font-size: 20px; text-align: center;">
-The cerebral aqueduct marked as a separate subdomain
-</p>
-</center>
-</div>
-</div>
-<br>
-<br>
-<br>
-<br>
-
----
-
-
-<style scoped>
-ul li { font-size: 26px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-
-# Results$^1$
-
-<div class="right-skewed-columns">
-<div>
-
-- 2 453 870 tetrahedra
-- 11 518 224 velocity DOFs
-- 546 542 pressure DOFs
-- Peak velocity $\sim 3.3~\text{mm/s}$ in the aqueduct
-- $\sim 2\text{-}4~\mu\text{m/s}$ in the SAS
-- Similar to experimental studies in mice and previous simulations
-- 20 CPUs, 120 GB RAM
-
-</div>
-<div>
-<center>
-<img src="images/csf_velocity.png" width=480>
-<p style="font-size: 20px; text-align: center;">
-Magnitude of the CSF velocity (cut-off at 0.06 mm/s).
-</p>
-</center>
-</div>
-</div>
-<br>
-
----
-
-
-<style scoped>
-ul li { font-size: 24px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-
-### Standard preconditioning does not work on the brain$^1$
-
-<div class="columns">
-<div>
-<center>
-<img src="images/csf_brain.png" width=661>
-<center/>
-</div>
-<div>
-<center>
-<img src="images/fluid_flow_csf.png" width=400>
-<center/>
-</div>
-</div>
-
-- <b>1155 MINRES iterations</b> with a standard Stokes preconditioner (BoomerAMG)
-- Condition number of the preconditioned matrix $\approx$ 927 000
-- The inf-sup condition breaks down in complex, anisotropic geometries
-
-<br>
-<br>
-
----
-
-<img src="images/networks_FEniCSx_qr.png" class="qr-code" vspace=0px width=200px>
-
-<!-- footer: $^3$I.G. Gjerde. <i>Graphnics: Combining FEniCS and NetworkX to simulate flow in complex networks</i>. 2022. <br>DOI: <a href="https://doi.org/10.48550/arXiv.2212.02916">10.48550/arXiv.2212.02916</a>.<br>$^4$ Daversin-Catty, Dean, and Rognes. <i>Finite Element Software and Performance for Network Models with Multipliers</i>. 2024.<br>DOI: <a href="https://doi.org/10.1007/978-3-031-58519-7_4">10.1007/978-3-031-58519-7_4</a> <br><br> -->
-
-# Blood flow in networks: Networks_FEniCSx
-
-<div class="skewed-columns">
-
-<div>
-
-MPI compatible FEniCSx+Networkx based on $^{3,4}$
-
-```python
-from networks_fenicsx import HydraulicNetworkAssembler, NetworkMesh, Solver
-from networks_fenicsx.network_generation import make_arterial_tree
-from networks_fenicsx.post_processing import export_functions, extract_global_flux
-
-n = 5
-G = make_arterial_tree(N=n, direction=np.array([0.1, 1, 0]))
-network_mesh = NetworkMesh(G, N=40, color_strategy=nx.coloring.strategy_largest_first)
-assembler = HydraulicNetworkAssembler(network_mesh, flux_degree=1, pressure_degree=0)
-assembler.compute_forms(p_bc_ex=p_bc_expr)
-solver = Solver(assembler, kind="nest")
-solver.assemble()
-sol = solver.solve()
-global_flux = extract_global_flux(network_mesh, sol)
-```
-
-</div>
-
-<div>
-<figure>
-<center>
-<img src="./images/arterial_tree.png" vspace=0px width=400px>
-</center>
-</figure>
-<br>
-</div>
-</div>
-
----
-
-<!--  footer: $^5$ Kuchta, M. (2021). Assembly of Multiscale Linear PDE Operators. In: Vermolen, F.J., Vuik, C. (eds) Numerical Mathematics and Advanced Applications ENUMATH 2019. Lecture Notes in Computational Science and Engineering, vol 139. Springer, Cham. https://doi.org/10.1007/978-3-030-55874-1_63 <br><br> -->
-
-### Vessels in tissue: Non-conforming 3D-1D coupling using FEniCSx_ii
-
-- Algorithm based on $^5$, but with MPI support and FEniCSx support
-- Example below from [FEniCSx_ii Demos](https://scientificcomputing.github.io/fenicsx_ii/demos/coupled_poisson_solver.html)
-
-<div class=columns>
-<div>
-
-<center>
-<img src="./images/xii.png" width=500>
-</center>
-</div>
-<center>
-<img src="./images/xii_solution.png" width=300>
-</center>
-</div>
-<br>
-<br>
-<br>
-
----
-
-<!-- footer: $^6$Yamamoto, Bruneau, Ring, <b>Dokken</b>, Valen-Sendstad. <i>VaSP: Vascular Fluid–Structure Interaction Pipeline</i>. SoftwareX 32, 102392, 2025. DOI: <a href="https://doi.org/10.1016/j.softx.2025.102392">10.1016/j.softx.2025.102392</a><br><br> -->
-
-# Blood flow in cerebral aneurysms$^6$
-
-<div class="columns">
-<div>
-
-- A cerebral aneurysm is a pathological dilation of an artery in the brain
-- VaSP: Vascular Fluid–Structure Interaction Pipeline
-  - Medical image-derived surface → fluid and solid mesh
-  - Monolithic FSI (fluid, solid, and mesh motion) with turtleFSI
-  - Hemodynamic and wall-mechanical post-processing
-- Built on FEniCS and VMTK
-
-</div>
-<div>
-<center>
-<img src="images/vasp_pipeline.png" width=560>
-</center>
-</div>
-</div>
-
----
-
-# Automated meshing$^6$
-
-<div class="left-skewed-columns">
-<div>
-<center>
-<img src="images/vasp_meshing.png" height=500>
-</center>
-</div>
-<div>
-
-- Centerlines and smoothing
-- Cylindrical flow extensions at inlets and outlets
-- Local mesh size and wall thickness
-- Scriptable command-line interface for reproducibility
-
-</div>
-</div>
-
----
-
-# Transitional flow and wall vibrations$^6$
-
-<center>
-<img src="images/vasp_aneurysm.png" width=950>
-<p style="font-size: 20px; text-align: center; max-width: 950px; margin: 0 auto;">
-Hemodynamic and solid-mechanical indices, and high-pass filtered displacement and strain
-</p>
-</center>
-
-- Tailored for transitional flow and high-frequency wall vibrations
-- Has offered a plausible explanation for clinically reported aneurysm sounds
-
----
-
-<!-- footer: $^7$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br><br> -->
-
-# Fusion: The ARC breeding blanket$^7$
-
-<div class="columns">
-<div>
-
-- ARC: Affordable, Robust, Compact fusion reactor
-- Liquid immersion blanket of FLiBe salt
-  - Breeder, coolant, and neutron moderator
-- Flowing molten salt couples
-  - Neutronics
-  - Thermal hydraulics
-  - Hydrogen isotope (tritium) transport
-- Model a 5° sector (72 identical sectors)
-
-</div>
-<div>
-<center>
-<img src="images/arc_geometry.png" width=520>
-<p style="font-size: 20px; text-align: center;">
-Breeder flow path, inlet, outlet, and interconnect
-</p>
-</center>
-</div>
-</div>
-
----
-
-# Coupling finite volumes and finite elements$^7$
-
-<center>
-<img src="images/arc_coupling.png" width=650>
-</center>
-
-- **OpenMC** (neutronics): tritium generation, nuclear heating
-- **OpenFOAM** (finite volume CFD, RANS $k$-$\omega$ SST): velocity, temperature, turbulent viscosity
-- **FESTIM** (finite elements, DOLFINx): tritium transport
-- `openmc2dolfinx` and `foam2dolfinx` transfer the fields to DOLFINx without interpolation
-
----
-
-# Tritium transport model$^7$
-
-$$
-\frac{\partial c_m}{\partial t} = \nabla \cdot (D_{\text{eff}}\nabla c_m) + S - \nabla \cdot (\mathbf{u}c_m)
-$$
-
-<div class="columns">
-<div>
-
-$$
-\begin{align*}
-D_{\text{eff}} &= D + D_{\text{turb}} + D_{\text{art}}\\
-D &= D_0 e^{-E_D/(k_B T)}\\
-D_{\text{turb}} &= \frac{\nu_t}{Sc_t}\\
-D_{\text{art}} &= \delta h \Vert \mathbf{u}\Vert
-\end{align*}
-$$
-
-</div>
-<div>
-
-- $S$: tritium source from OpenMC
-- $\mathbf{u}$, $\nu_t$, $T$: from OpenFOAM
-- $D_{\text{turb}}$: turbulence-enhanced mixing
-- $D_{\text{art}}$: stabilisation (as in SUPG/artificial diffusion) for high Péclet numbers
-
-</div>
-</div>
-
----
-
-### Tritium accumulates where the flow stagnates$^7$
-
-<center>
-<img src="images/arc_fields.png" width=700>
-<p style="font-size: 20px; text-align: center; max-width: 700px; margin: 0 auto;">
-Multiphysics fields in the upper region of the blanket sector. High concentrations in flow stagnation zones, lower concentrations in highly turbulent zones.
-</p>
-</center>
-
-
-<br>
-<br>
-<br>
-
----
-
-# FESTIM (FEM) vs. OpenFOAM (FV)$^7$
-
-<div class="columns">
-<div>
-
-- Steady-state tritium inventory
-  - FESTIM: 243 mg
-  - OpenFOAM: 240 mg
-- Outlet flux
-  - FESTIM: 1.0 mg/s
-  - OpenFOAM: 1.01 mg/s
-- Outlet flux at 99.5% of steady state
-  - FESTIM: 25.0 min
-  - OpenFOAM: 23.1 min
-
-</div>
-<div>
-<center>
-<img src="images/arc_transient.png" width=420>
-</center>
-</div>
-</div>
-
----
-
-<!-- footer: $^8$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
-
-
-<style scoped>
-ul li { font-size: 26px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-
-# Redox flow batteries$^8$
-
-<div class="columns">
-<div>
-
-- Large-scale energy storage for intermittent sources (solar, wind)
-- Energy stored in redox-active species dissolved in liquid electrolytes
-- Electrolytes circulated from two storage tanks through two half-cells
-- Capacity scales with the tank volume
-
-<center>
-<img src="images/batcat.png" width=300px>
-</center>
-<br>
-
-</div>
-<div>
-<center>
-<img src="images/rfb_schematic.png" width=520>
-</center>
-</div>
-</div>
-<br>
-
----
-
-
-<!-- footer: $^8$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation<br> framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
-
-
-<style scoped>
-ul li { font-size: 26px; }
-.katex-display { font-size: 0.8em; }
-</style>
-
-
-# RFBniCS: Redox flow batteries in FEniCSx$^8$
-
-<div class="left-skewed-columns">
-<div>
-
-- Macro-homogeneous porous-electrode model
-  - Electrolyte flow
-  - Multicomponent species transport
-  - Ionic and electronic charge conservation
-  - Interfacial Faradaic charge transfer
-- 1D, 2D and 3D half-cells
-  - 2D: Darcy flow
-  - 3D: Navier–Stokes with Darcy–Forchheimer resistance in the porous electrode
-- Flow solved first (Taylor–Hood), then the coupled electrochemical system
-
-</div>
-<div>
-<center>
-<img src="images/rfb_domains.png" height=560>
-</center>
-</div>
-
-</div>
-<br>
-<br>
-
----
-
-<!-- footer: $^8$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <br><br> -->
-
-# Governing equations$^8$
-
-<div class="columns">
-<div>
-
-Species transport (Nernst–Planck)
-
-$$
-\begin{align*}
-\frac{\partial (\varepsilon c_j)}{\partial t} + \nabla \cdot \mathbf{N}_j &= S_j\\
-\mathbf{N}_j = -D_j^{\text{eff}}\nabla c_j - \frac{z_jc_jD_j^{\text{eff}}}{RT}F\nabla \phi_\ell &+ \mathbf{v}c_j
-\end{align*}
-$$
-
-Local electroneutrality
-
-$$
-\sum_{j} z_jc_j = 0
-$$
-
-</div>
-<div>
-
-Charge conservation
-
-$$
-\begin{align*}
-\nabla \cdot \mathbf{i}_\ell &= a i_F\\
-\nabla \cdot \mathbf{i}_s &= -a i_F
-\end{align*}
-$$
-
-Butler–Volmer kinetics
-
-$$
-i_F = i_0\left[\frac{c_\mathcal{R}^{\text{surf}}}{c_\mathcal{R}}e^{\frac{\alpha_aF}{RT}\eta} - \frac{c_\mathcal{O}^{\text{surf}}}{c_\mathcal{O}}e^{-\frac{\alpha_cF}{RT}\eta}\right]
-$$
-
-</div>
-</div>
-
----
-
-### Verification against other open-source tools$^8$
-
-<div class="columns">
-<div>
-<center>
-<img src="images/rfb_rfbfoam.png" height=410>
-<p style="font-size: 20px; text-align: center;">
-3D vs. RfbFoam (OpenFOAM, finite volume): relative <i>L</i><sup>2</sup> errors 1.7% (<i>c</i><sub>Fe<sup>2+</sup></sub>), 0.54% (<i>c</i><sub>Fe<sup>3+</sup></sub>), 0.39% (<i>η</i>)
-</p>
-</center>
-</div>
-<div>
-<center>
-<img src="images/rfb_pybamm.png" height=410>
-<p style="font-size: 20px; text-align: center;">
-1D vs. PyBaMM: RFBniCS is more accurate and faster
-</p>
-</center>
-</div>
-</div>
-<br>
-
-<!-- --- -->
-
-<!-- # Transient charge–rest–discharge cycle$^8$
-
-<div class="columns">
-<div>
-<center>
-<img src="images/rfb_transient.png" height=440>
-</center>
-</div>
-<div>
-
-- Negative half-cell of a vanadium redox flow battery
-- Resolves both redox-active and supporting-electrolyte species
-- Near the end of charging, the Faradaic current localises near the inlet
-  - Non-uniform utilisation of the porous electrode
-
-</div>
-</div> -->
-
-<!-- ---
-
-# Faradaic current during charging$^8$
-
-<center>
-<img src="images/rfb_fields.png" height=520>
-</center>
--->
-
-<!-- --- -->
-
-
-
-
 
 ---
 
@@ -1121,9 +534,614 @@ with dolfinx.io.VTXWriter(mesh.comm, "uh.bp", [uh]) as bp:
 
 ---
 
-<!-- footer: $^1$Code from Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a>, <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
 
-# Back to the brain: Extracting the CSF spaces$^1$
+# Fluid flows in my work
+
+In my work, I regularly encounter fluid flows in physical systems:
+
+- Biological systems
+  - Cerebrospinal fluid (CSF) spaces surrounding our brains
+  - Blood vasculature and aneurysms
+- ARC (Affordable Robust Compact) fusion reactors
+- Redox-flow batteries
+
+<br>
+
+To model these systems we use a variety of numerical methods, including the **Finite Element Method** (using FEniCS) coupled with the **Finite Volume Method** (OpenFOAM).
+
+---
+
+<!-- footer: $^2$Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>. In: <b>Dokken</b> et al. (eds.) <i>Mathematical Modelling of the Human Brain II</i>, Simula SpringerBriefs on Computing 18, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a><br><br> -->
+
+# Cerebrospinal fluid (CSF) flow$^2$
+
+<style scoped>
+ul li { font-size: 24px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+<div class="left-skewed-columns">
+<div>
+
+$$
+\begin{align*}
+\mu\nabla^2 u-\nabla p&= 0 &&\text{in } \Omega_F\\
+\nabla\cdot u&= g &&\text{in } \Omega_F\\
+u&= 0 &&\text{in } \Omega_P\\
+u&= 0 &&\text{on } \Gamma_{FP}\\
+\mu\nabla u\cdot n-pn&= 0 &&\text{on } \partial\Omega_{ps}\\
+u&= 0 &&\text{on } \partial\Omega \setminus \partial\Omega_{ps}
+\end{align*}
+$$
+
+- Stokes: the Reynolds number is very low $\rightarrow$ flow is laminar
+- $g$: CSF production in the choroid plexus (0.5 L/day)
+- Zero velocity in the brain tissue ($\sim 0.2~\mu\text{m/min}$)
+
+</div>
+<div>
+<center>
+<img src="images/csf_regions.png" width=380>
+<p style="font-size: 20px; text-align: center;">
+SAS, cortical gray matter (CGM), brain tissue (BT), ventricles (V), and choroid plexus (CP)
+</p>
+</center>
+</div>
+</div>
+<br>
+
+---
+
+# Fluid spaces and interfaces$^2$
+
+<center>
+<img src="images/csf_interfaces.png" width=750>
+</center>
+<p style="font-size: 20px;">
+Left: the fluid spaces surrounding the brain. Right: the interfaces considered in the simulations. The outlet is the parasagittal sinus, and CP/V is the internal interface in the ventricles to the choroid plexus, which produces the CSF.
+</p>
+<br>
+<br>
+
+---
+
+<style scoped>
+ul li { font-size: 24px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+<!-- _footer: $^2$Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>. In: <b>Dokken</b> et al. (eds.) <i>Mathematical Modelling of the Human Brain II</i>, Simula SpringerBriefs on Computing 18, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a><br>$^3$Hu, Schneider, Wang, Zorin, Panozzo. <i>Fast tetrahedral meshing in the wild</i>. ACM Transactions on Graphics 39(4), 2020. DOI: <a href="https://doi.org/10.1145/3386569.3392385">10.1145/3386569.3392385</a><br>My work on this is funded by the Wellcome Trust grant <a href="https://wellcome.org/research-funding/funding-portfolio/funded-grants/next-generation-simulation-and-learning-imaging"><i>Next-generation simulation and learning in imaging-based biomedicine</i></a> (FEniCS in the wild)<br><br> -->
+
+# From MRI surfaces to a fluid mesh$^2$
+
+<div class="left-skewed-columns">
+<div>
+
+- The choroid plexus is thin and often not well resolved in MR images
+  - Can lead to degenerate meshes and unphysical results
+- The SAS can be so thin that it is hard to resolve
+  - Expand it by 2 mm in SVM-Tk
+- Thin regions (aqueduct, SAS) need refinement
+  - Otherwise the flow is effectively stopped
+- Working with researchers in mesh generation to improve meshing of complex medical images$^3$
+
+</div>
+<div>
+<center>
+<img src="images/csf_aqueduct.png" width=500>
+<p style="font-size: 20px; text-align: center;">
+The cerebral aqueduct marked as a separate subdomain
+</p>
+</center>
+</div>
+</div>
+<br>
+<br>
+<br>
+<br>
+
+---
+
+
+<style scoped>
+ul li { font-size: 26px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+# Results$^2$
+
+<div class="right-skewed-columns">
+<div>
+
+- 2 453 870 tetrahedra
+- 11 518 224 velocity DOFs
+- 546 542 pressure DOFs
+- Peak velocity $\sim 3.3~\text{mm/s}$ in the aqueduct
+- $\sim 2\text{-}4~\mu\text{m/s}$ in the SAS
+- Similar to experimental studies in mice and previous simulations
+- 20 CPUs, 120 GB RAM
+
+</div>
+<div>
+<center>
+<img src="images/csf_velocity.png" width=480>
+<p style="font-size: 20px; text-align: center;">
+Magnitude of the CSF velocity (cut-off at 0.06 mm/s).
+</p>
+</center>
+</div>
+</div>
+<br>
+
+---
+
+
+<style scoped>
+ul li { font-size: 22px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+### Standard preconditioning does not work on the brain$^2$
+
+<center>
+<div class="columns">
+<div>
+<img src="images/csf_brain.png" height=300>
+</div>
+<div>
+<img src="images/fluid_flow_csf.png" height=300>
+</div>
+</div>
+</center>
+
+- <b>1155 MINRES iterations</b> with a standard Stokes preconditioner (BoomerAMG)
+- Condition number of the preconditioned matrix $\approx$ 927 000
+- The inf-sup condition breaks down in anisotropic geometries$^4$
+
+<br>
+<br>
+
+<!-- footer: $^2$Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>. In: <b>Dokken</b> et al. (eds.) <i>Mathematical Modelling of the Human Brain II</i>, Simula SpringerBriefs on Computing 18, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a><br><sup>4</sup>Sande, E., Koch, T., Kuchta, M., & Mardal, K. (2025). On a robust inf-sup condition for the Stokes problem in slender domains - with application to preconditioning. ArXiv, abs/2510.24590. <br><br> -->
+
+---
+
+<img src="images/networks_FEniCSx_qr.png" class="qr-code" vspace=0px width=200px>
+
+<!-- footer: $^5$I.G. Gjerde. <i>Graphnics: Combining FEniCS and NetworkX to simulate flow in complex networks</i>. 2022. <br>DOI: <a href="https://doi.org/10.48550/arXiv.2212.02916">10.48550/arXiv.2212.02916</a>.<br>$^6$ Daversin-Catty, Dean, and Rognes. <i>Finite Element Software and Performance for Network Models with Multipliers</i>. 2024.<br>DOI: <a href="https://doi.org/10.1007/978-3-031-58519-7_4">10.1007/978-3-031-58519-7_4</a> <br><br> -->
+
+# Blood flow in networks: Networks_FEniCSx
+
+<div class="skewed-columns">
+
+<div>
+
+MPI compatible FEniCSx+Networkx based on $^{5,6}$
+
+```python
+from networks_fenicsx import HydraulicNetworkAssembler, NetworkMesh, Solver
+from networks_fenicsx.network_generation import make_arterial_tree
+from networks_fenicsx.post_processing import export_functions, extract_global_flux
+
+n = 5
+G = make_arterial_tree(N=n, direction=np.array([0.1, 1, 0]))
+network_mesh = NetworkMesh(G, N=40, color_strategy=nx.coloring.strategy_largest_first)
+assembler = HydraulicNetworkAssembler(network_mesh, flux_degree=1, pressure_degree=0)
+assembler.compute_forms(p_bc_ex=p_bc_expr)
+solver = Solver(assembler, kind="nest")
+solver.assemble()
+sol = solver.solve()
+global_flux = extract_global_flux(network_mesh, sol)
+```
+
+</div>
+
+<div>
+<figure>
+<center>
+<img src="./images/arterial_tree.png" vspace=0px width=400px>
+</center>
+</figure>
+<br>
+</div>
+</div>
+
+---
+
+<!--  footer: $^7$ Kuchta, M. (2021). Assembly of Multiscale Linear PDE Operators. In: Vermolen, F.J., Vuik, C. (eds) Numerical Mathematics and Advanced Applications ENUMATH 2019. Lecture Notes in Computational Science and Engineering, vol 139. Springer, Cham. https://doi.org/10.1007/978-3-030-55874-1_63 <br><br> -->
+
+### Vessels in tissue: Non-conforming 3D-1D coupling using FEniCSx_ii
+
+- Algorithm based on $^7$, but with MPI support and FEniCSx support
+- Example below from [FEniCSx_ii Demos](https://scientificcomputing.github.io/fenicsx_ii/demos/coupled_poisson_solver.html)
+
+<div class=columns>
+<div>
+
+<center>
+<img src="./images/xii.png" width=500>
+</center>
+</div>
+<center>
+<img src="./images/xii_solution.png" width=300>
+</center>
+</div>
+<br>
+<br>
+<br>
+
+---
+
+<!-- footer: $^8$Yamamoto, Bruneau, Ring, <b>Dokken</b>, Valen-Sendstad. <i>VaSP: Vascular Fluid–Structure Interaction Pipeline</i>. SoftwareX 32, 102392, 2025. DOI: <a href="https://doi.org/10.1016/j.softx.2025.102392">10.1016/j.softx.2025.102392</a><br><br> -->
+
+# Blood flow in cerebral aneurysms$^8$
+
+<div class="columns">
+<div>
+
+- VaSP: Vascular Fluid–Structure Interaction Pipeline
+  - Medical image-derived surface → fluid and solid mesh
+  - Monolithic FSI (fluid, solid, and mesh motion) with turtleFSI
+  - Hemodynamic and wall-mechanical post-processing
+- Built on FEniCS and VMTK
+
+</div>
+<div>
+<center>
+<img src="images/vasp_pipeline.png" width=560>
+</center>
+</div>
+</div>
+
+---
+
+# Automated meshing$^8$
+
+<div class="right-skewed-columns">
+<div>
+<center>
+<img src="images/vasp_meshing.png" height=400>
+</center>
+</div>
+<div>
+
+- Centerlines and smoothing
+- Cylindrical flow extensions at inlets and outlets
+- Local mesh size and wall thickness
+- Scriptable command-line interface for reproducibility
+
+</div>
+</div>
+
+---
+
+# Transitional flow and wall vibrations$^8$
+
+<center>
+<img src="images/vasp_aneurysm.png" width=950>
+<p style="font-size: 20px; text-align: center; max-width: 950px; margin: 0 auto;">
+Hemodynamic and solid-mechanical indices, and high-pass filtered displacement and strain
+</p>
+</center>
+
+- Tailored for transitional flow and high-frequency wall vibrations
+- Has offered a plausible explanation for clinically reported aneurysm sounds
+
+---
+
+<style scoped>
+ul li { font-size: 22px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+<!-- footer: $^9$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br><br> -->
+
+# Fusion: The ARC breeding blanket$^9$
+
+<div class="columns">
+<div>
+
+- ARC: Affordable, Robust, Compact fusion reactor
+- Liquid immersion blanket of FLiBe salt
+  - Breeder, coolant, and neutron moderator
+- Flowing molten salt couples
+  - Neutronics
+  - Thermal hydraulics
+  - Hydrogen isotope (tritium) transport
+- Model a 5° sector (72 identical sectors)
+
+</div>
+<div>
+<center>
+<img src="images/arc_geometry.png" width=520>
+<p style="font-size: 20px; text-align: center;">
+Breeder flow path, inlet, outlet, and interconnect
+</p>
+</center>
+</div>
+</div>
+
+---
+
+<style scoped>
+ul li { font-size: 22px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+### Coupling finite volumes and finite elements$^9$
+
+<center>
+<img src="images/arc_coupling.png" width=650>
+</center>
+
+- **OpenMC** (neutronics): tritium generation, nuclear heating
+- **OpenFOAM** (finite volume CFD, RANS $k$-$\omega$ SST): velocity, temperature, turbulent viscosity
+- **FESTIM** (finite elements, DOLFINx): tritium transport
+
+<br>
+<br>
+
+---
+
+# Tritium transport model$^9$
+
+$$
+\frac{\partial c_m}{\partial t} = \nabla \cdot (D_{\text{eff}}\nabla c_m) + S - \nabla \cdot (\mathbf{u}c_m)
+$$
+
+<div class="columns">
+<div>
+
+$$
+\begin{align*}
+D_{\text{eff}} &= D + D_{\text{turb}} + D_{\text{art}}\\
+D &= D_0 e^{-E_D/(k_B T)}\\
+D_{\text{turb}} &= \frac{\nu_t}{Sc_t}\\
+D_{\text{art}} &= \delta h \Vert \mathbf{u}\Vert
+\end{align*}
+$$
+
+</div>
+<div>
+
+- $S$: tritium source from OpenMC
+- $\mathbf{u}$, $\nu_t$, $T$: from OpenFOAM
+- $D_{\text{turb}}$: turbulence-enhanced mixing
+- $D_{\text{art}}$: stabilisation (as in SUPG/artificial diffusion) for high Péclet numbers
+
+</div>
+</div>
+
+---
+
+### Tritium accumulates where the flow stagnates$^9$
+
+<center>
+<img src="images/arc_fields.png" width=700>
+<p style="font-size: 20px; text-align: center; max-width: 700px; margin: 0 auto;">
+Multiphysics fields in the upper region of the blanket sector. High concentrations in flow stagnation zones, lower concentrations in highly turbulent zones.
+</p>
+</center>
+
+
+<br>
+<br>
+<br>
+
+
+<!-- footer: $^9$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br> -->
+
+
+---
+
+# FESTIM (FEM) vs. OpenFOAM (FV)$^9$
+
+<div class="columns">
+<div>
+
+- Steady-state tritium inventory
+  - FESTIM: 243 mg
+  - OpenFOAM: 240 mg
+- Outlet flux
+  - FESTIM: 1.0 mg/s
+  - OpenFOAM: 1.01 mg/s
+- Outlet flux at 99.5% of steady state
+  - FESTIM: 25.0 min
+  - OpenFOAM: 23.1 min
+
+</div>
+<div>
+<center>
+<img src="images/arc_transient.png" width=420>
+</center>
+</div>
+</div>
+
+---
+
+<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
+
+
+<style scoped>
+ul li { font-size: 26px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+# Redox flow batteries$^{10}$
+
+<div class="columns">
+<div>
+
+- Large-scale energy storage for intermittent sources (solar, wind)
+- Energy stored in redox-active species dissolved in liquid electrolytes
+- Electrolytes circulated from two storage tanks through two half-cells
+- Capacity scales with the tank volume
+
+<center>
+<img src="images/batcat.png" width=300px>
+</center>
+<br>
+
+</div>
+<div>
+<center>
+<img src="images/rfb_schematic.png" width=520>
+</center>
+</div>
+</div>
+<br>
+
+---
+
+
+<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation<br> framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
+
+
+<style scoped>
+ul li { font-size: 26px; }
+.katex-display { font-size: 0.8em; }
+</style>
+
+
+# RFBniCS: Redox flow batteries in FEniCSx$^{10}$
+
+<div class="left-skewed-columns">
+<div>
+
+- Macro-homogeneous porous-electrode model
+  - Electrolyte flow
+  - Multicomponent species transport
+  - Ionic and electronic charge conservation
+  - Interfacial Faradaic charge transfer
+- 1D, 2D and 3D half-cells
+  - 2D: Darcy flow
+  - 3D: Navier–Stokes with Darcy–Forchheimer resistance in the porous electrode
+- Flow solved first (Taylor–Hood), then the coupled electrochemical system
+
+</div>
+<div>
+<center>
+<img src="images/rfb_domains.png" height=560>
+</center>
+</div>
+
+</div>
+<br>
+<br>
+
+---
+
+<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <br><br> -->
+
+# Governing equations$^{10}$
+
+<div class="columns">
+<div>
+
+Species transport (Nernst–Planck)
+
+$$
+\begin{align*}
+\frac{\partial (\varepsilon c_j)}{\partial t} + \nabla \cdot \mathbf{N}_j &= S_j\\
+\mathbf{N}_j = -D_j^{\text{eff}}\nabla c_j - \frac{z_jc_jD_j^{\text{eff}}}{RT}F\nabla \phi_\ell &+ \mathbf{v}c_j
+\end{align*}
+$$
+
+Local electroneutrality
+
+$$
+\sum_{j} z_jc_j = 0
+$$
+
+</div>
+<div>
+
+Charge conservation
+
+$$
+\begin{align*}
+\nabla \cdot \mathbf{i}_\ell &= a i_F\\
+\nabla \cdot \mathbf{i}_s &= -a i_F
+\end{align*}
+$$
+
+Butler–Volmer kinetics
+
+$$
+i_F = i_0\left[\frac{c_\mathcal{R}^{\text{surf}}}{c_\mathcal{R}}e^{\frac{\alpha_aF}{RT}\eta} - \frac{c_\mathcal{O}^{\text{surf}}}{c_\mathcal{O}}e^{-\frac{\alpha_cF}{RT}\eta}\right]
+$$
+
+</div>
+</div>
+
+---
+
+### Verification against other open-source tools$^{10}$
+
+<div class="columns">
+<div>
+<center>
+<img src="images/rfb_rfbfoam.png" height=410>
+<p style="font-size: 20px; text-align: center;">
+3D vs. RfbFoam (OpenFOAM, finite volume): relative <i>L</i><sup>2</sup> errors 1.7% (<i>c</i><sub>Fe<sup>2+</sup></sub>), 0.54% (<i>c</i><sub>Fe<sup>3+</sup></sub>), 0.39% (<i>η</i>)
+</p>
+</center>
+</div>
+<div>
+<center>
+<img src="images/rfb_pybamm.png" height=410>
+<p style="font-size: 20px; text-align: center;">
+1D vs. PyBaMM: RFBniCS is more accurate and faster
+</p>
+</center>
+</div>
+</div>
+<br>
+
+<!-- --- -->
+
+<!-- # Transient charge–rest–discharge cycle$^{10}$
+
+<div class="columns">
+<div>
+<center>
+<img src="images/rfb_transient.png" height=440>
+</center>
+</div>
+<div>
+
+- Negative half-cell of a vanadium redox flow battery
+- Resolves both redox-active and supporting-electrolyte species
+- Near the end of charging, the Faradaic current localises near the inlet
+  - Non-uniform utilisation of the porous electrode
+
+</div>
+</div> -->
+
+<!-- ---
+
+# Faradaic current during charging$^{10}$
+
+<center>
+<img src="images/rfb_fields.png" height=520>
+</center>
+-->
+
+<!-- --- -->
+
+
+
+
+---
+
+<!-- footer: $^2$Code from Hornkjøl, Valnes, <b>Dokken</b>. <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.1007/978-3-032-00679-0_3">10.1007/978-3-032-00679-0_3</a>, <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
+
+# Back to the brain: Extracting the CSF spaces$^2$
 
 ```python
 domain, ct, ft = read_from_svmtk_npz(MPI.COMM_WORLD, filename)
@@ -1146,7 +1164,7 @@ facet_tags = transfer_meshtags_to_submesh(domain, ft, mesh, v_map, c_map)
 
 ---
 
-# Stokes flow in the CSF spaces$^1$
+# Stokes flow in the CSF spaces$^2$
 
 ```python
 cell = mesh.basix_cell()
@@ -1173,7 +1191,7 @@ L = -g_source * q * dx(cp_marker)
 
 ---
 
-# Boundary conditions and preconditioned solver$^1$
+### Boundary conditions and preconditioned solver$^2$
 
 ```python
 W0 = W.sub(0)
