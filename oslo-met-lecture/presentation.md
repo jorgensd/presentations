@@ -264,10 +264,9 @@ Analysis and generic tools and algorithms for PDEs
 
 ---
 
+<!-- 
 
-<!-- footer: <br><br> -->
-
-# How I ended up at Simula
+<!-- # How I ended up at Simula
 
 
 * Finished a master's in fluid mechanics and started looking for a job
@@ -277,9 +276,10 @@ Analysis and generic tools and algorithms for PDEs
 * Before I started, a colleague pointed me to a post-doc position: *"apply for this, it suits you"*
 * I applied, and got the post-doc
 * ...and got hooked on developing finite element software
-* Became known for my FEniCS expertise, which led to a permanent position at Simula
+* Became known for my FEniCS expertise, which led to a permanent position at Simula -->
 
----
+
+<!-- footer: <br><br> -->
 
 
 # A typical workday
@@ -547,7 +547,13 @@ In my work, I regularly encounter fluid flows in physical systems:
 
 <br>
 
+<div data-marpit-fragment>
+<div>
+
 To model these systems we use a variety of numerical methods, including the **Finite Element Method** (using FEniCS) coupled with the **Finite Volume Method** (OpenFOAM).
+
+</div>
+</div>
 
 ---
 
@@ -797,6 +803,7 @@ global_flux = extract_global_flux(network_mesh, sol)
 
 ---
 
+<!-- 
 # Automated meshing$^8$
 
 <div class="right-skewed-columns">
@@ -815,7 +822,7 @@ global_flux = extract_global_flux(network_mesh, sol)
 </div>
 </div>
 
----
+--- -->
 
 # Transitional flow and wall vibrations$^8$
 
@@ -831,15 +838,46 @@ Hemodynamic and solid-mechanical indices, and high-pass filtered displacement an
 
 ---
 
+<!-- footer: <br>$^9$Brunátová, <b>Dokken</b>, Valen-Sendstad, Hron. <i>On the Numerical Evaluation of Wall Shear Stress Using the Finite Element Method</i>. Int. J. Numer. Methods Biomed. Eng. 41(9), e70086, 2025. DOI: <a href="https://doi.org/10.1002/cnm.70086">10.1002/cnm.70086</a><br><br> -->
+
+# Computing wall shear stress with FEM$^9$
+
+<style scoped>
+ul li { font-size: 25px; }
+</style>
+
+<div class="skewed-columns">
+<div>
+<br>
+
+- P1/P1 stabilized vs. Taylor–Hood P2/P1 elements
+- WSS from a new boundary-flux method, or by projecting the tangential traction onto P1, DG-1 or DG-0
+- P2/P1 with boundary-layer meshes on curved walls *degraded* WSS accuracy (geometric approximation error)
+
+</div>
+<div>
+<center>
+<img src="images/wss_aneurysm.jpg" height=370>
+<p style="font-size: 20px; text-align: center;">
+Boundary-flux vs. projection (P2/P1) in an aneurysm
+</p>
+</center>
+</div>
+</div>
+
+---
+
 <style scoped>
 ul li { font-size: 22px; }
 .katex-display { font-size: 0.8em; }
 </style>
 
 
-<!-- footer: $^9$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br><br> -->
 
-# Fusion: The ARC breeding blanket$^9$
+
+<!-- footer: $^{10}$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br><br> -->
+
+# Fusion: The ARC breeding blanket$^{10}$
 
 <div class="columns">
 <div>
@@ -872,7 +910,7 @@ ul li { font-size: 22px; }
 </style>
 
 
-### Coupling finite volumes and finite elements$^9$
+### Coupling finite volumes and finite elements$^{10}$
 
 <center>
 <img src="images/arc_coupling.png" width=650>
@@ -887,7 +925,7 @@ ul li { font-size: 22px; }
 
 ---
 
-# Tritium transport model$^9$
+# Tritium transport model$^{10}$
 
 $$
 \frac{\partial c_m}{\partial t} = \nabla \cdot (D_{\text{eff}}\nabla c_m) + S - \nabla \cdot (\mathbf{u}c_m)
@@ -918,7 +956,7 @@ $$
 
 ---
 
-### Tritium accumulates where the flow stagnates$^9$
+### Tritium accumulates where the flow stagnates$^{10}$
 
 <center>
 <img src="images/arc_fields.png" width=700>
@@ -933,12 +971,12 @@ Multiphysics fields in the upper region of the blanket sector. High concentratio
 <br>
 
 
-<!-- footer: $^9$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br> -->
+<!-- footer: $^{10}$Dark, Sircar, Bae, <b>Dokken</b>, Delaporte-Mathurin. <i>Multiphysics tritium transport modelling of the ARC breeding blanket with FESTIM</i>. 2026. arXiv: <a href="https://arxiv.org/abs/2608.05398">2608.05398</a><br> -->
 
 
 ---
 
-# FESTIM (FEM) vs. OpenFOAM (FV)$^9$
+# FESTIM (FEM) vs. OpenFOAM (FV)$^{10}$
 
 <div class="columns">
 <div>
@@ -963,7 +1001,7 @@ Multiphysics fields in the upper region of the blanket sector. High concentratio
 
 ---
 
-<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
+<!-- footer: $^{11}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
 
 
 <style scoped>
@@ -972,7 +1010,7 @@ ul li { font-size: 26px; }
 </style>
 
 
-# Redox flow batteries$^{10}$
+# Redox flow batteries$^{11}$
 
 <div class="columns">
 <div>
@@ -999,7 +1037,7 @@ ul li { font-size: 26px; }
 ---
 
 
-<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation<br> framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
+<!-- footer: $^{11}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation<br> framework for redox flow batteries</i>. 2026. <a href="https://github.com/Ah-Aghabarari/RFBniCS">github.com/Ah-Aghabarari/RFBniCS</a><br>Funded by Horizon Europe, grant agreement no. 101137725 (BatCAT)<br><br> -->
 
 
 <style scoped>
@@ -1008,7 +1046,7 @@ ul li { font-size: 26px; }
 </style>
 
 
-# RFBniCS: Redox flow batteries in FEniCSx$^{10}$
+# RFBniCS: Redox flow batteries in FEniCSx$^{11}$
 
 <div class="left-skewed-columns">
 <div>
@@ -1036,9 +1074,9 @@ ul li { font-size: 26px; }
 
 ---
 
-<!-- footer: $^{10}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <br><br> -->
+<!-- footer: $^{11}$Aghabarari, <b>Dokken</b>, Horsch, Valseth, Janssen. <i>RFBniCS: An open-source simulation framework for redox flow batteries</i>. 2026. <br><br> -->
 
-# Governing equations$^{10}$
+# Governing equations$^{11}$
 
 <div class="columns">
 <div>
@@ -1081,7 +1119,7 @@ $$
 
 ---
 
-### Verification against other open-source tools$^{10}$
+### Verification against other open-source tools$^{11}$
 
 <div class="columns">
 <div>
@@ -1105,7 +1143,7 @@ $$
 
 <!-- --- -->
 
-<!-- # Transient charge–rest–discharge cycle$^{10}$
+<!-- # Transient charge–rest–discharge cycle$^{11}$
 
 <div class="columns">
 <div>
@@ -1125,7 +1163,7 @@ $$
 
 <!-- ---
 
-# Faradaic current during charging$^{10}$
+# Faradaic current during charging$^{11}$
 
 <center>
 <img src="images/rfb_fields.png" height=520>
@@ -1139,9 +1177,9 @@ $$
 
 ---
 
-<!-- footer: $^{11}$Hornkjøl, M. (2024). <i>mri2fem-ii-chapter-3-code</i> v1.0.0, code accompanying Hornkjøl, Valnes, <b>Dokken</b>, <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
+<!-- footer: $^{12}$Hornkjøl, M. (2024). <i>mri2fem-ii-chapter-3-code</i> v1.0.0, code accompanying Hornkjøl, Valnes, <b>Dokken</b>, <i>Segmenting, meshing, and modeling CSF spaces</i>, 2026. DOI: <a href="https://doi.org/10.5281/zenodo.10808334">10.5281/zenodo.10808334</a><br><br> -->
 
-# Back to the brain: Extracting the CSF spaces$^{11}$
+### Back to the brain: Extracting the CSF spaces$^{12}$
 
 ```python
 domain, ct, ft = read_mesh(
@@ -1170,7 +1208,7 @@ sub_facet_tags = transfer_meshtags_to_submesh(
 
 ---
 
-### Stokes flow in the CSF spaces$^{11}$
+### Stokes flow in the CSF spaces$^{12}$
 
 ```python
 cell = fluid_mesh.basix_cell()
@@ -1190,7 +1228,7 @@ mu = dolfinx.fem.Constant(mesh, water_viscosity)
 
 ---
 
-### Define variational form and preconditioner$^{11}$
+### Define variational form and preconditioner$^{12}$
 
 ```python
 (u, p) = ufl.TrialFunctions(W)
@@ -1208,7 +1246,7 @@ P = ufl.extract_blocks(P)
 
 ---
 
-### Create boundary conditions$^{11}$
+### Create boundary conditions$^{12}$
 
 ```python
 no_slip = dolfinx.fem.Function(V)
@@ -1223,7 +1261,7 @@ for marker in noslip_markers:
 
 ---
 
-### Preconditioned (iterative) linear solver$^{11}$
+### Preconditioned (iterative) linear solver$^{12}$
 
 ```python
 opts = {
